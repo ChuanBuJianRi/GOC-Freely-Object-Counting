@@ -1,11 +1,12 @@
 # Large dataset files
-dataset/
+datasets/
 
 # Model weights (too large for GitHub)
 models/
 checkpoint/
 result/checkpoints/
 *.pt
+*.pth
 
 # Logs
 *.log

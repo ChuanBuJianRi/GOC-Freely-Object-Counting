@@ -117,7 +117,10 @@ def run_epoch(rel_head, cat_head, tp, loader, z_dim, args, device, opt=None, gen
     train = opt is not None
     rel_head.train(train)
     agg = {"loss": 0.0, "L_sem": 0.0, "L_inst": 0.0, "sem_acc": 0.0, "sem_rec": 0.0,
-           "inst_acc": 0.0, "inst_rec": 0.0}
+           "inst_acc": 0.0, "inst_rec": 0.0, "inst_prec": 0.0}
+    # 累积混淆矩阵计数（跨 batch 微平均，正样本极稀疏，逐图平均不可靠）
+    tp_i = fp_i = fn_i = tn_i = 0
+    tp_s = fn_s = 0
     n_steps = 0
     for sample in loader:
         p = get_category_probs(cat_head, sample["z"], tp, device)
@@ -144,19 +147,25 @@ def run_epoch(rel_head, cat_head, tp, loader, z_dim, args, device, opt=None, gen
 
         for k, v in [("loss", loss), ("L_sem", l_sem), ("L_inst", l_inst)]:
             agg[k] += float(v.detach())
-        # Metrics
+        # Metrics: 用 valid 掩码（w>0.5 因 purity 极小恒为空，见 diag_relation_metrics.py）
         with torch.no_grad():
-            sm = w > 0.5
+            sm = w > 0
             if sm.sum() > 0:
-                sp = (torch.sigmoid(sem[sm]) > 0.5); st = y_sem[sm] > 0.5
-                agg["sem_acc"] += float((sp == st).float().mean())
-                agg["sem_rec"] += float((sp & st).sum()) / max(st.sum(), 1)
                 ip = (torch.sigmoid(inst[sm]) > 0.5); it = y_inst[sm] > 0.5
-                agg["inst_acc"] += float((ip == it).float().mean())
-                agg["inst_rec"] += float((ip & it).sum()) / max(it.sum(), 1)
+                tp_i += int((ip & it).sum()); fp_i += int((ip & ~it).sum())
+                fn_i += int((~ip & it).sum()); tn_i += int((~ip & ~it).sum())
+                sp = (torch.sigmoid(sem[sm]) > 0.5); st = y_sem[sm] > 0.5
+                tp_s += int((sp & st).sum()); fn_s += int((~sp & st).sum())
         n_steps += 1
 
-    return {k: v / max(n_steps, 1) for k, v in agg.items()}
+    out = {k: v / max(n_steps, 1) for k, v in agg.items()}
+    # 微平均 precision/recall（正样本稀疏，微平均比逐图平均可靠）
+    out["inst_rec"] = tp_i / max(tp_i + fn_i, 1)
+    out["inst_prec"] = tp_i / max(tp_i + fp_i, 1)
+    out["inst_acc"] = (tp_i + tn_i) / max(tp_i + fp_i + fn_i + tn_i, 1)
+    out["sem_rec"] = tp_s / max(tp_s + fn_s, 1)
+    out["inst_pos"] = tp_i + fn_i
+    return out
 
 
 def main():
@@ -231,8 +240,9 @@ def main():
         ev = run_epoch(rel_head, cat_head, tp, val_loader, z_dim, args, device)
 
         msg = (f"[epoch {epoch+1:2d}/{args.epochs}] "
-               f"train loss={tr['loss']:.4f} sem_rec={tr['sem_rec']*100:.0f}% inst_rec={tr['inst_rec']*100:.0f}% || "
-               f"val loss={ev['loss']:.4f} sem_rec={ev['sem_rec']*100:.0f}% inst_rec={ev['inst_rec']*100:.0f}%")
+               f"train loss={tr['loss']:.4f} inst_P={tr['inst_prec']*100:.0f}% inst_R={tr['inst_rec']*100:.0f}% || "
+               f"val loss={ev['loss']:.4f} inst_P={ev['inst_prec']*100:.0f}% inst_R={ev['inst_rec']*100:.0f}% "
+               f"sem_R={ev['sem_rec']*100:.0f}% (inst_pos={int(ev['inst_pos'])})")
         print(msg)
 
         if ev["loss"] < best_loss:

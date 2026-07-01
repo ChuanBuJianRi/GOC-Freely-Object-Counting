@@ -98,7 +98,7 @@ def process_image(image, file_name, ann_entry, class_idx, class_name, amg, encod
         inter = iw * ih
         if inter == 0: return 0.0
         return inter / (aw*ah + bw*bh - inter)
-    order = sorted(range(n_cand), key=lambda i: -masks[i].sum())
+    order = sorted(range(n_cand), key=lambda i: masks[i].sum(), reverse=True)
     kept = []
     for i in order:
         dup = False
