@@ -10,6 +10,9 @@
 | 端到端 RMSE (sample100) | **32.89** | 同上 |
 | CARPK MAE (test 459) | **4.06** | Exp5-C 微调 pts=32 关系头 + tau_inst=0.99 |
 | CARPK RMSE (test 459) | **5.51** | 同上 |
+| PUCPR+ Tiled MAE | **3.59** | 2×2 tiling + pts=32 |
+| OmniCount-191 Class-Agnostic MAE | **6.75** | FSC147→OmniCount zero-shot, 1,909 imgs |
+| OmniCount-191 OWLv2 Baseline MAE | 4.83 | "object" text prompt, 500 imgs |
 | Oracle-All MAE | 6.98 | pts=32 (理论上限) |
 
 ### 分区间详细结果 (最佳配置: density_threshold=50, conf_threshold=0.2)
@@ -714,3 +717,59 @@ bottleneck is front-end candidate density, not the counting formulation.
 - `result/logs/p2_tiled_eval.json` — 部分结果 (18 images, MAE=2.53)
 - `result/logs/p2_tiled_eval_final.json` — 完整结果 (25 images, MAE=3.59)
 - `/home/czp/ws_yiyang/ovcud_cache/pucpr_tiled/` — Tiled 预处理缓存 (25 files)
+
+---
+
+### P2-6: OmniCount-191 Class-Agnostic Evaluation 🆕
+
+**日期**: 2026-07-03
+**目标**: 在 OmniCount-191 (AAAI 2025) 多标签计数基准上评估 OV-CUD 的 prompt-free class-agnostic 计数能力
+
+#### 实验设置
+
+- **数据集**: OmniCount-191 test split (1,957 images, 93 classes across 7 categories)
+- **模型**: FSC147-trained (NO OmniCount training — zero-shot transfer)
+- **模式**: Class-agnostic prompt-free (不区分类别，仅统计总物体数)
+- **Preprocessing**: SAM2 pts=32 + DINOv2 3-view (no tiling)
+- **对比**: Vanilla SAM2, OWLv2 class-agnostic, Oracle (GT class)
+
+#### 关键结果
+
+| Method | MaE | RMSE | bias | nMAE |
+|---|---|---|---|---|
+| Vanilla SAM2 (count=n_masks) | 37.60 | 44.91 | +37.60 | 6.174 |
+| **OV-CUD class-agnostic** | **6.75** | **10.24** | **+5.41** | **1.106** |
+| OWLv2 class-agnostic† | 4.83 | 8.45 | -4.81 | 0.921 |
+| Oracle (GT class) | 4.16 | 5.73 | -4.16 | 0.682 |
+
+> † OWLv2 evaluated on 500-image subset; OV-CUD on same subset: MAE=5.65
+
+#### Per-Category OV-CUD Results
+
+| Category | #Imgs | Mean GT | MAE | RMSE | bias |
+|---|---|---|---|---|---|
+| Birds | 10 | 16.5 | 4.70 | 5.22 | -3.70 |
+| Fruits | 303 | 4.7 | **1.79** | **2.27** | -1.05 |
+| Pets | 11 | 9.6 | 4.45 | 5.16 | -4.45 |
+| Satellite | 127 | 2.2 | 13.65 | 19.58 | +13.65 |
+| Supermarket | 251 | 14.4 | 8.68 | 13.10 | +3.60 |
+| Urban | 1,000 | 5.4 | 6.86 | 9.43 | +6.65 |
+| Wild | 207 | 3.4 | 7.12 | 9.17 | +6.95 |
+
+#### 关键发现
+
+1. **5.6× improvement over Vanilla SAM2** — OV-CUD 的聚类+去重管道将 MAE 从 37.60 降至 6.75
+2. **Competitive with OWLv2 (text-prompted)** — 相同 subset MAE=5.65 vs 4.83，但 OV-CUD 完全不需要 prompt
+3. **Prompt-free advantage for multi-label** — class-agnostic mode 不依赖类别标注，天然适配 multi-label 场景
+4. **SAM2 over-segmentation is the main bottleneck** — 整体 SAM2 recall=124.5%，过度分割导致过计数 (+5.41 bias)
+5. **Fruits best, Satellite worst** — 简单孤立物体 vs 密集卫星图，差距 7.6×
+
+**文件**:
+- `script/preprocess_omnicount.py` — OmniCount 预处理脚本
+- `script/eval_omnicount.py` — OmniCount 评估脚本 (class-agnostic/oracle/SAM2-only)
+- `script/run_omnicount_baselines.py` — OWLv2 baseline 脚本
+- `result/logs/omnicount_class_agnostic.json` — OV-CUD 完整结果 (1,909 images)
+- `result/logs/omnicount_oracle.json` — Oracle 结果 (1,914 images)
+- `result/logs/omnicount_sam2_only.json` — Vanilla SAM2 结果 (1,917 images)
+- `result/logs/omnicount_owlv2_agnostic.json` — OWLv2 baseline (500 images)
+- `/home/czp/ws_yiyang/ovcud_cache/omnicount_test/` — 预处理缓存 (1,957 files)
