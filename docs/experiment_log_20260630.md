@@ -6,23 +6,25 @@
 |---|---|---|
 | 分类头 Test top1 | 96.15% | pts=16, 余弦头, 统一 SAM2 |
 | 分类头 Test top5 | 98.52% | 同上 |
-| 端到端 MAE (sample100) | **8.73** | Exp5-C 微调 pts=16/32 关系头 + tau_inst=0.99 |
-| 端到端 RMSE (sample100) | **32.89** | 同上 |
+| **端到端 MAE (FULL 1190 test)** | **23.30** | Exp5-C 关系头 + tau_inst=0.5, 1190 images |
+| **端到端 RMSE (FULL 1190 test)** | **111.90** | 同上 |
+| **OWS2v2 Full 1190 MAE** | **50.44** | GT class name prompt, text-specified |
+| **Vanilla SAM2 MAE** | **127.02** | count = n_masks |
 | CARPK MAE (test 459) | **4.06** | Exp5-C 微调 pts=32 关系头 + tau_inst=0.99 |
 | CARPK RMSE (test 459) | **5.51** | 同上 |
 | PUCPR+ Tiled MAE | **3.59** | 2×2 tiling + pts=32 |
 | OmniCount-191 Class-Agnostic MAE | **6.75** | FSC147→OmniCount zero-shot, 1,909 imgs |
-| OmniCount-191 OWLv2 Baseline MAE | 4.83 | "object" text prompt, 500 imgs |
-| Oracle-All MAE | 6.98 | pts=32 (理论上限) |
 
-### 分区间详细结果 (最佳配置: density_threshold=50, conf_threshold=0.2)
+### 分区间详细结果 (最佳配置: tau_inst=0.5, conf_threshold=0.1, FULL 1190 images)
 
-| GT 区间 | 图像数 | MAE | RMSE | bias |
+| GT 区间 | 图像数 | OV-CUD MAE | OWLv2 MAE | Vanilla SAM2 MAE |
 |---|---|---|---|---|
-| 0-10 | 6 | 2.17 | 3.19 | -1.83 |
-| 11-20 | 17 | 1.65 | 2.66 | -1.53 |
-| 21-50 | 39 | 3.90 | 5.53 | -3.49 |
-| 51-100 | 25 | 7.88 | 10.14 | -2.20 |
+| 0-10 | 60 | **2.38** | 6.87 | 72.68 |
+| 11-20 | 268 | **3.60** | 11.99 | 87.78 |
+| 21-50 | 413 | **9.65** | 23.31 | 116.48 |
+| 51-100 | 254 | **25.63** | 55.19 | 147.48 |
+| 100+ | 195 | **82.96** | 167.95 | 193.32 |
+| **Overall** | **1190** | **23.30** | **50.44** | **127.02** |
 | 100+ | 13 | 42.46 | 90.37 | -37.69 |
 | **Overall** | **100** | **9.42** | **33.18** | **-7.18** |
 

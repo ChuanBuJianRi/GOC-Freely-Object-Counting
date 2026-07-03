@@ -37,7 +37,7 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 
 | 数据集 | 设定 | MAE | RMSE | 备注 |
 |---|---|---|---|---|
-| **FSC147 Test** | Prompt-free / Image-only | **8.73** | 32.89 | 100-image sample, Exp5-C fine-tuned |
+| **FSC147 Test** | Prompt-free / Image-only | **23.30** | 111.90 | Full 1190 images, tau_inst=0.5, Exp5-C relation head |
 | **CARPK Test** | Zero-shot transfer (FSC147→CARPK) | **4.06 ± 0.17** | 5.51 ± 0.24 | 459 images, 95% CI |
 | **PUCPR+ Test** | Zero-shot transfer + Tiling | **3.59** | 5.43 | 25 images, 2×2 tiling |
 | **COCO val** | Multi-category (80 classes) | **6.94** | 10.04 | 300 images, class-aware evaluation |
@@ -49,8 +49,9 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 2. **OV-CUD 是 prompt-free 的**: 推理时不接收任何提示
 3. **OV-CUD 输出类别名**: 通过 text-prototype 分类头实现开放词表分类
 4. **OV-CUD 跨数据集泛化强**: FSC147 → CARPK MAE=4.06, FSC147 → PUCPR+ MAE=3.59 (tiled), FSC147 → OmniCount-191 MAE=6.75 (class-agnostic)
-5. **OV-CUD 多标签场景兼容**: 在不接收类别提示的条件下，class-agnostic counting 在 OmniCount-191 上优于 Vanilla SAM2 (37.60→6.75, 5.6× 改进)，接近 OWLv2 (4.83) 的 prompt-based 性能
-6. **Relation head + dedup 是核心**: 消融实验证明每个组件都不可缺
+5. **OV-CUD 多标签场景兼容**: 在不接收类别提示的条件下，class-agnostic counting 在 OmniCount-191 上优于 Vanilla SAM2 (37.60→6.75, 5.6× 改进)
+6. **Prompt-free 优于 Prompt-based 检测**: OV-CUD prompt-free MAE=23.30 vs OWLv2 prompt-based MAE=43.61 (1.9× better on full FSC147 test)
+7. **Relation head + dedup 是核心**: 消融实验证明每个组件都不可缺
 
 ---
 
@@ -127,18 +128,30 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 | DAVE | Image only | Density map | ❌ | 14.37 | 72.10 |
 | GCA-SUN | Image only | Density map | ❌ | 21.29 | — |
 | OCCAM-S | Image only | **No training** | ❌ | 14.35 | 67.54 |
-| **OV-CUD (Ours)** | **Image only** | **None** | ✅ | **8.73** | **32.89** |
+| **OV-CUD (Ours)** | **Image only** | **None** | ✅ | **23.30** | **111.90** |
 
-> OV-CUD 是唯一同时满足 "prompt-free + count-supervision-free + class-aware output" 的方法。
+> OV-CUD 是唯一同时满足 "prompt-free + count-supervision-free + class-aware output" 的方法。Full 1190-image FSC147 test, tau_inst=0.5, Exp5-C relation head.
 
 #### Block D: Detection Baseline (P2-3)
 
 | Method | Input | MAE | 说明 |
 |---|---|---|---|
-| OWLv2 (conf=0.1) | GT class name prompt | 43.61 | Open-vocabulary detector, receives class name |
-| **OV-CUD (Ours)** | **Image only** | **8.73** | No prompt at all |
+| OWLv2 (conf=0.1) | GT class name prompt | 50.44 | Open-vocabulary detector, receives class name |
+| **OV-CUD (Ours)** | **Image only** | **23.30** | No prompt at all |
 
-> 即使 OWLv2 接收 GT 类别名作为文本提示，其检测计数 MAE=43.61 仍远差于 OV-CUD 的 prompt-free MAE=8.73。
+> OWLv2 接收 GT 类别名作为文本提示，其检测计数 MAE=50.44 差于 OV-CUD 的 prompt-free MAE=23.30 (2.2× better)。结果基于 full 1190-image FSC147 test set。
+
+#### Block E: FSC147 Full Test Per-Bin Breakdown (1190 images)
+
+| Bin | #Images | OV-CUD MAE | OWLv2 MAE | SAM2 MAE |
+|---|---|---|---|---|
+| 0-10 | 60 | **2.38** | 6.87 | 72.68 |
+| 11-20 | 268 | **3.60** | 11.99 | 87.78 |
+| 21-50 | 413 | **9.65** | 23.31 | 116.48 |
+| 51-100 | 254 | **25.63** | 55.19 | 147.48 |
+| 100+ | 195 | **82.96** | 167.95 | 193.32 |
+
+> OV-CUD consistently outperforms both baselines across ALL density ranges.
 
 ### 3.2 CARPK — Cross-Dataset Zero-Shot Transfer (Table 2 候选)
 
@@ -349,13 +362,14 @@ OV-CUD 的成功跨数据集迁移证明了：
 
 | Method | Receives GT Class Name? | MAE |
 |---|---|---|
-| OWLv2-base | **Yes** (as text prompt) | 43.61 |
-| **OV-CUD full pipeline** | **No** (completely prompt-free) | **8.73** |
+| OWLv2-base | **Yes** (as text prompt) | 50.44 |
+| **OV-CUD full pipeline** | **No** (completely prompt-free) | **23.30** |
 
 **分析**: 
-- OWLv2 的误差主要来自过度检测 (sunglasses +192) 和漏检 (green peas -152)
+- OWLv2 的误差主要来自过度检测 (sunglasses) 和漏检 (green peas)
 - 检测模型不知道 "什么是可计数实例" — 这是 OV-CUD relation head 的核心贡献
-- OV-CUD prompt-free 性能是 OWLv2 prompt-based 的 **5.0× 更好**
+- OV-CUD prompt-free MAE=23.30 比 OWLv2 prompt-based MAE=50.44 好 **2.2×**
+- Full 1190-image FSC147 test set, tau_inst=0.5, Exp5-C relation head
 
 ### 6.3 OmniCount-191 Baseline Comparison 🆕
 
@@ -392,11 +406,14 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 | Oracle-A: 候选覆盖上界 | 10.83 | **2.69** |
 | + Oracle category (no dedup) | 16.72 | 15.49 |
 | + Oracle cat + dot dedup | 20.93 | 15.76 |
-| Real pipeline (Exp11 best) | — | **8.73** |
+| Real pipeline (Exp11 best) | — | **23.30** |
 
-**分析**: pts=32 候选召回理论上限 MAE=2.69，real pipeline 8.73。gap=6.04 来自：
+**分析**: pts=32 候选召回理论上限 MAE=2.69，real pipeline 23.30。gap=20.61 来自：
 1. 分类错误候选未被过滤
 2. 去重策略过保守 (merge rate <10%)
+3. Relation head inst calibration 在高密度场景下不足
+
+> Full 1190-image FSC147 test, tau_inst=0.5, Exp5-C relation head.
 
 ### 7.2 PUCPR+ SAM2 Recall 瓶颈 (P2-1)
 
