@@ -904,7 +904,7 @@ S-DCNet 核心洞察：将密集区域递归划分直到子区域计数落入训
 
 ---
 
-## P1: Counting as Closed-Set Classification (2026-07-04) 🆕
+## P1: Counting as Closed-Set Classification (2026-07-04) ⚠️ ATTEMPTED, NOT ADOPTED
 
 **灵感**: S-DCNet (Xiong et al., ICCV 2019) 将开集计数转化为闭集分类——将计数区间划分为 {1}, {2-3}, {4-7}, {8-15}, {16+}。
 
@@ -998,3 +998,12 @@ S-DCNet 核心洞察：将密集区域递归划分直到子区域计数落入训
 - `result/logs/fsc147_p1p2_combined.json` — P1+P2 full 1190 (MAE=14.54)
 - `result/logs/fsc147_p2_only_combined.json` — P2-only full 1190 control (MAE=14.03)
 - `/home/czp/official_code/relation_ft/script/run_adaptive_pipeline.py` — Updated with P1 support
+
+### ⚠️ 最终决定: P1 已从 pipeline 中移除 (2026-07-04)
+
+P1 per-mask count classifier 虽然减少 under-counting bias 62%，但整体 MAE 退化 (+0.51)，
+100+ bin 显著退化 (+8.64)。Count classifier 的高误报率导致正常单物体 masks 被错误上调计数。
+
+**当前最佳配置仍为 P2 Multi-Resolution Fusion (MAE=13.45)**，不使用 count classifier。
+P1 代码保留在 `script/build_p1_count_labels*.py` 和 `script/train_count_classifier.py` 
+供 future work 参考，但已从 `run_adaptive_pipeline.py` 中移除。
