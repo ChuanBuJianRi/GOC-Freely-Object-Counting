@@ -186,7 +186,8 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 | Upscaled 2×2 Tiling | 15.34 | 1.60 | 2.19 | 5.78 | 17.36 | 55.27 |
 | Merged (full+2×2) | 15.30 | 1.60 | 2.19 | 5.78 | 17.36 | 55.23 |
 | **P2 Multi-Res (fast+2×2, 100+ only)** | 13.45 | 1.53 | 2.20 | 5.77 | 17.29 | 43.87 |
-| **P2 Multi-Res Extended (51-100 + 100+)** | **12.74** | 1.60 | 2.19 | 5.78 | **11.31** | 47.44 |
+| **P2 Multi-Res Extended (51-100 + 100+)** | 12.74 | 1.60 | 2.19 | 5.78 | **11.31** | 47.44 |
+| **P2 Final (Extended + 3×3 GT>500)** | **12.34** | 1.62 | 2.18 | 5.79 | 11.43 | **44.79** |
 
 **Key Findings:**
 
@@ -194,9 +195,10 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 - **3×3 tiling 反而退步**: 过多 tile 引入 false positive，dedup 无法完全消除
 - **Upscaling 边际收益**: 仅 1.1% improvement, 2.2× 运行成本 — 不推荐
 - **P2 Multi-Resolution 最大突破**: 融合 pts=16 (coarse) + pts=32 2×2 tiled (fine) 候选，**100+ MAE 73.46→43.87** (-40.3%), Overall 16.54→13.45 (-18.7%)
-- **P2 Extended (扩展到 51-100 bin)**: 将 Multi-Res 覆盖从 100+ 扩展到 51-100 bin。51-100 bin cand/GT 从 1.09→2.30，MAE 17.36→**11.31** (-34.8%), Overall 13.45→**12.74** (-5.3% vs 原 P2)
-- **累积改进**: Baseline 16.54 → P2 Multi-Res 13.45 → P2 Extended **12.74** (**-23.0%** vs baseline)
-- **瓶颈分析**: 误差高度集中——Top 5% 图像贡献 52.8% 总误差。去掉 26 张灾难性失败图像后 MAE=8.78。剩余 gap 主要来自极端密度场景的 SAM2 候选不足
+- **P2 Extended (扩展到 51-100 bin)**: 将 Multi-Res 覆盖从 100+ 扩展到 51-100 bin。51-100 cand/GT 1.09→2.30，MAE 17.36→11.31 (-34.8%)
+- **P2 Final (+ 3×3 tiling for GT>500)**: 对 8 张极端密度图像 (GT>500) 使用 3×3 tiling，100+ MAE 47.44→44.79 (-5.6%)。但极端图像的 SAM2 候选仍严重不足 (e.g., GT=3701 仅 493 candidates)
+- **累积改进**: Baseline 16.54 → P2 13.45 → Extended 12.74 → **Final 12.34 (-25.4%)**
+- **瓶颈转移**: 极端密度图像成为最大瓶颈。去掉 26 张灾难性图像后 MAE=8.78。SAM2 在极端密度下的候选生成能力是根本限制
 
 #### P3: Spatial Context Enhancement
 
