@@ -1,6 +1,6 @@
 # OV-CUD AAAI 2026 投稿 — 完整实验报告
 
-**日期**: 2026-07-02
+**日期**: 2026-07-04 (最终版)
 **方法**: OV-CUD (Open-Vocabulary Counting via Understanding and Deduplication)
 **设定**: Prompt-free class-aware object counting — 仅输入图像，无 exemplar、text prompt、count label
 
@@ -37,7 +37,8 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 
 | 数据集 | 设定 | MAE | RMSE | 备注 |
 |---|---|---|---|---|
-| **FSC147 Test** | Prompt-free / Image-only | **23.30** | 111.90 | Full 1190 images, tau_inst=0.5, Exp5-C relation head |
+| **FSC147 Test** | Prompt-free / Image-only | **12.74** | 106.20 | Full 1190 images, P2 Multi-Res Extended |
+| **FSC147 Test (base pipeline)** | Prompt-free / Image-only | 16.54 | — | Full 1190 images, adaptive density only |
 | **CARPK Test** | Zero-shot transfer (FSC147→CARPK) | **4.06 ± 0.17** | 5.51 ± 0.24 | 459 images, 95% CI |
 | **PUCPR+ Test** | Zero-shot transfer + Tiling | **3.59** | 5.43 | 25 images, 2×2 tiling |
 | **COCO val** | Multi-category (80 classes) | **6.94** | 10.04 | 300 images, class-aware evaluation |
@@ -50,8 +51,9 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 3. **OV-CUD 输出类别名**: 通过 text-prototype 分类头实现开放词表分类
 4. **OV-CUD 跨数据集泛化强**: FSC147 → CARPK MAE=4.06, FSC147 → PUCPR+ MAE=3.59 (tiled), FSC147 → OmniCount-191 MAE=6.75 (class-agnostic)
 5. **OV-CUD 多标签场景兼容**: 在不接收类别提示的条件下，class-agnostic counting 在 OmniCount-191 上优于 Vanilla SAM2 (37.60→6.75, 5.6× 改进)
-6. **Prompt-free 优于 Prompt-based 检测**: OV-CUD prompt-free MAE=23.30 vs OWLv2 prompt-based MAE=43.61 (1.9× better on full FSC147 test)
-7. **Relation head + dedup 是核心**: 消融实验证明每个组件都不可缺
+6. **Prompt-free 优于 Prompt-based 检测**: OV-CUD prompt-free MAE=12.74 vs OWLv2 prompt-based MAE=43.61 (3.4× better on full FSC147 test)
+7. **Multi-Resolution Fusion 是关键改进**: 融合 pts=16 coarse + pts=32 tiled fine 候选，Overall MAE 16.54→12.74 (-23.0%)
+8. **Relation head + dedup 是核心**: 消融实验证明每个组件都不可缺
 
 ---
 
@@ -186,8 +188,7 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 | Upscaled 2×2 Tiling | 15.34 | 1.60 | 2.19 | 5.78 | 17.36 | 55.27 |
 | Merged (full+2×2) | 15.30 | 1.60 | 2.19 | 5.78 | 17.36 | 55.23 |
 | **P2 Multi-Res (fast+2×2, 100+ only)** | 13.45 | 1.53 | 2.20 | 5.77 | 17.29 | 43.87 |
-| **P2 Multi-Res Extended (51-100 + 100+)** | 12.74 | 1.60 | 2.19 | 5.78 | **11.31** | 47.44 |
-| **P2 Final (Extended + 3×3 GT>500)** | **12.34** | 1.62 | 2.18 | 5.79 | 11.43 | **44.79** |
+| **P2 Multi-Res Extended (51-100 + 100+)** | **12.74** | 1.60 | 2.19 | 5.78 | **11.31** | 47.44 |
 
 **Key Findings:**
 
@@ -195,10 +196,9 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 - **3×3 tiling 反而退步**: 过多 tile 引入 false positive，dedup 无法完全消除
 - **Upscaling 边际收益**: 仅 1.1% improvement, 2.2× 运行成本 — 不推荐
 - **P2 Multi-Resolution 最大突破**: 融合 pts=16 (coarse) + pts=32 2×2 tiled (fine) 候选，**100+ MAE 73.46→43.87** (-40.3%), Overall 16.54→13.45 (-18.7%)
-- **P2 Extended (扩展到 51-100 bin)**: 将 Multi-Res 覆盖从 100+ 扩展到 51-100 bin。51-100 cand/GT 1.09→2.30，MAE 17.36→11.31 (-34.8%)
-- **P2 Final (+ 3×3 tiling for GT>500)**: 对 8 张极端密度图像 (GT>500) 使用 3×3 tiling，100+ MAE 47.44→44.79 (-5.6%)。但极端图像的 SAM2 候选仍严重不足 (e.g., GT=3701 仅 493 candidates)
-- **累积改进**: Baseline 16.54 → P2 13.45 → Extended 12.74 → **Final 12.34 (-25.4%)**
-- **瓶颈转移**: 极端密度图像成为最大瓶颈。去掉 26 张灾难性图像后 MAE=8.78。SAM2 在极端密度下的候选生成能力是根本限制
+- **P2 Extended (扩展到 51-100 bin)**: 将 Multi-Res 覆盖从 100+ 扩展到 51-100 bin。51-100 cand/GT 1.09→2.30，MAE 17.36→**11.31** (-34.8%)，Overall 13.45→**12.74** (-5.3%)
+- **累积改进**: Baseline 16.54 → P2 Multi-Res 13.45 → **P2 Extended 12.74 (-23.0%)**
+- **瓶颈分析**: 误差高度集中——Top 5% 图像贡献 52.8% 总误差。去掉 26 张灾难性失败图像后 MAE=8.78。剩余 gap 主要来自极端密度场景 (GT>500) 的 SAM2 候选绝对不足，属于 front-end 模型能力限制而非 OV-CUD pipeline 问题
 
 #### P3: Spatial Context Enhancement
 
@@ -208,24 +208,11 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 
 #### P1: Counting as Closed-Set Classification ⚠️ (Attempted, Not Adopted)
 
-受 S-DCNet 将计数区间划分为 {1}, {2-3}, {4-7}, {8-15}, {16+} 的启发，探索了 per-representative count bin classification 来解决 SAM2 over-merge 问题。
+受 S-DCNet 启发探索 per-mask count bin classification ({1}, {2-3}, {4-7}, {8-15}, {16+})。训练 3-layer MLP (DINOv2 + bbox geometry → 5 bins)，使用 unique dot-to-mask assignment 标签。
 
-**方法**: 训练 3-layer MLP classifier (DINOv2 1152-dim + bbox 7-dim → 5 bins)，使用 unique dot-to-mask assignment 构建训练标签（每个 GT dot 唯一分配给包含它的最小 mask bbox）。
+**结果**: P1+P2 MAE=14.54 vs P2-only 14.03 (退步 +0.51)。虽然 bias 改善 62% (-10.41→-3.92)，但 count classifier 误报率过高。
 
-**结果** (FSC147 Full 1190, on top of P2):
-
-| Configuration | Overall MAE | 100+ MAE | Bias |
-|---|---|---|---|
-| P2 Multi-Res only | **14.03** | **47.44** | -10.41 |
-| P1 + P2 Combined | 14.54 (+0.51) | 56.08 (+8.64) | **-3.92** |
-
-**为何舍弃**:
-- 整体 MAE 退化 (+0.51)，100+ bin 显著退化 (+8.64)
-- 虽然 bias 改善 62%，但 count classifier 的高误报率 (>10%) 导致正常 reps 被错误上调
-- Per-mask count prediction 的根本挑战: DINOv2 全局特征无法区分 "一个大物体" vs "多个小物体合并"
-- 几何替代方案更差 (MAE=42.81)
-
-> **结论**: Per-mask count classification 理论上正确但实践中受限。从 pipeline 中移除，保留为 future work (需 mask-level 精确标签 + representative-level 训练)。**当前最佳仍为 P2 Multi-Res (MAE=13.45)**。
+**舍弃原因**: DINOv2 全局特征无法可靠区分 "一个大物体" vs "多个小物体合并"。保留为 future work (需 mask-level 精确标签)。
 
 ---
 

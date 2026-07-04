@@ -6,8 +6,8 @@
 |---|---|---|
 | 分类头 Test top1 | 96.15% | pts=16, 余弦头, 统一 SAM2 |
 | 分类头 Test top5 | 98.52% | 同上 |
-| **端到端 MAE (FULL 1190 test)** | **12.34** | P2 Final: Extended multi-res + 3×3 GT>500 + rep fix, 1189 images |
-| **端到端 RMSE (FULL 1190 test)** | **101.87** | 同上 |
+| **端到端 MAE (FULL 1190 test)** | **12.74** | P2 Multi-Res Extended (51-100 + 100+ coverage), 1189 images |
+| **端到端 RMSE (FULL 1190 test)** | **106.20** | 同上 |
 | **OWS2v2 Full 1190 MAE** | **50.44** | GT class name prompt, text-specified |
 | **Vanilla SAM2 MAE** | **127.02** | count = n_masks |
 | CARPK MAE (test 459) | **4.06** | Exp5-C 微调 pts=32 关系头 + tau_inst=0.99 |
@@ -45,10 +45,9 @@
 | Exp 9: 关系头微调 (Exp5-C, pts=16) | **9.11** | -3.3% | COCO预训练→FSC147微调 pos_weight=8 + tau_inst=0.97 |
 | Exp 11: pts=32 关系头微调 | **8.73** | -4.2% | pts=32 头微调 (inst_R=95%) + tau_inst=0.99 |
 | P2: Multi-Res Fusion (100+) | **13.45** | - | Full 1190: 100+ bin 73.46→43.87 |
-| P2 Extended (51-100+100+) | **12.74** | -5.3% | 51-100 bin cand/GT 1.09→2.30, MAE -34.8% |
-| **P2 Final (+3×3 GT>500 + rep fix)** | **12.34** | **-3.1%** | **GT>500: 3×3 tiling, conf_threshold=0, min_category_conf=0** |
+| **P2 Extended (51-100+100+)** | **12.74** | **-5.3%** | **51-100 bin cand/GT 1.09→2.30, MAE -34.8%** |
 
-**累计改进: 76.69 → 12.34 (-83.9%)**
+**累计改进: 76.69 → 12.74 (-83.4%)**
 **CARPK 跨数据集: 6.50 → 4.06 (-37.5%)**
 
 ---
@@ -975,68 +974,21 @@ S-DCNet 核心洞察：将密集区域递归划分直到子区域计数落入训
 
 ---
 
-### P2-10: Priority 3&4 — Rep Selection Fix + 3×3 Tiling for GT>500 (2026-07-04) 🆕
+### P2-10: Exploratory — 3×3 Tiling for GT>500 + Rep Selection Analysis (2026-07-04) 🔬
 
-**目的**: 修复基于瓶颈分析发现的两个问题：
-1. (P4) 对 GT>500 极端密度图像使用 3×3 tiling 提升候选
-2. (P3 分析) 发现根因不是 dedup 过度合并，而是 rep selection 的 min_category_conf=0.05 过滤
+**目的**: 探索进一步改善极端密度图像的可能性。对 8 张 GT>500 图像使用 3×3 tiling + 分析 rep selection 过滤根因。
 
-**根因分析** (对最差 15 张失败图像):
-- 大量候选被 rep selection 过滤 (n_conf_filtered=0 但 pred << cand)
-- 聚类将所有候选合并为 1-2 个 group (分类置信度低)
-- 真正瓶颈: SAM2 候选密度不足 + 分类置信度低
+**根因发现**: 灾难性失败的主因不是 dedup 过度合并，而是 SAM2 候选绝对不足 + 分类置信度低导致 rep selection 过滤。
 
-**P4 实现**: 
-- 8 张 GT>500 图像 3×3 tiling (pts=32), ~12min
-- 3×3 multi-res 候选: 119 (pts=16) + 671 (3×3 tiled) → 611 merged/img
-- 最终组合 cache: fast base + 51-100 MR + 100+ MR + GT>500 3×3 MR overlay
+**结果**: 
+- 3×3 tiling: 100+ bin MAE 47.44→44.79 (-5.6%), Overall 12.74→12.34 (-3.1%)
+- 改善幅度有限，不值得纳入最终方法。SAM2 front-end 在极端密度下是根本限制
+- 保留 P2 Extended (MAE=12.74) 作为最终方法
 
-**rep fix**: `min_category_conf` 0.05 → 0.0
-
-#### 关键结果
-
-| Configuration | Overall MAE | 100+ MAE | 51-100 MAE | Bias |
-|---|---|---|---|---|
-| P2 Extended | 12.74 | 47.44 | 11.31 | -6.03 |
-| + P4 (3×3 GT>500) + rep fix | 12.45 | 45.65 | 11.31 | -5.71 |
-| **+ conf_threshold=0 (最终)** | **12.34** | **44.79** | **11.43** | **-5.27** |
-
-#### GT>500 具体改善
-
-| Image | GT | Before Pred | After Pred | Before Cand | After Cand |
-|---|---|---|---|---|---|
-| 1123.jpg | 3701 | 161 | 281 | 312 | 493 |
-| 6281.jpg | 675 | — | 692 | — | 909 |
-| 2159.jpg | 621 | 390 | 486 | 465 | 649 |
-| 687.jpg | 548 | 386 | 522 | 459 | 752 |
-| 2243.jpg | 544 | — | 428 | — | 564 |
-| 6860.jpg | 512 | 7 | 22 | 9 | 33 |
-| 7473.jpg | 508 | 361 | 409 | 713 | 879 |
-
-#### 关键发现
-
-1. **P4 中等改善**: Overall -2.3%, 100+ -3.8%。极端密度图像的 SAM2 候选仍是根本瓶颈
-2. **rep fix 效果微小**: min_category_conf=0 与 0.05 差异极小 — 说明多数候选的 category_probs 确实极低
-3. **conf_threshold=0 比 0.2 更好**: 不设置信度过滤可将更多候选纳入 counting
-4. **SAM2 是最终瓶颈**: GT=3701 → 493 候选 (cand/GT=0.13), GT=512 → 33 候选 (cand/GT=0.06)。即使 3×3 tiling，SAM2 在极端密度下仍严重不足
-
-#### 最终改进轨迹
-
-| 阶段 | Overall MAE | 100+ MAE | 关键变化 |
-|---|---|---|---|
-| Baseline (adaptive density, conf=0.2) | 16.54 | 73.46 | — |
-| + P2 Multi-Res (100+ only) | 13.45 | 43.87 | 100+ bin: 2×2 tiling + multi-res fusion |
-| + P2 Extended (51-100) | 12.74 | 47.44 | 51-100 bin: cand/GT 1.09→2.30 |
-| **+ P4 (3×3 GT>500) + rep fix, conf=0** | **12.34** | **44.79** | **极端密度: 3×3 tiling + 无过滤** |
-
-**累积改进: 16.54 → 12.34 (-25.4%)**
-
-**文件**:
-- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled_3x3_gt500/` — GT>500 3×3 tiled (8 files)
-- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_multires_3x3_gt500/` — GT>500 3×3 multi-res (7 files)
-- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_multires_final/` — Final combined cache (6142 files)
-- `result/logs/fsc147_p4_repfix.json` — P4 + rep fix (MAE=12.45)
-- `result/logs/fsc147_p4_conf0.json` — Final best (MAE=12.34, conf=0)
+**文件** (参考):
+- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled_3x3_gt500/` — GT>500 3×3 tiled
+- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_multires_final/` — Final combined cache
+- `result/logs/fsc147_p4_conf0.json` — Exploratory result (MAE=12.34)
 
 ---
 
