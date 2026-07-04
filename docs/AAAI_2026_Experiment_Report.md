@@ -201,6 +201,27 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 
 > **结论**: Multi-resolution candidate fusion (pts=16 coarse + pts=32 tiled fine) 是最有效的改进策略。受 S-DCNet "将开集计数转化为闭集分类" 思想启发，我们将不同 SAM2 密度视为不同 "闭集"，融合其候选实现互补。
 
+#### P1: Counting as Closed-Set Classification (S-DCNet Inspired)
+
+受 S-DCNet 将计数区间划分为 {1}, {2-3}, {4-7}, {8-15}, {16+} 的启发，我们探索了 per-representative count bin classification 来解决 SAM2 over-merge 问题。
+
+**方法**: 训练 3-layer MLP classifier (DINOv2 1152-dim + bbox 7-dim features → 5 count bins)，使用 unique dot-to-mask assignment 构建训练标签（每个 GT dot 唯一分配给包含它的最小 mask bbox）。
+
+**FSC147 Full 1190 结果 (on top of P2 Multi-Res)**:
+
+| Configuration | Overall MAE | 100+ MAE | Bias |
+|---|---|---|---|
+| P2 Multi-Res only | **14.03** | **47.44** | -10.41 |
+| P1 + P2 Combined | 14.54 | 56.08 | **-3.92** |
+
+**关键发现**:
+- P1 显著减少 under-counting bias (-10.41 → -3.92, 62% reduction) 但整体 MAE 略差 (+0.51)
+- Count classifier val_acc=80.4%，但中间 bin ({4-7}, {8-15}) 准确率仅 59-69%（训练样本 < 1000）
+- Per-mask count prediction 的根本挑战: DINOv2 全局特征难以区分 "一个大物体" vs "多个小物体合并"
+- 几何替代方案 (area ratio > 3× p25 typical) 更差 (MAE=42.81)，无法可靠检测 over-merge
+
+> **结论**: Per-mask count classification 在理论上正确但实践中受限。S-DCNet 的 region-level 应用（空间划分 → 子区域计数分类）比 per-mask 应用更可行。保留为 future work 方向。
+
 ---
 
 ## 4. 核心消融实验

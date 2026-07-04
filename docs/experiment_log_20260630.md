@@ -901,3 +901,100 @@ S-DCNet 核心洞察：将密集区域递归划分直到子区域计数落入训
 - `result/logs/fsc147_multires_sp10.json` — P2+P3 sp=10 (MAE=13.46)
 - `result/logs/fsc147_tiled_merged.json` — Merged (full+2×2) (MAE=15.30)
 - `result/logs/fsc147_baseline_fixed.json` — 修复后 baseline (MAE=25.68, 100+ bin 仅 38 张用 pts=32)
+
+---
+
+## P1: Counting as Closed-Set Classification (2026-07-04) 🆕
+
+**灵感**: S-DCNet (Xiong et al., ICCV 2019) 将开集计数转化为闭集分类——将计数区间划分为 {1}, {2-3}, {4-7}, {8-15}, {16+}。
+
+**问题**: SAM2 mask 在密集场景中常常合并多个小物体 (over-merge)，OV-CUD pipeline 将每个 representative 计为 1，导致 under-count。
+
+**方法**: 训练一个 per-mask count bin classifier，预测每个 representative mask 包含的真实物体数。
+
+### P1-1: Label Building V1 (Bbox Dot Count)
+
+**方法**: 对每个 training mask，统计其 bbox 内的 GT dots 数量作为 per-mask count label。
+
+**结果**: 
+- 84.9% masks 包含 1 个 dot, 11.1% 包含 2-3 个, 4.0% 包含 4+
+- 问题: overlapping masks 导致 dot 被重复计数 (同一 dot 被多个 bbox 包含)
+- 训练的分类器 val_acc=82.7%，但在 test 上严重 over-count (MAE=31.03 vs baseline 8.73)
+
+### P1-2: Label Building V2 (Unique Dot Assignment)
+
+**方法**: 每个 GT dot 唯一分配给包含它的最小 bbox，防止重复计数。
+
+**结果**:
+- 93.8% masks 包含 1 个 dot, 4.6% 包含 2-3 个, 1.6% 包含 4+
+- 86.0% dots 被分配 (14% 落在所有 bbox 外 → SAM2 漏检)
+- 标签分布显著改善
+
+### P1-3: Count Classifier Training (V2 Labels)
+
+**模型**: 3-layer MLP (1152-dim DINOv2 + 7-dim bbox geometry → 256 → 128 → 64 → 5 bins)
+
+**训练结果** (`count_classifier_v2.pt`):
+- Best val_acc: 80.4% (epoch 27)
+- Per-bin accuracy: {1}=81%, {2-3}=69%, {4-7}=59%, {8-15}=69%, {16+}=83%
+- 中间 bin (4-7, 8-15) 准确率低因为训练样本极少 (704 和 387)
+
+### P1-4: End-to-End Evaluation
+
+**Pipeline**: 在 representative selection 后, 对每个 rep 运行 count classifier。仅在高置信度 (prob>0.9) 且预测 bin>0 时调整计数。
+
+**FSC147 sample100 结果**:
+
+| Configuration | MAE | RMSE | Bias |
+|---|---|---|---|
+| Baseline (no P1) | 8.73 | 32.87 | -4.77 |
+| P1 V1 (bbox dot count) | 31.03 | 47.30 | +24.10 |
+| P1 V2 (unique assignment) | 8.98 | 30.64 | **-1.73** |
+
+**FSC147 Full 1190 (P1+P2 combined cache)**:
+
+| Configuration | Overall MAE | 0-10 | 11-20 | 21-50 | 51-100 | 100+ | Bias |
+|---|---|---|---|---|---|---|---|
+| P2 Multi-Res only | **14.03** | 1.60 | 2.19 | 5.78 | 17.36 | **47.44** | -10.41 |
+| P1+P2 Combined | 14.54 | 1.50 | 2.14 | **5.15** | **14.27** | 56.08 | **-3.92** |
+
+### P1-5: Geometric Heuristic (Alternative)
+
+**方法**: 不依赖学习，使用 bbox area ratio 检测 over-merge：
+- 计算所有 rep bbox 的 25th percentile area 作为 "典型单物体面积"
+- 若 rep area > 3× typical → 视为 over-merged → count = round(area / typical)
+
+**结果**: MAE=42.81 (sample100) — 过于激进，无法区分 "一个大物体" 和 "多个小物体合并"
+
+### 关键发现
+
+1. **P1 减少 under-counting bias 62%** (-10.41 → -3.92) 但整体 MAE 略差 (+0.51)
+2. **Per-mask count prediction 是困难的**: DINOv2 全局特征难以区分 "一个大物体" vs "多个小物体合并"——需要更细粒度的空间特征
+3. **训练标签噪声**: 即使 unique assignment，bbox 级别的 dot counting ≠ mask 级别的 object counting。需要 mask decoding 才能获得精确标签
+4. **分布偏移**: 训练在 all candidates 上，推理在 representatives 上——representatives 的分布不同
+5. **几何 heuristic 失败**: 密集场景中物体大小方差大，area ratio 无法可靠区分 over-merge
+6. **S-DCNet 启示仍然有效**: 将计数转化为分类的思想是正确的，但应在 region-level (如 S-DCNet 的 spatial division) 而非 per-mask level 应用
+
+### 未来方向
+
+- **Mask-level labels**: 使用 pycocotools.decode 精确计算每个 mask 内的 dot 数
+- **Representative-level training**: 只在 representatives (dedup 后) 上训练，eliminate distribution shift
+- **Region-level application**: 类似 S-DCNet，在图像 region 上做 count interval 分类，而非 per-mask
+- **Multi-modal features**: 结合 SAM2 mask decoder 特征 + DINOv2 特征
+- **P1 可作为 bias correction term**: 不在所有 reps 上应用，仅用于纠正极端 under-count 的图像
+
+### 文件
+
+- `script/build_p1_count_labels.py` — V1 label builder (bbox dot count)
+- `script/build_p1_count_labels_v2.py` — V2 label builder (unique dot assignment)
+- `script/train_count_classifier.py` — Count bin classifier 训练脚本
+- `result/checkpoints/count_classifier.pt` — V1 classifier (val_acc=82.7%)
+- `result/checkpoints/count_classifier_v2.pt` — V2 classifier (val_acc=80.4%)
+- `/home/czp/ws_yiyang/ovcud_cache/p1_count_labels.pt` — V1 labels (1.1 GB)
+- `/home/czp/ws_yiyang/ovcud_cache/p1_count_labels_v2.pt` — V2 labels (1.1 GB)
+- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_p1p2/` — Combined cache for P1+P2 eval
+- `result/logs/fsc147_p1b_geo.json` — P1 geometric heuristic (MAE=42.81)
+- `result/logs/fsc147_p1_v2.json` — P1 V2 sample100 (MAE=8.98)
+- `result/logs/fsc147_p1p2_combined.json` — P1+P2 full 1190 (MAE=14.54)
+- `result/logs/fsc147_p2_only_combined.json` — P2-only full 1190 control (MAE=14.03)
+- `/home/czp/official_code/relation_ft/script/run_adaptive_pipeline.py` — Updated with P1 support

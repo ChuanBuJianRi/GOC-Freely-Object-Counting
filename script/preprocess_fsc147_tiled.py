@@ -4,13 +4,24 @@ For each high-density image (GT > 100), splits it into 2×2 overlapping tiles,
 runs SAM2 AMG on each tile, merges overlapping candidates via IoU, then
 encodes with DINOv2 3-view. This improves SAM2 candidate recall for dense scenes.
 
+When --upscale is set, each tile is resized to the original image resolution
+before SAM2 AMG, then masks are scaled back. This makes small objects larger
+in each tile view, further improving recall for dense-small-object scenes.
+
 Usage:
+    # Standard tiling
     python script/preprocess_fsc147_tiled.py \
         --ann /home/czp/official_code/dataset/FSC147/annotation_FSC147_384.json \
         --img-dir /home/czp/official_code/dataset/FSC147/images_384_VarV2 \
         --images-file result/logs/fsc147_test_100plus.json \
         --out-dir /home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled \
         --tiles 2 --overlap 0.25 --pts-per-side 32
+
+    # Upscaled tiling (tile → upscale → SAM2 → downscale masks)
+    python script/preprocess_fsc147_tiled.py \
+        --ann ... --img-dir ... --images-file ... \
+        --out-dir /home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled_2x2_upscale \
+        --tiles 2 --overlap 0.25 --pts-per-side 32 --upscale
 """
 
 from __future__ import annotations
@@ -153,7 +164,7 @@ def dot_based_matching(
 # Process single image with tiling
 # ---------------------------------------------------------------------------
 def process_image_tiled(image, file_name, ann_entry, class_idx, class_name,
-                         amg, encoder, n_tiles, overlap):
+                         amg, encoder, n_tiles, overlap, upscale=False):
     h, w = image.shape[:2]
     tiles = compute_tiles(h, w, n_tiles, overlap)
 
@@ -162,13 +173,35 @@ def process_image_tiled(image, file_name, ann_entry, class_idx, class_name,
 
     for ti, (y1, x1, y2, x2) in enumerate(tiles):
         tile_img = image[y1:y2, x1:x2]
+        th, tw = y2 - y1, x2 - x1
+
+        if upscale:
+            # Upscale tile to original image resolution so SAM2 sees
+            # larger objects in dense scenes → better recall.
+            tile_img_pil = Image.fromarray(tile_img)
+            tile_img_pil = tile_img_pil.resize((w, h), Image.BILINEAR)
+            tile_img = np.array(tile_img_pil)
+            # Scale factors for mapping back
+            sy, sx = th / h, tw / w
+
         raw = amg.generate(tile_img)
         for r in raw:
             m = np.asarray(r["segmentation"]).astype(np.uint8)
             area = float(m.sum())
             if area == 0:
                 continue
-            ar = area / ((y2 - y1) * (x2 - x1))
+
+            if upscale:
+                # Scale mask back to tile coordinates
+                m_pil = Image.fromarray(m)
+                m_pil = m_pil.resize((tw, th), Image.NEAREST)
+                m = np.array(m_pil).astype(np.uint8)
+                # Recompute area after downscaling
+                area = float(m.sum())
+                if area == 0:
+                    continue
+
+            ar = area / (th * tw)
             if ar < 1e-4 or ar > 0.95:
                 continue
             ys, xs = np.where(m)
@@ -272,6 +305,8 @@ def main():
     ap.add_argument("--tiles", type=int, default=2)
     ap.add_argument("--overlap", type=float, default=0.25)
     ap.add_argument("--pts-per-side", type=int, default=32)
+    ap.add_argument("--upscale", action="store_true",
+                    help="Upscale each tile to original image resolution before SAM2")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
 
@@ -298,7 +333,8 @@ def main():
     print(f"[init] {len(img_files)} images to process")
 
     # Build SAM2
-    print(f"[init] Building SAM2 AMG (pts={args.pts_per_side}, {args.tiles}×{args.tiles} tiles)...")
+    print(f"[init] Building SAM2 AMG (pts={args.pts_per_side}, {args.tiles}×{args.tiles} tiles, "
+          f"upscale={args.upscale})...")
     t0 = time.time()
     amg = build_sam2_amg(device, args.pts_per_side)
     print(f"[init] SAM2 ready in {time.time() - t0:.0f}s")
@@ -351,6 +387,7 @@ def main():
         result = process_image_tiled(
             image, fn, entry, class_idx, class_name,
             amg, encoder, args.tiles, args.overlap,
+            upscale=args.upscale,
         )
         if result is None:
             print(f"  [warn] No candidates for {fn}")
