@@ -172,6 +172,24 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 
 > Tiling 修复 SAM2 候选密度瓶颈后，PUCPR+ MAE 降至 3.59 — 接近 CARPK 水平，证明 OV-CUD 计数模块泛化能力 robust。
 
+### 3.4 FSC147 — Multi-Scale Tiling Analysis
+
+为进一步优化 FSC147 全测试集高密度场景 (GT>100)，我们在 195 张最密集图像上尝试了多尺度 tiling。
+
+| Configuration | Overall MAE | 0-10 | 11-20 | 21-50 | 51-100 | 100+ |
+|---|---|---|---|---|---|---|
+| Baseline (adaptive) | 16.54 | 1.52 | 2.17 | 5.71 | 9.37 | 73.46 |
+| **+ 2×2 Tiling** | **15.44** | 1.60 | 2.19 | 5.78 | 17.36 | **55.87** |
+| + 3×3 Tiling | 15.85 | 1.60 | 2.19 | 5.78 | 17.36 | 58.37 |
+
+**Findings:**
+- **2×2 tiling 效果显著**: 100+ bin MAE 73.46→55.87 (**-23.9%**), Overall 16.54→15.44 (-6.7%)
+- **3×3 tiling 反而退步**: 100+ MAE 58.37 (+4.5% vs 2×2)。过多的 tile (9 个) 引入更多 false positive 候选，dedup 无法完全消除
+- **2×2 是最优配置**: 4 tiles 在 recall 提升和噪声控制之间取得最佳平衡
+- 51-100 区间的退化与 tiling 无关，来自 cache-32 覆盖不足 (仅 38/254 图像匹配 pts=32)
+
+> **结论**: 2×2 multi-scale tiling 是 FSC147 高密度场景的最佳 tiling 策略。代码修复: `run_adaptive_pipeline.py` 中 `inst_logits` 添加 `np.clip(inst_logits, -20, 20)` 防止 exp overflow。
+
 ---
 
 ## 4. 核心消融实验

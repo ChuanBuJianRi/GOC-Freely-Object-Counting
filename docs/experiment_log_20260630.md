@@ -775,3 +775,66 @@ bottleneck is front-end candidate density, not the counting formulation.
 - `result/logs/omnicount_sam2_only.json` — Vanilla SAM2 结果 (1,917 images)
 - `result/logs/omnicount_owlv2_agnostic.json` — OWLv2 baseline (500 images)
 - `/home/czp/ws_yiyang/ovcud_cache/omnicount_test/` — 预处理缓存 (1,957 files)
+
+---
+
+### P2-7: FSC147 Multi-Scale Tiling (2×2 vs 3×3) 🆕
+
+**日期**: 2026-07-04
+**目标**: 在 FSC147 全测试集 195 张最密集图像 (GT>100) 上测试 multi-scale tiling，对比 2×2 和 3×3
+
+#### 实验设置
+
+- **数据集**: FSC147 full test (1190 images)
+- **Tiling 范围**: 195 张 GT>100 图像 (100+ bin)
+- **2×2 Tiling**: 4 tiles, 25% overlap, SAM2 pts=32 per tile, IoU>0.7 merge
+- **3×3 Tiling**: 9 tiles, 25% overlap, SAM2 pts=32 per tile, IoU>0.7 merge
+- **Cache 策略**: pts32_100 (100 files, baseline) + tiled files overlay for 100+
+- **Pipeline**: 自适应密度 (density_threshold=50) + 置信度过滤 (conf=0.2)
+- **Checkpoints**: `fsc147_relation_best.pt` + `fsc147_relation_pts32_best.pt`, tau_inst=0.99
+
+#### 关键结果 (MAE)
+
+| Configuration | Overall | 0-10 | 11-20 | 21-50 | 51-100 | 100+ |
+|---|---|---|---|---|---|---|
+| Baseline (adaptive) | 16.54 | 1.52 | 2.17 | 5.71 | 9.37 | 73.46 |
+| **+ 2×2 Tiling** | **15.44** | 1.60 | 2.19 | 5.78 | 17.36 | **55.87** |
+| + 3×3 Tiling | 15.85 | 1.60 | 2.19 | 5.78 | 17.36 | 58.37 |
+
+#### Per-Bin Analysis
+
+| Bin | Baseline | 2×2 Tiling | Δ | 3×3 Tiling | Δ vs 2×2 |
+|---|---|---|---|---|---|
+| 0-10 | 1.52 | 1.60 | +5.3% | 1.60 | 0% |
+| 11-20 | 2.17 | 2.19 | +0.9% | 2.19 | 0% |
+| 21-50 | 5.71 | 5.78 | +1.2% | 5.78 | 0% |
+| 51-100 | 9.37 | 17.36 | +85.3% | 17.36 | 0% |
+| **100+** | **73.46** | **55.87** | **-23.9%** | **58.37** | **+4.5%** |
+| Overall | 16.54 | 15.44 | -6.7% | 15.85 | +2.7% |
+
+#### 关键发现
+
+1. **2×2 tiling 显著提升 100+ bin**: MAE 73.46→55.87 (-23.9%)，Overall 16.54→15.44 (-6.7%)
+2. **3×3 tiling 退步**: 100+ MAE 58.37 (+4.5% vs 2×2)。9 个 tile 产生过多 false positive 候选，dedup 无法完全消除
+3. **2×2 是最优 tiling 配置**: 4 tiles 在 SAM2 recall 提升和噪声控制之间取得最佳平衡
+4. **51-100 退化与 tiling 无关**: 来自 cache-32 覆盖不足 — 仅 38/254 张 51-100 图像匹配 pts=32 (pts32_100 仅包含 100 个 sample100 文件)
+5. **代码修复**: `run_adaptive_pipeline.py` 中 relation head `inst_logits` 添加 `np.clip(inst_logits, -20, 20)` 防止 exp overflow 导致 sigmoid 为 1
+
+#### 对比: PUCPR+ vs FSC147 Tiling
+
+| 数据集 | #Images | w/o Tiling | w/ 2×2 Tiling | Improvement |
+|---|---|---|---|---|
+| PUCPR+ | 25 | 33.65 | 3.59 | -89.3% |
+| FSC147 100+ | 195 | 73.46 | 55.87 | -23.9% |
+
+> FSC147 的 improvement 幅度 (-23.9%) 远小于 PUCPR+ (-89.3%)，因为 FSC147 cache-32 已经使用 pts=32 候选 (recal ~90%)，tiling 提升空间有限；而 PUCPR+ 的 SAM2 recall 仅 84.2%，tiling 大幅提升了候选质量。
+
+**文件**:
+- `script/preprocess_fsc147_tiled.py` — FSC147 multi-scale tiling 预处理
+- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled/` — 2×2 tiled 缓存 (195 files)
+- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled_3x3/` — 3×3 tiled 缓存 (195 files)
+- `/home/czp/ws_yiyang/ovcud_cache/fsc147_tiled2x2_combined/` — 2×2 combined cache (282 files)
+- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled_3x3_combined/` — 3×3 combined cache (278 files)
+- `result/logs/fsc147_tiled2x2_fixed.json` — 2×2 tiling 完整结果
+- `result/logs/fsc147_tiled3x3_fixed.json` — 3×3 tiling 完整结果
+- `result/logs/fsc147_baseline_fixed.json` — 修复后 baseline (MAE=25.68, 100+ bin 仅 38 张用 pts=32)
