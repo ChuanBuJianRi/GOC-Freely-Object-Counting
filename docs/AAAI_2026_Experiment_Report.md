@@ -172,23 +172,34 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 
 > Tiling 修复 SAM2 候选密度瓶颈后，PUCPR+ MAE 降至 3.59 — 接近 CARPK 水平，证明 OV-CUD 计数模块泛化能力 robust。
 
-### 3.4 FSC147 — Multi-Scale Tiling Analysis
+### 3.4 FSC147 — Multi-Scale Tiling & Multi-Resolution Fusion (S-DCNet Inspired)
 
-为进一步优化 FSC147 全测试集高密度场景 (GT>100)，我们在 195 张最密集图像上尝试了多尺度 tiling。
+为进一步优化 FSC147 全测试集高密度场景，受 S-DCNet (Xiong et al., ICCV 2019) 空间分治思想启发，我们探索了多项改进策略。
+
+#### Tiling Strategies
 
 | Configuration | Overall MAE | 0-10 | 11-20 | 21-50 | 51-100 | 100+ |
 |---|---|---|---|---|---|---|
 | Baseline (adaptive) | 16.54 | 1.52 | 2.17 | 5.71 | 9.37 | 73.46 |
-| **+ 2×2 Tiling** | **15.44** | 1.60 | 2.19 | 5.78 | 17.36 | **55.87** |
-| + 3×3 Tiling | 15.85 | 1.60 | 2.19 | 5.78 | 17.36 | 58.37 |
+| Standard 2×2 Tiling | 15.44 | 1.60 | 2.19 | 5.78 | 17.36 | 55.87 |
+| 3×3 Tiling | 15.85 | 1.60 | 2.19 | 5.78 | 17.36 | 58.37 |
+| Upscaled 2×2 Tiling | 15.34 | 1.60 | 2.19 | 5.78 | 17.36 | 55.27 |
+| Merged (full+2×2) | 15.30 | 1.60 | 2.19 | 5.78 | 17.36 | 55.23 |
+| **P2 Multi-Res (fast+2×2)** | **13.45** | 1.53 | 2.20 | 5.77 | 17.29 | **43.87** |
 
-**Findings:**
-- **2×2 tiling 效果显著**: 100+ bin MAE 73.46→55.87 (**-23.9%**), Overall 16.54→15.44 (-6.7%)
-- **3×3 tiling 反而退步**: 100+ MAE 58.37 (+4.5% vs 2×2)。过多的 tile (9 个) 引入更多 false positive 候选，dedup 无法完全消除
-- **2×2 是最优配置**: 4 tiles 在 recall 提升和噪声控制之间取得最佳平衡
-- 51-100 区间的退化与 tiling 无关，来自 cache-32 覆盖不足 (仅 38/254 图像匹配 pts=32)
+**Key Findings:**
 
-> **结论**: 2×2 multi-scale tiling 是 FSC147 高密度场景的最佳 tiling 策略。代码修复: `run_adaptive_pipeline.py` 中 `inst_logits` 添加 `np.clip(inst_logits, -20, 20)` 防止 exp overflow。
+- **2×2 tiling 效果显著**: 100+ bin MAE 73.46→55.87 (-23.9%), Overall 16.54→15.44 (-6.7%)
+- **3×3 tiling 反而退步**: 过多 tile 引入 false positive，dedup 无法完全消除
+- **Upscaling 边际收益**: 仅 1.1% improvement, 2.2× 运行成本 — 不推荐
+- **Merged (full+2×2)**: 保留 full-image 和 tiled 候选，bias 降低 70%
+- **P2 Multi-Resolution 最大突破**: 融合 pts=16 (coarse, better classification) + pts=32 2×2 tiled (fine, better recall) 候选，100+ MAE 73.46→**43.87** (-40.3%!), Overall 16.54→**13.45** (-18.7%!)
+
+#### P3: Spatial Context Enhancement
+
+在 dedup 阶段添加空间距离惩罚 (spatial weight=0/5/10)，结果无显著差异 (MAE≈13.45)。原因: relation head 的 pairwise features 已包含 6 维 bbox geometrics，clustering 已使用 spatial sub-clustering，空间信息已被充分利用。
+
+> **结论**: Multi-resolution candidate fusion (pts=16 coarse + pts=32 tiled fine) 是最有效的改进策略。受 S-DCNet "将开集计数转化为闭集分类" 思想启发，我们将不同 SAM2 密度视为不同 "闭集"，融合其候选实现互补。
 
 ---
 

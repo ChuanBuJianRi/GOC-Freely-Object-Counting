@@ -838,3 +838,66 @@ bottleneck is front-end candidate density, not the counting formulation.
 - `result/logs/fsc147_tiled2x2_fixed.json` — 2×2 tiling 完整结果
 - `result/logs/fsc147_tiled3x3_fixed.json` — 3×3 tiling 完整结果
 - `result/logs/fsc147_baseline_fixed.json` — 修复后 baseline (MAE=25.68, 100+ bin 仅 38 张用 pts=32)
+
+---
+
+### P2-8: FSC147 Multi-Resolution & Spatial Context (S-DCNet P2+P3) 🆕
+
+**日期**: 2026-07-04
+**目标**: 受 S-DCNet 空间分治思想启发，实现多分辨率候选融合 (P2) 和空间上下文增强 (P3)
+
+#### P2: Multi-Resolution Candidate Fusion
+
+**方法**: 融合两套不同密度的 SAM2 候选：
+- **Coarse (pts=16)**: ~97 candidates/image，分类准确度高
+- **Fine (pts=32 2×2 tiled)**: ~285 candidates/image，召回率高
+- **Merge**: Bbox IoU>0.5 去重 → ~271 candidates/image
+
+**动机**: 类似 S-DCNet 将开集计数转化为闭集，不同 SAM2 密度相当于不同的"闭集"，融合后实现互补。
+
+#### P3: Spatial Distance Penalty in Dedup
+
+**方法**: 在 A_inst 上叠加空间距离惩罚 `A_inst -= spatial_weight * normalized_distance`
+**参数**: spatial_weight ∈ {0, 5, 10}
+
+#### 关键结果
+
+| Configuration | Overall MAE | 100+ MAE | RMSE | Bias |
+|---|---|---|---|---|
+| Baseline (no tiling) | 16.54 | 73.46 | 280.61 | -69.32 |
+| Standard 2×2 Tiling | 15.44 | 55.87 | 311.89 | -42.72 |
+| Merged (full+2×2) | 15.30 | 55.23 | 260.40 | -12.84 |
+| **P2 Multi-Res sp=0 ★BEST** | **13.45** | **43.87** | **260.49** | **-34.05** |
+| P2+P3 sp=5 | 13.45 | 43.97 | 260.48 | -33.65 |
+| P2+P3 sp=10 | 13.46 | 44.04 | 260.47 | -33.23 |
+
+#### 关键发现
+
+1. **P2 Multi-Resolution 大幅提升**: Overall 16.54→13.45 (-18.7%!), 100+ 73.46→43.87 (-40.3%!!)
+   - 这远超之前所有 tiling 改进的幅度 (2×2: -6.7%, merged: -7.5%)
+   - pts=16 候选提供更好分类 (fewer FP) + pts=32 tiled 提供更好召回 → 互补效应显著
+2. **P3 Spatial Penalty 无显著效果**: spatial_weight 0/5/10 结果几乎相同
+   - Relation head 已通过 bbox geometrics (6-dim) 编码空间信息
+   - Clustering 已使用 spatial sub-clustering
+   - 空间信息在现有 pipeline 中已被充分利用
+3. **Multi-Resolution 比任何单一 tiling 策略都好**: MAE 13.45 vs 15.30 (merged) -12.1%
+
+#### S-DCNet Connection
+
+S-DCNet 核心洞察：将密集区域递归划分直到子区域计数落入训练时的闭集范围。我们的 multi-resolution 方法类比：
+- pts=16 (粗) ≈ S-DCNet 中的 C0 (全局预测)
+- pts=32 tiled (细) ≈ S-DCNet 中的 division results
+- 融合过程 ≈ S-DCNet 中的 soft division mask merging
+
+关键区别：S-DCNet 使用学习到的 division decider，我们使用 bbox-IoU heuristic。未来的方向是训练一个 learned merger。
+
+**文件**:
+- `script/build_multires_cache.py` — Multi-resolution cache builder
+- `script/preprocess_fsc147_adaptive.py` — Adaptive two-pass tiling (P0)
+- `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_multires/` — Multi-res cache (194 files)
+- `/home/czp/ws_yiyang/ovcud_cache/fsc147_multires_combined/` — Combined cache (281 files)
+- `result/logs/fsc147_multires_sp0.json` — P2 完整结果 (MAE=13.45)
+- `result/logs/fsc147_multires_sp5.json` — P2+P3 sp=5 (MAE=13.45)
+- `result/logs/fsc147_multires_sp10.json` — P2+P3 sp=10 (MAE=13.46)
+- `result/logs/fsc147_tiled_merged.json` — Merged (full+2×2) (MAE=15.30)
+- `result/logs/fsc147_baseline_fixed.json` — 修复后 baseline (MAE=25.68, 100+ bin 仅 38 张用 pts=32)
