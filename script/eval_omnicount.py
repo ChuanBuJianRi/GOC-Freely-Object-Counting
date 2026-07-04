@@ -57,7 +57,8 @@ def bin_of(c):
 # ---------------------------------------------------------------------------
 # Image-level counting with heuristic dedup (no category/relation heads)
 # ---------------------------------------------------------------------------
-def count_image_class_agnostic(d, tau_inst=0.5):
+def count_image_class_agnostic(d, tau_inst=0.5, tau_aff=0.3, max_area_ratio=1.0,
+                               adaptive_mult=8.0, adaptive_floor=0.08):
     """Count all objects in an image using heuristic bbox IoU dedup."""
     h, w = int(d["height"]), int(d["width"])
     n_cand = d["z"].shape[0]
@@ -67,6 +68,31 @@ def count_image_class_agnostic(d, tau_inst=0.5):
         return {"pred_count": 0, "n_candidates": 0, "gt_count": gt_count}
 
     bbox_np = d["bbox"].float().numpy()
+
+    # Candidate area filtering to drop oversized background candidates.
+    #   max_area_ratio >= 1.0 : disabled
+    #   0 < max_area_ratio < 1 : fixed cap = ratio * image_area
+    #   max_area_ratio < 0     : adaptive per-image cap driven by the in-image
+    #                            area distribution (robust to scale differences
+    #                            between dense-small vs large-object scenes)
+    image_area_f = float(h * w)
+    areas = bbox_np[:, 2] * bbox_np[:, 3]
+    cap = None
+    if max_area_ratio < 0:
+        # Adaptive: keep candidates up to a multiple of the median area, but
+        # never below a small floor of the image (so genuinely large single
+        # objects survive when the whole image is one big thing).
+        med = float(np.median(areas)) if len(areas) else 0.0
+        adaptive_cap = adaptive_mult * med if med > 0 else image_area_f
+        floor_cap = adaptive_floor * image_area_f
+        cap = max(adaptive_cap, floor_cap)
+    elif max_area_ratio < 1.0:
+        cap = max_area_ratio * image_area_f
+    if cap is not None:
+        keep_mask = areas <= cap
+        if keep_mask.sum() >= 1:
+            bbox_np = bbox_np[keep_mask]
+            n_cand = int(keep_mask.sum())
 
     # Build A_sem and A_inst from bbox IoU
     n = n_cand
@@ -96,7 +122,7 @@ def count_image_class_agnostic(d, tau_inst=0.5):
     image_area = float(h * w)
     groups = category_aware_clustering_with_spatial(
         category_probs, A_sem, bbox_np, image_area,
-        tau_affinity=0.3, max_group_size=30, use_bucketing=True,
+        tau_affinity=tau_aff, max_group_size=30, use_bucketing=True,
     )
 
     # Dedup + counting
@@ -201,6 +227,14 @@ def main():
     ap.add_argument("--cache-dir", required=True)
     ap.add_argument("--out", default="")
     ap.add_argument("--tau-inst", type=float, default=0.5)
+    ap.add_argument("--tau-aff", type=float, default=0.3)
+    ap.add_argument("--max-area-ratio", type=float, default=1.0,
+                    help="drop candidates with bbox area > this fraction of image; "
+                         "negative value enables adaptive per-image capping")
+    ap.add_argument("--adaptive-mult", type=float, default=8.0,
+                    help="adaptive cap = mult * median(candidate area)")
+    ap.add_argument("--adaptive-floor", type=float, default=0.08,
+                    help="adaptive cap never below this fraction of image area")
     ap.add_argument("--oracle", action="store_true",
                     help="Use oracle classification (GT matched_class) for upper bound")
     ap.add_argument("--sam2-only", action="store_true",
@@ -232,7 +266,9 @@ def main():
         elif args.oracle:
             r = count_image_oracle(d)
         else:
-            r = count_image_class_agnostic(d, tau_inst=args.tau_inst)
+            r = count_image_class_agnostic(d, tau_inst=args.tau_inst,
+                                           tau_aff=args.tau_aff, max_area_ratio=args.max_area_ratio,
+                                           adaptive_mult=args.adaptive_mult, adaptive_floor=args.adaptive_floor)
 
         r["file_name"] = file_name
         r["category"] = category
