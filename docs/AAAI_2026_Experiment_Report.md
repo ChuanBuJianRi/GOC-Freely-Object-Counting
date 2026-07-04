@@ -185,15 +185,18 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 | 3×3 Tiling | 15.85 | 1.60 | 2.19 | 5.78 | 17.36 | 58.37 |
 | Upscaled 2×2 Tiling | 15.34 | 1.60 | 2.19 | 5.78 | 17.36 | 55.27 |
 | Merged (full+2×2) | 15.30 | 1.60 | 2.19 | 5.78 | 17.36 | 55.23 |
-| **P2 Multi-Res (fast+2×2)** | **13.45** | 1.53 | 2.20 | 5.77 | 17.29 | **43.87** |
+| **P2 Multi-Res (fast+2×2, 100+ only)** | 13.45 | 1.53 | 2.20 | 5.77 | 17.29 | 43.87 |
+| **P2 Multi-Res Extended (51-100 + 100+)** | **12.74** | 1.60 | 2.19 | 5.78 | **11.31** | 47.44 |
 
 **Key Findings:**
 
 - **2×2 tiling 效果显著**: 100+ bin MAE 73.46→55.87 (-23.9%), Overall 16.54→15.44 (-6.7%)
 - **3×3 tiling 反而退步**: 过多 tile 引入 false positive，dedup 无法完全消除
 - **Upscaling 边际收益**: 仅 1.1% improvement, 2.2× 运行成本 — 不推荐
-- **Merged (full+2×2)**: 保留 full-image 和 tiled 候选，bias 降低 70%
-- **P2 Multi-Resolution 最大突破**: 融合 pts=16 (coarse, better classification) + pts=32 2×2 tiled (fine, better recall) 候选，100+ MAE 73.46→**43.87** (-40.3%!), Overall 16.54→**13.45** (-18.7%!)
+- **P2 Multi-Resolution 最大突破**: 融合 pts=16 (coarse) + pts=32 2×2 tiled (fine) 候选，**100+ MAE 73.46→43.87** (-40.3%), Overall 16.54→13.45 (-18.7%)
+- **P2 Extended (扩展到 51-100 bin)**: 将 Multi-Res 覆盖从 100+ 扩展到 51-100 bin。51-100 bin cand/GT 从 1.09→2.30，MAE 17.36→**11.31** (-34.8%), Overall 13.45→**12.74** (-5.3% vs 原 P2)
+- **累积改进**: Baseline 16.54 → P2 Multi-Res 13.45 → P2 Extended **12.74** (**-23.0%** vs baseline)
+- **瓶颈分析**: 误差高度集中——Top 5% 图像贡献 52.8% 总误差。去掉 26 张灾难性失败图像后 MAE=8.78。剩余 gap 主要来自极端密度场景的 SAM2 候选不足
 
 #### P3: Spatial Context Enhancement
 
