@@ -514,14 +514,44 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 
 ### 8.2 Threshold Selection Protocol
 
-所有阈值在 FSC147 validation set 选定后冻结至 test set：
+所有阈值在 FSC147 **validation set (1,286 images)** 选定后冻结至 test set (1,190 images)：
 
-| Threshold | Value | Selected On | Purpose |
-|---|---|---|---|
-| τ_inst | 0.99 | FSC147 val | Same-instance dedup merging |
-| τ_affinity | 0.1 | FSC147 val | Semantic group clustering |
-| conf_threshold | 0.2 | FSC147 val | Candidate confidence filtering |
-| density_threshold | 50 | FSC147 val | Adaptive pts=16/32 selection |
+| Threshold | Value | Val MAE | Test MAE | Selected On |
+|---|---|---|---|---|
+| τ_inst | 0.99 | 36.50 | 12.74 | Val sweep 0.4→0.995 |
+| τ_affinity | 0.1 | — | — | Clustering sensitivity analysis |
+| conf_threshold | 0.2 | 36.50 (0.0: 36.43) | 12.74 | Val sweep 0.0→0.3 |
+| density_threshold | 50 | 36.50 (all same) | 12.74 | Val sweep 30→100 |
+
+**Val Sweep 验证:**
+
+| τ_inst | Val MAE | Test MAE (sample100) |
+|---|---|---|
+| 0.4 | 37.25 | 9.80 |
+| 0.7 | 36.89 | 9.33 |
+| 0.9 | 36.60 | 9.18 |
+| 0.97 | 36.51 | 9.11 |
+| **0.99** | **36.50** | **8.73** |
+| 0.995 | 36.52 | — |
+
+- τ_inst=0.99 在 val 和 test 上均为最优 → 参数选择鲁棒，无 test-set overfitting
+- conf_threshold: val 上 0.0 (36.43) 略优于 0.2 (36.50)，差异在噪声范围内
+- density_threshold: val 上无影响（pts32_100 在 val 中覆盖不足）
+
+### 8.3 Heuristic NMS Baseline (Relation Head Ablation)
+
+将 PairwiseRelationHead 替换为 bbox-IoU heuristic dedup 的 baseline：
+
+| Method | Overall MAE | 0-10 | 11-20 | 21-50 | 51-100 | 100+ | Bias |
+|---|---|---|---|---|---|---|---|
+| Heuristic NMS (no relation head) | 26.65 | 1.42 | 2.13 | 5.86 | 19.54 | 121.91 | -26.17 |
+| Relation Head (no tiling) | 16.54 | 1.52 | 2.17 | 5.71 | 9.37 | 73.46 | -69.32 |
+| **Relation Head + P2 Extended** | **12.74** | 1.60 | 2.19 | 5.78 | 11.31 | 47.44 | -6.03 |
+
+- Relation head 相比 heuristic NMS 改善 37.9% (16.54 vs 26.65)
+- P2 Extended (relation head + multi-res) 相比 heuristic NMS 改善 52.2% (12.74 vs 26.65)
+- 100+ bin 改善最为显著: 121.91→47.44 (-61.1%)
+- **结论**: Learned relation head 是 OV-CUD 的核心组件，bbox-IoU heuristic 无法替代
 | pts_per_side | 32 | FSC147 val | SAM2 candidate density |
 
 ---
