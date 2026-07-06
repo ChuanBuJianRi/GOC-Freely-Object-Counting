@@ -1,0 +1,3502 @@
+[
+ {
+  "file_name": "1050.jpg",
+  "pred_count": 109,
+  "gt_count": 136,
+  "n_groups": 4,
+  "n_candidates": 152
+ },
+ {
+  "file_name": "1053.jpg",
+  "pred_count": 119,
+  "gt_count": 207,
+  "n_groups": 5,
+  "n_candidates": 148
+ },
+ {
+  "file_name": "1061.jpg",
+  "pred_count": 13,
+  "gt_count": 22,
+  "n_groups": 1,
+  "n_candidates": 29
+ },
+ {
+  "file_name": "1074.jpg",
+  "pred_count": 7,
+  "gt_count": 9,
+  "n_groups": 3,
+  "n_candidates": 41
+ },
+ {
+  "file_name": "1077.jpg",
+  "pred_count": 13,
+  "gt_count": 26,
+  "n_groups": 1,
+  "n_candidates": 28
+ },
+ {
+  "file_name": "1084.jpg",
+  "pred_count": 150,
+  "gt_count": 198,
+  "n_groups": 1,
+  "n_candidates": 191
+ },
+ {
+  "file_name": "1085.jpg",
+  "pred_count": 43,
+  "gt_count": 41,
+  "n_groups": 7,
+  "n_candidates": 62
+ },
+ {
+  "file_name": "1087.jpg",
+  "pred_count": 36,
+  "gt_count": 82,
+  "n_groups": 4,
+  "n_candidates": 45
+ },
+ {
+  "file_name": "1106.jpg",
+  "pred_count": 32,
+  "gt_count": 49,
+  "n_groups": 4,
+  "n_candidates": 85
+ },
+ {
+  "file_name": "1123.jpg",
+  "pred_count": 42,
+  "gt_count": 3701,
+  "n_groups": 2,
+  "n_candidates": 112
+ },
+ {
+  "file_name": "1130.jpg",
+  "pred_count": 25,
+  "gt_count": 61,
+  "n_groups": 2,
+  "n_candidates": 94
+ },
+ {
+  "file_name": "1246.jpg",
+  "pred_count": 2,
+  "gt_count": 159,
+  "n_groups": 1,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "1282.jpg",
+  "pred_count": 27,
+  "gt_count": 27,
+  "n_groups": 2,
+  "n_candidates": 65
+ },
+ {
+  "file_name": "1306.jpg",
+  "pred_count": 26,
+  "gt_count": 44,
+  "n_groups": 1,
+  "n_candidates": 42
+ },
+ {
+  "file_name": "1325.jpg",
+  "pred_count": 44,
+  "gt_count": 46,
+  "n_groups": 8,
+  "n_candidates": 91
+ },
+ {
+  "file_name": "1328.jpg",
+  "pred_count": 14,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 23
+ },
+ {
+  "file_name": "1386.jpg",
+  "pred_count": 38,
+  "gt_count": 35,
+  "n_groups": 11,
+  "n_candidates": 71
+ },
+ {
+  "file_name": "1391.jpg",
+  "pred_count": 39,
+  "gt_count": 42,
+  "n_groups": 5,
+  "n_candidates": 56
+ },
+ {
+  "file_name": "1397.jpg",
+  "pred_count": 57,
+  "gt_count": 166,
+  "n_groups": 1,
+  "n_candidates": 75
+ },
+ {
+  "file_name": "1455.jpg",
+  "pred_count": 63,
+  "gt_count": 63,
+  "n_groups": 1,
+  "n_candidates": 82
+ },
+ {
+  "file_name": "1456.jpg",
+  "pred_count": 101,
+  "gt_count": 184,
+  "n_groups": 4,
+  "n_candidates": 116
+ },
+ {
+  "file_name": "1458.jpg",
+  "pred_count": 90,
+  "gt_count": 162,
+  "n_groups": 2,
+  "n_candidates": 107
+ },
+ {
+  "file_name": "1461.jpg",
+  "pred_count": 99,
+  "gt_count": 99,
+  "n_groups": 1,
+  "n_candidates": 105
+ },
+ {
+  "file_name": "1462.jpg",
+  "pred_count": 255,
+  "gt_count": 409,
+  "n_groups": 1,
+  "n_candidates": 272
+ },
+ {
+  "file_name": "1463.jpg",
+  "pred_count": 61,
+  "gt_count": 60,
+  "n_groups": 1,
+  "n_candidates": 63
+ },
+ {
+  "file_name": "1464.jpg",
+  "pred_count": 62,
+  "gt_count": 59,
+  "n_groups": 1,
+  "n_candidates": 88
+ },
+ {
+  "file_name": "1467.jpg",
+  "pred_count": 8,
+  "gt_count": 70,
+  "n_groups": 1,
+  "n_candidates": 32
+ },
+ {
+  "file_name": "1493.jpg",
+  "pred_count": 71,
+  "gt_count": 67,
+  "n_groups": 1,
+  "n_candidates": 91
+ },
+ {
+  "file_name": "1497.jpg",
+  "pred_count": 187,
+  "gt_count": 207,
+  "n_groups": 2,
+  "n_candidates": 213
+ },
+ {
+  "file_name": "1509.jpg",
+  "pred_count": 27,
+  "gt_count": 50,
+  "n_groups": 1,
+  "n_candidates": 46
+ },
+ {
+  "file_name": "1537.jpg",
+  "pred_count": 79,
+  "gt_count": 110,
+  "n_groups": 1,
+  "n_candidates": 89
+ },
+ {
+  "file_name": "1572.jpg",
+  "pred_count": 12,
+  "gt_count": 25,
+  "n_groups": 3,
+  "n_candidates": 22
+ },
+ {
+  "file_name": "1625.jpg",
+  "pred_count": 12,
+  "gt_count": 18,
+  "n_groups": 2,
+  "n_candidates": 35
+ },
+ {
+  "file_name": "1636.jpg",
+  "pred_count": 14,
+  "gt_count": 274,
+  "n_groups": 1,
+  "n_candidates": 45
+ },
+ {
+  "file_name": "1668.jpg",
+  "pred_count": 7,
+  "gt_count": 48,
+  "n_groups": 2,
+  "n_candidates": 35
+ },
+ {
+  "file_name": "1762.jpg",
+  "pred_count": 131,
+  "gt_count": 166,
+  "n_groups": 2,
+  "n_candidates": 200
+ },
+ {
+  "file_name": "1768.jpg",
+  "pred_count": 308,
+  "gt_count": 433,
+  "n_groups": 1,
+  "n_candidates": 359
+ },
+ {
+  "file_name": "1772.jpg",
+  "pred_count": 42,
+  "gt_count": 55,
+  "n_groups": 1,
+  "n_candidates": 53
+ },
+ {
+  "file_name": "1861.jpg",
+  "pred_count": 35,
+  "gt_count": 135,
+  "n_groups": 3,
+  "n_candidates": 120
+ },
+ {
+  "file_name": "1863.jpg",
+  "pred_count": 25,
+  "gt_count": 25,
+  "n_groups": 6,
+  "n_candidates": 57
+ },
+ {
+  "file_name": "1864.jpg",
+  "pred_count": 7,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 40
+ },
+ {
+  "file_name": "1866.jpg",
+  "pred_count": 13,
+  "gt_count": 17,
+  "n_groups": 1,
+  "n_candidates": 67
+ },
+ {
+  "file_name": "1867.jpg",
+  "pred_count": 26,
+  "gt_count": 26,
+  "n_groups": 6,
+  "n_candidates": 42
+ },
+ {
+  "file_name": "1868.jpg",
+  "pred_count": 36,
+  "gt_count": 35,
+  "n_groups": 5,
+  "n_candidates": 58
+ },
+ {
+  "file_name": "187.jpg",
+  "pred_count": 25,
+  "gt_count": 28,
+  "n_groups": 1,
+  "n_candidates": 28
+ },
+ {
+  "file_name": "1872.jpg",
+  "pred_count": 17,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 39
+ },
+ {
+  "file_name": "1873.jpg",
+  "pred_count": 10,
+  "gt_count": 12,
+  "n_groups": 2,
+  "n_candidates": 26
+ },
+ {
+  "file_name": "1874.jpg",
+  "pred_count": 10,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 28
+ },
+ {
+  "file_name": "1875.jpg",
+  "pred_count": 36,
+  "gt_count": 54,
+  "n_groups": 1,
+  "n_candidates": 51
+ },
+ {
+  "file_name": "188.jpg",
+  "pred_count": 16,
+  "gt_count": 24,
+  "n_groups": 3,
+  "n_candidates": 20
+ },
+ {
+  "file_name": "1881.jpg",
+  "pred_count": 11,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 33
+ },
+ {
+  "file_name": "1884.jpg",
+  "pred_count": 16,
+  "gt_count": 16,
+  "n_groups": 1,
+  "n_candidates": 43
+ },
+ {
+  "file_name": "1886.jpg",
+  "pred_count": 10,
+  "gt_count": 12,
+  "n_groups": 2,
+  "n_candidates": 38
+ },
+ {
+  "file_name": "1887.jpg",
+  "pred_count": 9,
+  "gt_count": 10,
+  "n_groups": 1,
+  "n_candidates": 46
+ },
+ {
+  "file_name": "1888.jpg",
+  "pred_count": 9,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 51
+ },
+ {
+  "file_name": "1889.jpg",
+  "pred_count": 14,
+  "gt_count": 17,
+  "n_groups": 3,
+  "n_candidates": 23
+ },
+ {
+  "file_name": "189.jpg",
+  "pred_count": 13,
+  "gt_count": 18,
+  "n_groups": 1,
+  "n_candidates": 13
+ },
+ {
+  "file_name": "1890.jpg",
+  "pred_count": 68,
+  "gt_count": 76,
+  "n_groups": 1,
+  "n_candidates": 82
+ },
+ {
+  "file_name": "1891.jpg",
+  "pred_count": 36,
+  "gt_count": 31,
+  "n_groups": 11,
+  "n_candidates": 51
+ },
+ {
+  "file_name": "1892.jpg",
+  "pred_count": 170,
+  "gt_count": 180,
+  "n_groups": 1,
+  "n_candidates": 209
+ },
+ {
+  "file_name": "1894.jpg",
+  "pred_count": 31,
+  "gt_count": 32,
+  "n_groups": 9,
+  "n_candidates": 70
+ },
+ {
+  "file_name": "1895.jpg",
+  "pred_count": 32,
+  "gt_count": 30,
+  "n_groups": 12,
+  "n_candidates": 49
+ },
+ {
+  "file_name": "1896.jpg",
+  "pred_count": 112,
+  "gt_count": 123,
+  "n_groups": 2,
+  "n_candidates": 184
+ },
+ {
+  "file_name": "1897.jpg",
+  "pred_count": 15,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 16
+ },
+ {
+  "file_name": "1898.jpg",
+  "pred_count": 142,
+  "gt_count": 149,
+  "n_groups": 1,
+  "n_candidates": 223
+ },
+ {
+  "file_name": "1899.jpg",
+  "pred_count": 8,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 28
+ },
+ {
+  "file_name": "19.jpg",
+  "pred_count": 9,
+  "gt_count": 9,
+  "n_groups": 1,
+  "n_candidates": 22
+ },
+ {
+  "file_name": "190.jpg",
+  "pred_count": 12,
+  "gt_count": 13,
+  "n_groups": 2,
+  "n_candidates": 16
+ },
+ {
+  "file_name": "1900.jpg",
+  "pred_count": 13,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 21
+ },
+ {
+  "file_name": "1901.jpg",
+  "pred_count": 18,
+  "gt_count": 17,
+  "n_groups": 1,
+  "n_candidates": 34
+ },
+ {
+  "file_name": "1902.jpg",
+  "pred_count": 95,
+  "gt_count": 94,
+  "n_groups": 16,
+  "n_candidates": 109
+ },
+ {
+  "file_name": "1903.jpg",
+  "pred_count": 125,
+  "gt_count": 139,
+  "n_groups": 1,
+  "n_candidates": 190
+ },
+ {
+  "file_name": "1906.jpg",
+  "pred_count": 69,
+  "gt_count": 70,
+  "n_groups": 6,
+  "n_candidates": 75
+ },
+ {
+  "file_name": "1907.jpg",
+  "pred_count": 28,
+  "gt_count": 28,
+  "n_groups": 2,
+  "n_candidates": 38
+ },
+ {
+  "file_name": "191.jpg",
+  "pred_count": 15,
+  "gt_count": 15,
+  "n_groups": 1,
+  "n_candidates": 29
+ },
+ {
+  "file_name": "1910.jpg",
+  "pred_count": 36,
+  "gt_count": 28,
+  "n_groups": 5,
+  "n_candidates": 53
+ },
+ {
+  "file_name": "1911.jpg",
+  "pred_count": 100,
+  "gt_count": 119,
+  "n_groups": 2,
+  "n_candidates": 161
+ },
+ {
+  "file_name": "1912.jpg",
+  "pred_count": 49,
+  "gt_count": 46,
+  "n_groups": 16,
+  "n_candidates": 64
+ },
+ {
+  "file_name": "1913.jpg",
+  "pred_count": 51,
+  "gt_count": 50,
+  "n_groups": 1,
+  "n_candidates": 69
+ },
+ {
+  "file_name": "1915.jpg",
+  "pred_count": 199,
+  "gt_count": 684,
+  "n_groups": 2,
+  "n_candidates": 228
+ },
+ {
+  "file_name": "1916.jpg",
+  "pred_count": 28,
+  "gt_count": 20,
+  "n_groups": 6,
+  "n_candidates": 61
+ },
+ {
+  "file_name": "1917.jpg",
+  "pred_count": 21,
+  "gt_count": 17,
+  "n_groups": 2,
+  "n_candidates": 67
+ },
+ {
+  "file_name": "1918.jpg",
+  "pred_count": 18,
+  "gt_count": 18,
+  "n_groups": 2,
+  "n_candidates": 31
+ },
+ {
+  "file_name": "1919.jpg",
+  "pred_count": 425,
+  "gt_count": 436,
+  "n_groups": 41,
+  "n_candidates": 429
+ },
+ {
+  "file_name": "192.jpg",
+  "pred_count": 16,
+  "gt_count": 19,
+  "n_groups": 1,
+  "n_candidates": 16
+ },
+ {
+  "file_name": "1920.jpg",
+  "pred_count": 108,
+  "gt_count": 138,
+  "n_groups": 1,
+  "n_candidates": 161
+ },
+ {
+  "file_name": "1921.jpg",
+  "pred_count": 52,
+  "gt_count": 49,
+  "n_groups": 17,
+  "n_candidates": 81
+ },
+ {
+  "file_name": "1922.jpg",
+  "pred_count": 46,
+  "gt_count": 45,
+  "n_groups": 1,
+  "n_candidates": 58
+ },
+ {
+  "file_name": "1924.jpg",
+  "pred_count": 48,
+  "gt_count": 48,
+  "n_groups": 2,
+  "n_candidates": 55
+ },
+ {
+  "file_name": "1925.jpg",
+  "pred_count": 32,
+  "gt_count": 29,
+  "n_groups": 10,
+  "n_candidates": 41
+ },
+ {
+  "file_name": "1927.jpg",
+  "pred_count": 60,
+  "gt_count": 68,
+  "n_groups": 2,
+  "n_candidates": 95
+ },
+ {
+  "file_name": "1928.jpg",
+  "pred_count": 13,
+  "gt_count": 13,
+  "n_groups": 1,
+  "n_candidates": 19
+ },
+ {
+  "file_name": "1929.jpg",
+  "pred_count": 83,
+  "gt_count": 86,
+  "n_groups": 2,
+  "n_candidates": 151
+ },
+ {
+  "file_name": "1930.jpg",
+  "pred_count": 15,
+  "gt_count": 18,
+  "n_groups": 1,
+  "n_candidates": 48
+ },
+ {
+  "file_name": "1931.jpg",
+  "pred_count": 55,
+  "gt_count": 54,
+  "n_groups": 1,
+  "n_candidates": 65
+ },
+ {
+  "file_name": "1933.jpg",
+  "pred_count": 152,
+  "gt_count": 215,
+  "n_groups": 4,
+  "n_candidates": 185
+ },
+ {
+  "file_name": "1934.jpg",
+  "pred_count": 158,
+  "gt_count": 171,
+  "n_groups": 2,
+  "n_candidates": 202
+ },
+ {
+  "file_name": "1935.jpg",
+  "pred_count": 146,
+  "gt_count": 175,
+  "n_groups": 1,
+  "n_candidates": 187
+ },
+ {
+  "file_name": "1936.jpg",
+  "pred_count": 498,
+  "gt_count": 501,
+  "n_groups": 1,
+  "n_candidates": 500
+ },
+ {
+  "file_name": "1937.jpg",
+  "pred_count": 113,
+  "gt_count": 117,
+  "n_groups": 6,
+  "n_candidates": 172
+ },
+ {
+  "file_name": "1938.jpg",
+  "pred_count": 11,
+  "gt_count": 9,
+  "n_groups": 2,
+  "n_candidates": 30
+ },
+ {
+  "file_name": "1939.jpg",
+  "pred_count": 69,
+  "gt_count": 69,
+  "n_groups": 1,
+  "n_candidates": 93
+ },
+ {
+  "file_name": "194.jpg",
+  "pred_count": 85,
+  "gt_count": 82,
+  "n_groups": 2,
+  "n_candidates": 122
+ },
+ {
+  "file_name": "1942.jpg",
+  "pred_count": 147,
+  "gt_count": 163,
+  "n_groups": 1,
+  "n_candidates": 207
+ },
+ {
+  "file_name": "1943.jpg",
+  "pred_count": 47,
+  "gt_count": 221,
+  "n_groups": 6,
+  "n_candidates": 48
+ },
+ {
+  "file_name": "1944.jpg",
+  "pred_count": 47,
+  "gt_count": 48,
+  "n_groups": 6,
+  "n_candidates": 76
+ },
+ {
+  "file_name": "1945.jpg",
+  "pred_count": 44,
+  "gt_count": 44,
+  "n_groups": 2,
+  "n_candidates": 55
+ },
+ {
+  "file_name": "1946.jpg",
+  "pred_count": 39,
+  "gt_count": 40,
+  "n_groups": 1,
+  "n_candidates": 41
+ },
+ {
+  "file_name": "1947.jpg",
+  "pred_count": 12,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 15
+ },
+ {
+  "file_name": "1948.jpg",
+  "pred_count": 18,
+  "gt_count": 22,
+  "n_groups": 1,
+  "n_candidates": 31
+ },
+ {
+  "file_name": "1949.jpg",
+  "pred_count": 151,
+  "gt_count": 150,
+  "n_groups": 1,
+  "n_candidates": 155
+ },
+ {
+  "file_name": "195.jpg",
+  "pred_count": 10,
+  "gt_count": 10,
+  "n_groups": 2,
+  "n_candidates": 22
+ },
+ {
+  "file_name": "1950.jpg",
+  "pred_count": 21,
+  "gt_count": 21,
+  "n_groups": 1,
+  "n_candidates": 43
+ },
+ {
+  "file_name": "1951.jpg",
+  "pred_count": 21,
+  "gt_count": 19,
+  "n_groups": 5,
+  "n_candidates": 31
+ },
+ {
+  "file_name": "1952.jpg",
+  "pred_count": 40,
+  "gt_count": 37,
+  "n_groups": 8,
+  "n_candidates": 75
+ },
+ {
+  "file_name": "1955.jpg",
+  "pred_count": 17,
+  "gt_count": 13,
+  "n_groups": 1,
+  "n_candidates": 20
+ },
+ {
+  "file_name": "1956.jpg",
+  "pred_count": 395,
+  "gt_count": 1229,
+  "n_groups": 1,
+  "n_candidates": 404
+ },
+ {
+  "file_name": "1957.jpg",
+  "pred_count": 42,
+  "gt_count": 39,
+  "n_groups": 6,
+  "n_candidates": 63
+ },
+ {
+  "file_name": "1958.jpg",
+  "pred_count": 16,
+  "gt_count": 12,
+  "n_groups": 2,
+  "n_candidates": 34
+ },
+ {
+  "file_name": "1959.jpg",
+  "pred_count": 69,
+  "gt_count": 68,
+  "n_groups": 4,
+  "n_candidates": 77
+ },
+ {
+  "file_name": "196.jpg",
+  "pred_count": 84,
+  "gt_count": 85,
+  "n_groups": 2,
+  "n_candidates": 121
+ },
+ {
+  "file_name": "1960.jpg",
+  "pred_count": 143,
+  "gt_count": 163,
+  "n_groups": 2,
+  "n_candidates": 213
+ },
+ {
+  "file_name": "1961.jpg",
+  "pred_count": 104,
+  "gt_count": 111,
+  "n_groups": 1,
+  "n_candidates": 169
+ },
+ {
+  "file_name": "1962.jpg",
+  "pred_count": 19,
+  "gt_count": 13,
+  "n_groups": 1,
+  "n_candidates": 28
+ },
+ {
+  "file_name": "1964.jpg",
+  "pred_count": 11,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 14
+ },
+ {
+  "file_name": "1965.jpg",
+  "pred_count": 94,
+  "gt_count": 96,
+  "n_groups": 1,
+  "n_candidates": 104
+ },
+ {
+  "file_name": "1966.jpg",
+  "pred_count": 25,
+  "gt_count": 19,
+  "n_groups": 3,
+  "n_candidates": 60
+ },
+ {
+  "file_name": "1967.jpg",
+  "pred_count": 45,
+  "gt_count": 36,
+  "n_groups": 21,
+  "n_candidates": 56
+ },
+ {
+  "file_name": "1968.jpg",
+  "pred_count": 14,
+  "gt_count": 13,
+  "n_groups": 1,
+  "n_candidates": 33
+ },
+ {
+  "file_name": "1969.jpg",
+  "pred_count": 118,
+  "gt_count": 134,
+  "n_groups": 1,
+  "n_candidates": 168
+ },
+ {
+  "file_name": "197.jpg",
+  "pred_count": 79,
+  "gt_count": 77,
+  "n_groups": 5,
+  "n_candidates": 103
+ },
+ {
+  "file_name": "1971.jpg",
+  "pred_count": 25,
+  "gt_count": 19,
+  "n_groups": 1,
+  "n_candidates": 60
+ },
+ {
+  "file_name": "1972.jpg",
+  "pred_count": 9,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 18
+ },
+ {
+  "file_name": "1973.jpg",
+  "pred_count": 14,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 19
+ },
+ {
+  "file_name": "1976.jpg",
+  "pred_count": 32,
+  "gt_count": 32,
+  "n_groups": 14,
+  "n_candidates": 42
+ },
+ {
+  "file_name": "1977.jpg",
+  "pred_count": 129,
+  "gt_count": 132,
+  "n_groups": 1,
+  "n_candidates": 171
+ },
+ {
+  "file_name": "1978.jpg",
+  "pred_count": 38,
+  "gt_count": 35,
+  "n_groups": 14,
+  "n_candidates": 46
+ },
+ {
+  "file_name": "1979.jpg",
+  "pred_count": 60,
+  "gt_count": 40,
+  "n_groups": 32,
+  "n_candidates": 83
+ },
+ {
+  "file_name": "198.jpg",
+  "pred_count": 69,
+  "gt_count": 69,
+  "n_groups": 3,
+  "n_candidates": 120
+ },
+ {
+  "file_name": "1981.jpg",
+  "pred_count": 144,
+  "gt_count": 159,
+  "n_groups": 1,
+  "n_candidates": 219
+ },
+ {
+  "file_name": "1982.jpg",
+  "pred_count": 10,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 23
+ },
+ {
+  "file_name": "1983.jpg",
+  "pred_count": 146,
+  "gt_count": 172,
+  "n_groups": 1,
+  "n_candidates": 218
+ },
+ {
+  "file_name": "1984.jpg",
+  "pred_count": 49,
+  "gt_count": 35,
+  "n_groups": 12,
+  "n_candidates": 59
+ },
+ {
+  "file_name": "1986.jpg",
+  "pred_count": 202,
+  "gt_count": 248,
+  "n_groups": 1,
+  "n_candidates": 285
+ },
+ {
+  "file_name": "1987.jpg",
+  "pred_count": 76,
+  "gt_count": 95,
+  "n_groups": 1,
+  "n_candidates": 110
+ },
+ {
+  "file_name": "1988.jpg",
+  "pred_count": 21,
+  "gt_count": 20,
+  "n_groups": 1,
+  "n_candidates": 24
+ },
+ {
+  "file_name": "1989.jpg",
+  "pred_count": 129,
+  "gt_count": 148,
+  "n_groups": 1,
+  "n_candidates": 204
+ },
+ {
+  "file_name": "199.jpg",
+  "pred_count": 7,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 88
+ },
+ {
+  "file_name": "1990.jpg",
+  "pred_count": 379,
+  "gt_count": 476,
+  "n_groups": 1,
+  "n_candidates": 422
+ },
+ {
+  "file_name": "1991.jpg",
+  "pred_count": 96,
+  "gt_count": 119,
+  "n_groups": 1,
+  "n_candidates": 138
+ },
+ {
+  "file_name": "1992.jpg",
+  "pred_count": 19,
+  "gt_count": 18,
+  "n_groups": 2,
+  "n_candidates": 24
+ },
+ {
+  "file_name": "1993.jpg",
+  "pred_count": 47,
+  "gt_count": 48,
+  "n_groups": 17,
+  "n_candidates": 58
+ },
+ {
+  "file_name": "1994.jpg",
+  "pred_count": 285,
+  "gt_count": 313,
+  "n_groups": 1,
+  "n_candidates": 328
+ },
+ {
+  "file_name": "1996.jpg",
+  "pred_count": 33,
+  "gt_count": 24,
+  "n_groups": 5,
+  "n_candidates": 76
+ },
+ {
+  "file_name": "1997.jpg",
+  "pred_count": 18,
+  "gt_count": 14,
+  "n_groups": 1,
+  "n_candidates": 30
+ },
+ {
+  "file_name": "1999.jpg",
+  "pred_count": 73,
+  "gt_count": 83,
+  "n_groups": 2,
+  "n_candidates": 109
+ },
+ {
+  "file_name": "2.jpg",
+  "pred_count": 8,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 10
+ },
+ {
+  "file_name": "20.jpg",
+  "pred_count": 16,
+  "gt_count": 16,
+  "n_groups": 1,
+  "n_candidates": 48
+ },
+ {
+  "file_name": "200.jpg",
+  "pred_count": 10,
+  "gt_count": 9,
+  "n_groups": 1,
+  "n_candidates": 30
+ },
+ {
+  "file_name": "2000.jpg",
+  "pred_count": 18,
+  "gt_count": 18,
+  "n_groups": 1,
+  "n_candidates": 35
+ },
+ {
+  "file_name": "2001.jpg",
+  "pred_count": 94,
+  "gt_count": 100,
+  "n_groups": 1,
+  "n_candidates": 105
+ },
+ {
+  "file_name": "2003.jpg",
+  "pred_count": 30,
+  "gt_count": 20,
+  "n_groups": 18,
+  "n_candidates": 51
+ },
+ {
+  "file_name": "2004.jpg",
+  "pred_count": 79,
+  "gt_count": 226,
+  "n_groups": 7,
+  "n_candidates": 417
+ },
+ {
+  "file_name": "2005.jpg",
+  "pred_count": 20,
+  "gt_count": 140,
+  "n_groups": 1,
+  "n_candidates": 238
+ },
+ {
+  "file_name": "2007.jpg",
+  "pred_count": 61,
+  "gt_count": 108,
+  "n_groups": 6,
+  "n_candidates": 181
+ },
+ {
+  "file_name": "2008.jpg",
+  "pred_count": 33,
+  "gt_count": 42,
+  "n_groups": 7,
+  "n_candidates": 140
+ },
+ {
+  "file_name": "2009.jpg",
+  "pred_count": 112,
+  "gt_count": 198,
+  "n_groups": 2,
+  "n_candidates": 329
+ },
+ {
+  "file_name": "201.jpg",
+  "pred_count": 15,
+  "gt_count": 15,
+  "n_groups": 1,
+  "n_candidates": 25
+ },
+ {
+  "file_name": "2010.jpg",
+  "pred_count": 11,
+  "gt_count": 15,
+  "n_groups": 1,
+  "n_candidates": 40
+ },
+ {
+  "file_name": "2011.jpg",
+  "pred_count": 78,
+  "gt_count": 79,
+  "n_groups": 4,
+  "n_candidates": 219
+ },
+ {
+  "file_name": "2012.jpg",
+  "pred_count": 36,
+  "gt_count": 69,
+  "n_groups": 11,
+  "n_candidates": 128
+ },
+ {
+  "file_name": "2013.jpg",
+  "pred_count": 8,
+  "gt_count": 49,
+  "n_groups": 2,
+  "n_candidates": 107
+ },
+ {
+  "file_name": "2014.jpg",
+  "pred_count": 13,
+  "gt_count": 18,
+  "n_groups": 1,
+  "n_candidates": 59
+ },
+ {
+  "file_name": "2015.jpg",
+  "pred_count": 4,
+  "gt_count": 25,
+  "n_groups": 1,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2016.jpg",
+  "pred_count": 1,
+  "gt_count": 24,
+  "n_groups": 1,
+  "n_candidates": 26
+ },
+ {
+  "file_name": "2017.jpg",
+  "pred_count": 111,
+  "gt_count": 104,
+  "n_groups": 3,
+  "n_candidates": 198
+ },
+ {
+  "file_name": "2018.jpg",
+  "pred_count": 21,
+  "gt_count": 68,
+  "n_groups": 1,
+  "n_candidates": 170
+ },
+ {
+  "file_name": "2019.jpg",
+  "pred_count": 13,
+  "gt_count": 14,
+  "n_groups": 1,
+  "n_candidates": 91
+ },
+ {
+  "file_name": "202.jpg",
+  "pred_count": 1,
+  "gt_count": 9,
+  "n_groups": 1,
+  "n_candidates": 16
+ },
+ {
+  "file_name": "2020.jpg",
+  "pred_count": 7,
+  "gt_count": 36,
+  "n_groups": 1,
+  "n_candidates": 66
+ },
+ {
+  "file_name": "2021.jpg",
+  "pred_count": 39,
+  "gt_count": 44,
+  "n_groups": 12,
+  "n_candidates": 125
+ },
+ {
+  "file_name": "2025.jpg",
+  "pred_count": 52,
+  "gt_count": 60,
+  "n_groups": 6,
+  "n_candidates": 192
+ },
+ {
+  "file_name": "2026.jpg",
+  "pred_count": 2,
+  "gt_count": 16,
+  "n_groups": 1,
+  "n_candidates": 45
+ },
+ {
+  "file_name": "2027.jpg",
+  "pred_count": 10,
+  "gt_count": 23,
+  "n_groups": 1,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2028.jpg",
+  "pred_count": 19,
+  "gt_count": 19,
+  "n_groups": 4,
+  "n_candidates": 53
+ },
+ {
+  "file_name": "2029.jpg",
+  "pred_count": 35,
+  "gt_count": 79,
+  "n_groups": 9,
+  "n_candidates": 194
+ },
+ {
+  "file_name": "2030.jpg",
+  "pred_count": 26,
+  "gt_count": 29,
+  "n_groups": 10,
+  "n_candidates": 86
+ },
+ {
+  "file_name": "2031.jpg",
+  "pred_count": 21,
+  "gt_count": 31,
+  "n_groups": 2,
+  "n_candidates": 63
+ },
+ {
+  "file_name": "2032.jpg",
+  "pred_count": 11,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 102
+ },
+ {
+  "file_name": "2033.jpg",
+  "pred_count": 18,
+  "gt_count": 20,
+  "n_groups": 1,
+  "n_candidates": 49
+ },
+ {
+  "file_name": "2035.jpg",
+  "pred_count": 22,
+  "gt_count": 28,
+  "n_groups": 1,
+  "n_candidates": 93
+ },
+ {
+  "file_name": "2036.jpg",
+  "pred_count": 13,
+  "gt_count": 27,
+  "n_groups": 1,
+  "n_candidates": 56
+ },
+ {
+  "file_name": "2037.jpg",
+  "pred_count": 53,
+  "gt_count": 134,
+  "n_groups": 8,
+  "n_candidates": 184
+ },
+ {
+  "file_name": "2038.jpg",
+  "pred_count": 63,
+  "gt_count": 198,
+  "n_groups": 8,
+  "n_candidates": 330
+ },
+ {
+  "file_name": "2039.jpg",
+  "pred_count": 57,
+  "gt_count": 81,
+  "n_groups": 7,
+  "n_candidates": 61
+ },
+ {
+  "file_name": "204.jpg",
+  "pred_count": 12,
+  "gt_count": 10,
+  "n_groups": 2,
+  "n_candidates": 32
+ },
+ {
+  "file_name": "2040.jpg",
+  "pred_count": 26,
+  "gt_count": 32,
+  "n_groups": 14,
+  "n_candidates": 72
+ },
+ {
+  "file_name": "2041.jpg",
+  "pred_count": 31,
+  "gt_count": 88,
+  "n_groups": 10,
+  "n_candidates": 124
+ },
+ {
+  "file_name": "2042.jpg",
+  "pred_count": 26,
+  "gt_count": 81,
+  "n_groups": 3,
+  "n_candidates": 81
+ },
+ {
+  "file_name": "2043.jpg",
+  "pred_count": 68,
+  "gt_count": 90,
+  "n_groups": 6,
+  "n_candidates": 216
+ },
+ {
+  "file_name": "2044.jpg",
+  "pred_count": 21,
+  "gt_count": 27,
+  "n_groups": 1,
+  "n_candidates": 33
+ },
+ {
+  "file_name": "2045.jpg",
+  "pred_count": 8,
+  "gt_count": 22,
+  "n_groups": 2,
+  "n_candidates": 72
+ },
+ {
+  "file_name": "2046.jpg",
+  "pred_count": 7,
+  "gt_count": 20,
+  "n_groups": 1,
+  "n_candidates": 45
+ },
+ {
+  "file_name": "2047.jpg",
+  "pred_count": 3,
+  "gt_count": 30,
+  "n_groups": 1,
+  "n_candidates": 63
+ },
+ {
+  "file_name": "2048.jpg",
+  "pred_count": 16,
+  "gt_count": 43,
+  "n_groups": 1,
+  "n_candidates": 49
+ },
+ {
+  "file_name": "2049.jpg",
+  "pred_count": 75,
+  "gt_count": 79,
+  "n_groups": 1,
+  "n_candidates": 193
+ },
+ {
+  "file_name": "205.jpg",
+  "pred_count": 21,
+  "gt_count": 22,
+  "n_groups": 3,
+  "n_candidates": 35
+ },
+ {
+  "file_name": "2051.jpg",
+  "pred_count": 16,
+  "gt_count": 15,
+  "n_groups": 1,
+  "n_candidates": 55
+ },
+ {
+  "file_name": "2052.jpg",
+  "pred_count": 4,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 28
+ },
+ {
+  "file_name": "2053.jpg",
+  "pred_count": 18,
+  "gt_count": 47,
+  "n_groups": 1,
+  "n_candidates": 89
+ },
+ {
+  "file_name": "2054.jpg",
+  "pred_count": 26,
+  "gt_count": 63,
+  "n_groups": 1,
+  "n_candidates": 102
+ },
+ {
+  "file_name": "2057.jpg",
+  "pred_count": 15,
+  "gt_count": 15,
+  "n_groups": 4,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2058.jpg",
+  "pred_count": 24,
+  "gt_count": 26,
+  "n_groups": 1,
+  "n_candidates": 39
+ },
+ {
+  "file_name": "2059.jpg",
+  "pred_count": 21,
+  "gt_count": 28,
+  "n_groups": 1,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2060.jpg",
+  "pred_count": 22,
+  "gt_count": 19,
+  "n_groups": 8,
+  "n_candidates": 43
+ },
+ {
+  "file_name": "2061.jpg",
+  "pred_count": 20,
+  "gt_count": 21,
+  "n_groups": 5,
+  "n_candidates": 66
+ },
+ {
+  "file_name": "2062.jpg",
+  "pred_count": 7,
+  "gt_count": 15,
+  "n_groups": 2,
+  "n_candidates": 51
+ },
+ {
+  "file_name": "2063.jpg",
+  "pred_count": 20,
+  "gt_count": 21,
+  "n_groups": 1,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2064.jpg",
+  "pred_count": 7,
+  "gt_count": 17,
+  "n_groups": 1,
+  "n_candidates": 23
+ },
+ {
+  "file_name": "2065.jpg",
+  "pred_count": 26,
+  "gt_count": 50,
+  "n_groups": 3,
+  "n_candidates": 40
+ },
+ {
+  "file_name": "2068.jpg",
+  "pred_count": 19,
+  "gt_count": 24,
+  "n_groups": 1,
+  "n_candidates": 65
+ },
+ {
+  "file_name": "2069.jpg",
+  "pred_count": 27,
+  "gt_count": 28,
+  "n_groups": 2,
+  "n_candidates": 51
+ },
+ {
+  "file_name": "207.jpg",
+  "pred_count": 10,
+  "gt_count": 11,
+  "n_groups": 3,
+  "n_candidates": 25
+ },
+ {
+  "file_name": "2070.jpg",
+  "pred_count": 5,
+  "gt_count": 23,
+  "n_groups": 1,
+  "n_candidates": 62
+ },
+ {
+  "file_name": "2071.jpg",
+  "pred_count": 21,
+  "gt_count": 16,
+  "n_groups": 6,
+  "n_candidates": 43
+ },
+ {
+  "file_name": "2072.jpg",
+  "pred_count": 13,
+  "gt_count": 18,
+  "n_groups": 6,
+  "n_candidates": 42
+ },
+ {
+  "file_name": "2073.jpg",
+  "pred_count": 14,
+  "gt_count": 13,
+  "n_groups": 5,
+  "n_candidates": 48
+ },
+ {
+  "file_name": "2074.jpg",
+  "pred_count": 22,
+  "gt_count": 24,
+  "n_groups": 2,
+  "n_candidates": 49
+ },
+ {
+  "file_name": "2076.jpg",
+  "pred_count": 3,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 17
+ },
+ {
+  "file_name": "2079.jpg",
+  "pred_count": 12,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 49
+ },
+ {
+  "file_name": "208.jpg",
+  "pred_count": 67,
+  "gt_count": 68,
+  "n_groups": 1,
+  "n_candidates": 105
+ },
+ {
+  "file_name": "2080.jpg",
+  "pred_count": 26,
+  "gt_count": 24,
+  "n_groups": 6,
+  "n_candidates": 34
+ },
+ {
+  "file_name": "2081.jpg",
+  "pred_count": 14,
+  "gt_count": 13,
+  "n_groups": 3,
+  "n_candidates": 44
+ },
+ {
+  "file_name": "2083.jpg",
+  "pred_count": 18,
+  "gt_count": 8,
+  "n_groups": 6,
+  "n_candidates": 41
+ },
+ {
+  "file_name": "2084.jpg",
+  "pred_count": 20,
+  "gt_count": 20,
+  "n_groups": 1,
+  "n_candidates": 30
+ },
+ {
+  "file_name": "2085.jpg",
+  "pred_count": 17,
+  "gt_count": 17,
+  "n_groups": 3,
+  "n_candidates": 24
+ },
+ {
+  "file_name": "2086.jpg",
+  "pred_count": 14,
+  "gt_count": 14,
+  "n_groups": 2,
+  "n_candidates": 35
+ },
+ {
+  "file_name": "2087.jpg",
+  "pred_count": 34,
+  "gt_count": 36,
+  "n_groups": 3,
+  "n_candidates": 47
+ },
+ {
+  "file_name": "2088.jpg",
+  "pred_count": 20,
+  "gt_count": 10,
+  "n_groups": 1,
+  "n_candidates": 52
+ },
+ {
+  "file_name": "2089.jpg",
+  "pred_count": 32,
+  "gt_count": 31,
+  "n_groups": 6,
+  "n_candidates": 61
+ },
+ {
+  "file_name": "209.jpg",
+  "pred_count": 32,
+  "gt_count": 33,
+  "n_groups": 2,
+  "n_candidates": 54
+ },
+ {
+  "file_name": "2090.jpg",
+  "pred_count": 11,
+  "gt_count": 13,
+  "n_groups": 4,
+  "n_candidates": 27
+ },
+ {
+  "file_name": "2091.jpg",
+  "pred_count": 13,
+  "gt_count": 15,
+  "n_groups": 2,
+  "n_candidates": 13
+ },
+ {
+  "file_name": "2092.jpg",
+  "pred_count": 34,
+  "gt_count": 41,
+  "n_groups": 5,
+  "n_candidates": 79
+ },
+ {
+  "file_name": "2093.jpg",
+  "pred_count": 16,
+  "gt_count": 14,
+  "n_groups": 2,
+  "n_candidates": 17
+ },
+ {
+  "file_name": "2094.jpg",
+  "pred_count": 19,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 49
+ },
+ {
+  "file_name": "2095.jpg",
+  "pred_count": 10,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 55
+ },
+ {
+  "file_name": "2096.jpg",
+  "pred_count": 20,
+  "gt_count": 19,
+  "n_groups": 2,
+  "n_candidates": 31
+ },
+ {
+  "file_name": "2097.jpg",
+  "pred_count": 16,
+  "gt_count": 14,
+  "n_groups": 2,
+  "n_candidates": 45
+ },
+ {
+  "file_name": "2098.jpg",
+  "pred_count": 11,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 15
+ },
+ {
+  "file_name": "2099.jpg",
+  "pred_count": 19,
+  "gt_count": 19,
+  "n_groups": 2,
+  "n_candidates": 25
+ },
+ {
+  "file_name": "21.jpg",
+  "pred_count": 8,
+  "gt_count": 8,
+  "n_groups": 2,
+  "n_candidates": 30
+ },
+ {
+  "file_name": "210.jpg",
+  "pred_count": 10,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 55
+ },
+ {
+  "file_name": "2101.jpg",
+  "pred_count": 28,
+  "gt_count": 20,
+  "n_groups": 3,
+  "n_candidates": 44
+ },
+ {
+  "file_name": "2102.jpg",
+  "pred_count": 24,
+  "gt_count": 27,
+  "n_groups": 4,
+  "n_candidates": 43
+ },
+ {
+  "file_name": "2103.jpg",
+  "pred_count": 10,
+  "gt_count": 10,
+  "n_groups": 2,
+  "n_candidates": 50
+ },
+ {
+  "file_name": "2104.jpg",
+  "pred_count": 23,
+  "gt_count": 21,
+  "n_groups": 4,
+  "n_candidates": 32
+ },
+ {
+  "file_name": "2106.jpg",
+  "pred_count": 49,
+  "gt_count": 121,
+  "n_groups": 8,
+  "n_candidates": 54
+ },
+ {
+  "file_name": "2107.jpg",
+  "pred_count": 28,
+  "gt_count": 15,
+  "n_groups": 2,
+  "n_candidates": 36
+ },
+ {
+  "file_name": "2108.jpg",
+  "pred_count": 13,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 47
+ },
+ {
+  "file_name": "2109.jpg",
+  "pred_count": 10,
+  "gt_count": 10,
+  "n_groups": 1,
+  "n_candidates": 53
+ },
+ {
+  "file_name": "211.jpg",
+  "pred_count": 13,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 32
+ },
+ {
+  "file_name": "2110.jpg",
+  "pred_count": 14,
+  "gt_count": 13,
+  "n_groups": 3,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2111.jpg",
+  "pred_count": 12,
+  "gt_count": 10,
+  "n_groups": 1,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2112.jpg",
+  "pred_count": 8,
+  "gt_count": 10,
+  "n_groups": 2,
+  "n_candidates": 41
+ },
+ {
+  "file_name": "2113.jpg",
+  "pred_count": 24,
+  "gt_count": 29,
+  "n_groups": 6,
+  "n_candidates": 43
+ },
+ {
+  "file_name": "2114.jpg",
+  "pred_count": 19,
+  "gt_count": 27,
+  "n_groups": 2,
+  "n_candidates": 66
+ },
+ {
+  "file_name": "2115.jpg",
+  "pred_count": 50,
+  "gt_count": 46,
+  "n_groups": 3,
+  "n_candidates": 67
+ },
+ {
+  "file_name": "2116.jpg",
+  "pred_count": 39,
+  "gt_count": 21,
+  "n_groups": 6,
+  "n_candidates": 59
+ },
+ {
+  "file_name": "2117.jpg",
+  "pred_count": 11,
+  "gt_count": 10,
+  "n_groups": 2,
+  "n_candidates": 20
+ },
+ {
+  "file_name": "2118.jpg",
+  "pred_count": 14,
+  "gt_count": 12,
+  "n_groups": 3,
+  "n_candidates": 36
+ },
+ {
+  "file_name": "2119.jpg",
+  "pred_count": 39,
+  "gt_count": 24,
+  "n_groups": 2,
+  "n_candidates": 50
+ },
+ {
+  "file_name": "212.jpg",
+  "pred_count": 43,
+  "gt_count": 51,
+  "n_groups": 2,
+  "n_candidates": 50
+ },
+ {
+  "file_name": "2121.jpg",
+  "pred_count": 25,
+  "gt_count": 13,
+  "n_groups": 1,
+  "n_candidates": 44
+ },
+ {
+  "file_name": "2122.jpg",
+  "pred_count": 11,
+  "gt_count": 9,
+  "n_groups": 2,
+  "n_candidates": 30
+ },
+ {
+  "file_name": "2123.jpg",
+  "pred_count": 18,
+  "gt_count": 20,
+  "n_groups": 1,
+  "n_candidates": 36
+ },
+ {
+  "file_name": "2124.jpg",
+  "pred_count": 8,
+  "gt_count": 9,
+  "n_groups": 1,
+  "n_candidates": 16
+ },
+ {
+  "file_name": "2127.jpg",
+  "pred_count": 14,
+  "gt_count": 14,
+  "n_groups": 1,
+  "n_candidates": 38
+ },
+ {
+  "file_name": "2128.jpg",
+  "pred_count": 15,
+  "gt_count": 12,
+  "n_groups": 2,
+  "n_candidates": 29
+ },
+ {
+  "file_name": "2129.jpg",
+  "pred_count": 21,
+  "gt_count": 20,
+  "n_groups": 1,
+  "n_candidates": 34
+ },
+ {
+  "file_name": "213.jpg",
+  "pred_count": 193,
+  "gt_count": 169,
+  "n_groups": 27,
+  "n_candidates": 231
+ },
+ {
+  "file_name": "2130.jpg",
+  "pred_count": 16,
+  "gt_count": 16,
+  "n_groups": 4,
+  "n_candidates": 27
+ },
+ {
+  "file_name": "2131.jpg",
+  "pred_count": 18,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 46
+ },
+ {
+  "file_name": "2132.jpg",
+  "pred_count": 11,
+  "gt_count": 10,
+  "n_groups": 2,
+  "n_candidates": 28
+ },
+ {
+  "file_name": "2133.jpg",
+  "pred_count": 34,
+  "gt_count": 23,
+  "n_groups": 4,
+  "n_candidates": 52
+ },
+ {
+  "file_name": "2134.jpg",
+  "pred_count": 30,
+  "gt_count": 38,
+  "n_groups": 2,
+  "n_candidates": 52
+ },
+ {
+  "file_name": "2135.jpg",
+  "pred_count": 10,
+  "gt_count": 17,
+  "n_groups": 1,
+  "n_candidates": 38
+ },
+ {
+  "file_name": "2136.jpg",
+  "pred_count": 11,
+  "gt_count": 11,
+  "n_groups": 2,
+  "n_candidates": 20
+ },
+ {
+  "file_name": "2137.jpg",
+  "pred_count": 63,
+  "gt_count": 72,
+  "n_groups": 9,
+  "n_candidates": 105
+ },
+ {
+  "file_name": "2138.jpg",
+  "pred_count": 31,
+  "gt_count": 29,
+  "n_groups": 8,
+  "n_candidates": 43
+ },
+ {
+  "file_name": "2139.jpg",
+  "pred_count": 47,
+  "gt_count": 61,
+  "n_groups": 2,
+  "n_candidates": 134
+ },
+ {
+  "file_name": "214.jpg",
+  "pred_count": 42,
+  "gt_count": 64,
+  "n_groups": 4,
+  "n_candidates": 74
+ },
+ {
+  "file_name": "2140.jpg",
+  "pred_count": 20,
+  "gt_count": 21,
+  "n_groups": 2,
+  "n_candidates": 29
+ },
+ {
+  "file_name": "2141.jpg",
+  "pred_count": 13,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 22
+ },
+ {
+  "file_name": "2142.jpg",
+  "pred_count": 35,
+  "gt_count": 35,
+  "n_groups": 17,
+  "n_candidates": 53
+ },
+ {
+  "file_name": "2143.jpg",
+  "pred_count": 10,
+  "gt_count": 9,
+  "n_groups": 2,
+  "n_candidates": 35
+ },
+ {
+  "file_name": "2145.jpg",
+  "pred_count": 13,
+  "gt_count": 14,
+  "n_groups": 1,
+  "n_candidates": 42
+ },
+ {
+  "file_name": "2146.jpg",
+  "pred_count": 23,
+  "gt_count": 23,
+  "n_groups": 1,
+  "n_candidates": 50
+ },
+ {
+  "file_name": "2147.jpg",
+  "pred_count": 39,
+  "gt_count": 37,
+  "n_groups": 13,
+  "n_candidates": 66
+ },
+ {
+  "file_name": "215.jpg",
+  "pred_count": 188,
+  "gt_count": 259,
+  "n_groups": 9,
+  "n_candidates": 252
+ },
+ {
+  "file_name": "2150.jpg",
+  "pred_count": 9,
+  "gt_count": 9,
+  "n_groups": 1,
+  "n_candidates": 29
+ },
+ {
+  "file_name": "2151.jpg",
+  "pred_count": 12,
+  "gt_count": 11,
+  "n_groups": 2,
+  "n_candidates": 53
+ },
+ {
+  "file_name": "2152.jpg",
+  "pred_count": 23,
+  "gt_count": 22,
+  "n_groups": 1,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2153.jpg",
+  "pred_count": 13,
+  "gt_count": 12,
+  "n_groups": 2,
+  "n_candidates": 23
+ },
+ {
+  "file_name": "2155.jpg",
+  "pred_count": 21,
+  "gt_count": 18,
+  "n_groups": 2,
+  "n_candidates": 30
+ },
+ {
+  "file_name": "2156.jpg",
+  "pred_count": 68,
+  "gt_count": 68,
+  "n_groups": 6,
+  "n_candidates": 110
+ },
+ {
+  "file_name": "2157.jpg",
+  "pred_count": 98,
+  "gt_count": 116,
+  "n_groups": 1,
+  "n_candidates": 142
+ },
+ {
+  "file_name": "2159.jpg",
+  "pred_count": 247,
+  "gt_count": 621,
+  "n_groups": 8,
+  "n_candidates": 270
+ },
+ {
+  "file_name": "216.jpg",
+  "pred_count": 23,
+  "gt_count": 46,
+  "n_groups": 1,
+  "n_candidates": 45
+ },
+ {
+  "file_name": "2162.jpg",
+  "pred_count": 30,
+  "gt_count": 34,
+  "n_groups": 1,
+  "n_candidates": 60
+ },
+ {
+  "file_name": "2163.jpg",
+  "pred_count": 12,
+  "gt_count": 13,
+  "n_groups": 2,
+  "n_candidates": 39
+ },
+ {
+  "file_name": "2164.jpg",
+  "pred_count": 25,
+  "gt_count": 23,
+  "n_groups": 2,
+  "n_candidates": 49
+ },
+ {
+  "file_name": "2165.jpg",
+  "pred_count": 24,
+  "gt_count": 24,
+  "n_groups": 1,
+  "n_candidates": 50
+ },
+ {
+  "file_name": "2166.jpg",
+  "pred_count": 41,
+  "gt_count": 119,
+  "n_groups": 8,
+  "n_candidates": 64
+ },
+ {
+  "file_name": "2168.jpg",
+  "pred_count": 124,
+  "gt_count": 175,
+  "n_groups": 1,
+  "n_candidates": 152
+ },
+ {
+  "file_name": "217.jpg",
+  "pred_count": 59,
+  "gt_count": 60,
+  "n_groups": 1,
+  "n_candidates": 130
+ },
+ {
+  "file_name": "2170.jpg",
+  "pred_count": 125,
+  "gt_count": 147,
+  "n_groups": 3,
+  "n_candidates": 146
+ },
+ {
+  "file_name": "2171.jpg",
+  "pred_count": 20,
+  "gt_count": 20,
+  "n_groups": 1,
+  "n_candidates": 34
+ },
+ {
+  "file_name": "2172.jpg",
+  "pred_count": 44,
+  "gt_count": 86,
+  "n_groups": 3,
+  "n_candidates": 124
+ },
+ {
+  "file_name": "2173.jpg",
+  "pred_count": 96,
+  "gt_count": 169,
+  "n_groups": 3,
+  "n_candidates": 127
+ },
+ {
+  "file_name": "2174.jpg",
+  "pred_count": 43,
+  "gt_count": 41,
+  "n_groups": 12,
+  "n_candidates": 65
+ },
+ {
+  "file_name": "2175.jpg",
+  "pred_count": 56,
+  "gt_count": 91,
+  "n_groups": 3,
+  "n_candidates": 104
+ },
+ {
+  "file_name": "2176.jpg",
+  "pred_count": 46,
+  "gt_count": 73,
+  "n_groups": 4,
+  "n_candidates": 282
+ },
+ {
+  "file_name": "2177.jpg",
+  "pred_count": 31,
+  "gt_count": 27,
+  "n_groups": 4,
+  "n_candidates": 55
+ },
+ {
+  "file_name": "2178.jpg",
+  "pred_count": 10,
+  "gt_count": 10,
+  "n_groups": 1,
+  "n_candidates": 45
+ },
+ {
+  "file_name": "2179.jpg",
+  "pred_count": 16,
+  "gt_count": 16,
+  "n_groups": 1,
+  "n_candidates": 22
+ },
+ {
+  "file_name": "218.jpg",
+  "pred_count": 52,
+  "gt_count": 58,
+  "n_groups": 1,
+  "n_candidates": 61
+ },
+ {
+  "file_name": "2180.jpg",
+  "pred_count": 214,
+  "gt_count": 223,
+  "n_groups": 5,
+  "n_candidates": 228
+ },
+ {
+  "file_name": "2181.jpg",
+  "pred_count": 13,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 41
+ },
+ {
+  "file_name": "2182.jpg",
+  "pred_count": 42,
+  "gt_count": 39,
+  "n_groups": 3,
+  "n_candidates": 61
+ },
+ {
+  "file_name": "2184.jpg",
+  "pred_count": 19,
+  "gt_count": 33,
+  "n_groups": 1,
+  "n_candidates": 114
+ },
+ {
+  "file_name": "2189.jpg",
+  "pred_count": 7,
+  "gt_count": 8,
+  "n_groups": 4,
+  "n_candidates": 38
+ },
+ {
+  "file_name": "219.jpg",
+  "pred_count": 46,
+  "gt_count": 47,
+  "n_groups": 1,
+  "n_candidates": 69
+ },
+ {
+  "file_name": "2190.jpg",
+  "pred_count": 25,
+  "gt_count": 23,
+  "n_groups": 2,
+  "n_candidates": 42
+ },
+ {
+  "file_name": "2191.jpg",
+  "pred_count": 44,
+  "gt_count": 42,
+  "n_groups": 15,
+  "n_candidates": 74
+ },
+ {
+  "file_name": "2192.jpg",
+  "pred_count": 23,
+  "gt_count": 24,
+  "n_groups": 2,
+  "n_candidates": 46
+ },
+ {
+  "file_name": "2193.jpg",
+  "pred_count": 34,
+  "gt_count": 32,
+  "n_groups": 15,
+  "n_candidates": 66
+ },
+ {
+  "file_name": "2194.jpg",
+  "pred_count": 36,
+  "gt_count": 38,
+  "n_groups": 4,
+  "n_candidates": 76
+ },
+ {
+  "file_name": "2195.jpg",
+  "pred_count": 15,
+  "gt_count": 13,
+  "n_groups": 1,
+  "n_candidates": 27
+ },
+ {
+  "file_name": "2197.jpg",
+  "pred_count": 87,
+  "gt_count": 90,
+  "n_groups": 1,
+  "n_candidates": 115
+ },
+ {
+  "file_name": "2198.jpg",
+  "pred_count": 28,
+  "gt_count": 27,
+  "n_groups": 1,
+  "n_candidates": 74
+ },
+ {
+  "file_name": "2199.jpg",
+  "pred_count": 13,
+  "gt_count": 13,
+  "n_groups": 1,
+  "n_candidates": 26
+ },
+ {
+  "file_name": "22.jpg",
+  "pred_count": 29,
+  "gt_count": 30,
+  "n_groups": 6,
+  "n_candidates": 57
+ },
+ {
+  "file_name": "220.jpg",
+  "pred_count": 45,
+  "gt_count": 59,
+  "n_groups": 1,
+  "n_candidates": 92
+ },
+ {
+  "file_name": "2202.jpg",
+  "pred_count": 96,
+  "gt_count": 99,
+  "n_groups": 2,
+  "n_candidates": 118
+ },
+ {
+  "file_name": "2203.jpg",
+  "pred_count": 24,
+  "gt_count": 22,
+  "n_groups": 2,
+  "n_candidates": 30
+ },
+ {
+  "file_name": "2204.jpg",
+  "pred_count": 9,
+  "gt_count": 9,
+  "n_groups": 1,
+  "n_candidates": 18
+ },
+ {
+  "file_name": "2206.jpg",
+  "pred_count": 88,
+  "gt_count": 88,
+  "n_groups": 2,
+  "n_candidates": 131
+ },
+ {
+  "file_name": "2207.jpg",
+  "pred_count": 10,
+  "gt_count": 10,
+  "n_groups": 1,
+  "n_candidates": 40
+ },
+ {
+  "file_name": "2208.jpg",
+  "pred_count": 12,
+  "gt_count": 13,
+  "n_groups": 2,
+  "n_candidates": 36
+ },
+ {
+  "file_name": "2209.jpg",
+  "pred_count": 12,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 26
+ },
+ {
+  "file_name": "221.jpg",
+  "pred_count": 39,
+  "gt_count": 42,
+  "n_groups": 2,
+  "n_candidates": 52
+ },
+ {
+  "file_name": "2210.jpg",
+  "pred_count": 43,
+  "gt_count": 41,
+  "n_groups": 12,
+  "n_candidates": 61
+ },
+ {
+  "file_name": "2211.jpg",
+  "pred_count": 48,
+  "gt_count": 49,
+  "n_groups": 11,
+  "n_candidates": 68
+ },
+ {
+  "file_name": "2213.jpg",
+  "pred_count": 31,
+  "gt_count": 97,
+  "n_groups": 6,
+  "n_candidates": 58
+ },
+ {
+  "file_name": "2215.jpg",
+  "pred_count": 56,
+  "gt_count": 55,
+  "n_groups": 5,
+  "n_candidates": 74
+ },
+ {
+  "file_name": "2216.jpg",
+  "pred_count": 34,
+  "gt_count": 36,
+  "n_groups": 3,
+  "n_candidates": 54
+ },
+ {
+  "file_name": "2217.jpg",
+  "pred_count": 28,
+  "gt_count": 25,
+  "n_groups": 2,
+  "n_candidates": 46
+ },
+ {
+  "file_name": "2218.jpg",
+  "pred_count": 15,
+  "gt_count": 15,
+  "n_groups": 2,
+  "n_candidates": 34
+ },
+ {
+  "file_name": "2219.jpg",
+  "pred_count": 188,
+  "gt_count": 356,
+  "n_groups": 6,
+  "n_candidates": 215
+ },
+ {
+  "file_name": "222.jpg",
+  "pred_count": 64,
+  "gt_count": 65,
+  "n_groups": 1,
+  "n_candidates": 135
+ },
+ {
+  "file_name": "2220.jpg",
+  "pred_count": 17,
+  "gt_count": 16,
+  "n_groups": 2,
+  "n_candidates": 39
+ },
+ {
+  "file_name": "2223.jpg",
+  "pred_count": 30,
+  "gt_count": 30,
+  "n_groups": 15,
+  "n_candidates": 57
+ },
+ {
+  "file_name": "2225.jpg",
+  "pred_count": 21,
+  "gt_count": 19,
+  "n_groups": 1,
+  "n_candidates": 30
+ },
+ {
+  "file_name": "2226.jpg",
+  "pred_count": 50,
+  "gt_count": 47,
+  "n_groups": 5,
+  "n_candidates": 92
+ },
+ {
+  "file_name": "2227.jpg",
+  "pred_count": 9,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 33
+ },
+ {
+  "file_name": "2229.jpg",
+  "pred_count": 83,
+  "gt_count": 111,
+  "n_groups": 3,
+  "n_candidates": 183
+ },
+ {
+  "file_name": "2232.jpg",
+  "pred_count": 89,
+  "gt_count": 96,
+  "n_groups": 3,
+  "n_candidates": 120
+ },
+ {
+  "file_name": "2233.jpg",
+  "pred_count": 63,
+  "gt_count": 64,
+  "n_groups": 2,
+  "n_candidates": 96
+ },
+ {
+  "file_name": "2234.jpg",
+  "pred_count": 11,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 26
+ },
+ {
+  "file_name": "2235.jpg",
+  "pred_count": 15,
+  "gt_count": 16,
+  "n_groups": 1,
+  "n_candidates": 138
+ },
+ {
+  "file_name": "2236.jpg",
+  "pred_count": 91,
+  "gt_count": 98,
+  "n_groups": 1,
+  "n_candidates": 123
+ },
+ {
+  "file_name": "2237.jpg",
+  "pred_count": 22,
+  "gt_count": 20,
+  "n_groups": 3,
+  "n_candidates": 42
+ },
+ {
+  "file_name": "2238.jpg",
+  "pred_count": 25,
+  "gt_count": 26,
+  "n_groups": 3,
+  "n_candidates": 48
+ },
+ {
+  "file_name": "2239.jpg",
+  "pred_count": 17,
+  "gt_count": 17,
+  "n_groups": 1,
+  "n_candidates": 33
+ },
+ {
+  "file_name": "224.jpg",
+  "pred_count": 20,
+  "gt_count": 20,
+  "n_groups": 1,
+  "n_candidates": 54
+ },
+ {
+  "file_name": "2240.jpg",
+  "pred_count": 55,
+  "gt_count": 54,
+  "n_groups": 3,
+  "n_candidates": 97
+ },
+ {
+  "file_name": "2241.jpg",
+  "pred_count": 26,
+  "gt_count": 25,
+  "n_groups": 2,
+  "n_candidates": 49
+ },
+ {
+  "file_name": "2243.jpg",
+  "pred_count": 265,
+  "gt_count": 544,
+  "n_groups": 1,
+  "n_candidates": 296
+ },
+ {
+  "file_name": "2244.jpg",
+  "pred_count": 15,
+  "gt_count": 12,
+  "n_groups": 2,
+  "n_candidates": 43
+ },
+ {
+  "file_name": "2245.jpg",
+  "pred_count": 34,
+  "gt_count": 82,
+  "n_groups": 11,
+  "n_candidates": 61
+ },
+ {
+  "file_name": "2246.jpg",
+  "pred_count": 39,
+  "gt_count": 37,
+  "n_groups": 15,
+  "n_candidates": 71
+ },
+ {
+  "file_name": "2247.jpg",
+  "pred_count": 19,
+  "gt_count": 16,
+  "n_groups": 1,
+  "n_candidates": 29
+ },
+ {
+  "file_name": "2248.jpg",
+  "pred_count": 54,
+  "gt_count": 53,
+  "n_groups": 4,
+  "n_candidates": 77
+ },
+ {
+  "file_name": "2252.jpg",
+  "pred_count": 85,
+  "gt_count": 82,
+  "n_groups": 3,
+  "n_candidates": 132
+ },
+ {
+  "file_name": "2255.jpg",
+  "pred_count": 22,
+  "gt_count": 20,
+  "n_groups": 1,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2256.jpg",
+  "pred_count": 59,
+  "gt_count": 59,
+  "n_groups": 1,
+  "n_candidates": 97
+ },
+ {
+  "file_name": "2257.jpg",
+  "pred_count": 25,
+  "gt_count": 23,
+  "n_groups": 1,
+  "n_candidates": 58
+ },
+ {
+  "file_name": "2258.jpg",
+  "pred_count": 75,
+  "gt_count": 75,
+  "n_groups": 2,
+  "n_candidates": 99
+ },
+ {
+  "file_name": "2259.jpg",
+  "pred_count": 167,
+  "gt_count": 174,
+  "n_groups": 2,
+  "n_candidates": 210
+ },
+ {
+  "file_name": "226.jpg",
+  "pred_count": 59,
+  "gt_count": 78,
+  "n_groups": 1,
+  "n_candidates": 109
+ },
+ {
+  "file_name": "2260.jpg",
+  "pred_count": 10,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 77
+ },
+ {
+  "file_name": "2261.jpg",
+  "pred_count": 42,
+  "gt_count": 174,
+  "n_groups": 5,
+  "n_candidates": 107
+ },
+ {
+  "file_name": "2262.jpg",
+  "pred_count": 9,
+  "gt_count": 9,
+  "n_groups": 2,
+  "n_candidates": 12
+ },
+ {
+  "file_name": "2264.jpg",
+  "pred_count": 12,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 23
+ },
+ {
+  "file_name": "2265.jpg",
+  "pred_count": 57,
+  "gt_count": 57,
+  "n_groups": 5,
+  "n_candidates": 78
+ },
+ {
+  "file_name": "2267.jpg",
+  "pred_count": 9,
+  "gt_count": 9,
+  "n_groups": 2,
+  "n_candidates": 23
+ },
+ {
+  "file_name": "2268.jpg",
+  "pred_count": 75,
+  "gt_count": 74,
+  "n_groups": 3,
+  "n_candidates": 91
+ },
+ {
+  "file_name": "2269.jpg",
+  "pred_count": 11,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 27
+ },
+ {
+  "file_name": "227.jpg",
+  "pred_count": 24,
+  "gt_count": 25,
+  "n_groups": 1,
+  "n_candidates": 88
+ },
+ {
+  "file_name": "2270.jpg",
+  "pred_count": 50,
+  "gt_count": 50,
+  "n_groups": 4,
+  "n_candidates": 106
+ },
+ {
+  "file_name": "2271.jpg",
+  "pred_count": 49,
+  "gt_count": 42,
+  "n_groups": 3,
+  "n_candidates": 91
+ },
+ {
+  "file_name": "2272.jpg",
+  "pred_count": 17,
+  "gt_count": 15,
+  "n_groups": 1,
+  "n_candidates": 32
+ },
+ {
+  "file_name": "2273.jpg",
+  "pred_count": 139,
+  "gt_count": 165,
+  "n_groups": 2,
+  "n_candidates": 168
+ },
+ {
+  "file_name": "2274.jpg",
+  "pred_count": 66,
+  "gt_count": 66,
+  "n_groups": 3,
+  "n_candidates": 78
+ },
+ {
+  "file_name": "2275.jpg",
+  "pred_count": 40,
+  "gt_count": 38,
+  "n_groups": 16,
+  "n_candidates": 56
+ },
+ {
+  "file_name": "2276.jpg",
+  "pred_count": 31,
+  "gt_count": 30,
+  "n_groups": 7,
+  "n_candidates": 66
+ },
+ {
+  "file_name": "2277.jpg",
+  "pred_count": 50,
+  "gt_count": 49,
+  "n_groups": 6,
+  "n_candidates": 62
+ },
+ {
+  "file_name": "2279.jpg",
+  "pred_count": 38,
+  "gt_count": 37,
+  "n_groups": 12,
+  "n_candidates": 61
+ },
+ {
+  "file_name": "228.jpg",
+  "pred_count": 38,
+  "gt_count": 44,
+  "n_groups": 3,
+  "n_candidates": 45
+ },
+ {
+  "file_name": "2280.jpg",
+  "pred_count": 107,
+  "gt_count": 157,
+  "n_groups": 3,
+  "n_candidates": 143
+ },
+ {
+  "file_name": "2281.jpg",
+  "pred_count": 22,
+  "gt_count": 22,
+  "n_groups": 2,
+  "n_candidates": 46
+ },
+ {
+  "file_name": "2282.jpg",
+  "pred_count": 44,
+  "gt_count": 47,
+  "n_groups": 2,
+  "n_candidates": 116
+ },
+ {
+  "file_name": "2284.jpg",
+  "pred_count": 24,
+  "gt_count": 25,
+  "n_groups": 1,
+  "n_candidates": 235
+ },
+ {
+  "file_name": "2285.jpg",
+  "pred_count": 51,
+  "gt_count": 48,
+  "n_groups": 8,
+  "n_candidates": 65
+ },
+ {
+  "file_name": "2286.jpg",
+  "pred_count": 14,
+  "gt_count": 14,
+  "n_groups": 1,
+  "n_candidates": 31
+ },
+ {
+  "file_name": "2287.jpg",
+  "pred_count": 103,
+  "gt_count": 195,
+  "n_groups": 1,
+  "n_candidates": 174
+ },
+ {
+  "file_name": "2288.jpg",
+  "pred_count": 20,
+  "gt_count": 18,
+  "n_groups": 1,
+  "n_candidates": 42
+ },
+ {
+  "file_name": "2289.jpg",
+  "pred_count": 1,
+  "gt_count": 15,
+  "n_groups": 1,
+  "n_candidates": 1
+ },
+ {
+  "file_name": "229.jpg",
+  "pred_count": 24,
+  "gt_count": 25,
+  "n_groups": 1,
+  "n_candidates": 58
+ },
+ {
+  "file_name": "2291.jpg",
+  "pred_count": 2,
+  "gt_count": 70,
+  "n_groups": 2,
+  "n_candidates": 16
+ },
+ {
+  "file_name": "2293.jpg",
+  "pred_count": 1,
+  "gt_count": 59,
+  "n_groups": 1,
+  "n_candidates": 4
+ },
+ {
+  "file_name": "2298.jpg",
+  "pred_count": 8,
+  "gt_count": 8,
+  "n_groups": 3,
+  "n_candidates": 14
+ },
+ {
+  "file_name": "23.jpg",
+  "pred_count": 11,
+  "gt_count": 10,
+  "n_groups": 2,
+  "n_candidates": 22
+ },
+ {
+  "file_name": "2300.jpg",
+  "pred_count": 8,
+  "gt_count": 19,
+  "n_groups": 2,
+  "n_candidates": 20
+ },
+ {
+  "file_name": "2301.jpg",
+  "pred_count": 1,
+  "gt_count": 14,
+  "n_groups": 1,
+  "n_candidates": 43
+ },
+ {
+  "file_name": "2302.jpg",
+  "pred_count": 8,
+  "gt_count": 11,
+  "n_groups": 3,
+  "n_candidates": 28
+ },
+ {
+  "file_name": "2303.jpg",
+  "pred_count": 7,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 26
+ },
+ {
+  "file_name": "2304.jpg",
+  "pred_count": 4,
+  "gt_count": 9,
+  "n_groups": 1,
+  "n_candidates": 12
+ },
+ {
+  "file_name": "2305.jpg",
+  "pred_count": 27,
+  "gt_count": 27,
+  "n_groups": 9,
+  "n_candidates": 51
+ },
+ {
+  "file_name": "2306.jpg",
+  "pred_count": 8,
+  "gt_count": 14,
+  "n_groups": 1,
+  "n_candidates": 77
+ },
+ {
+  "file_name": "231.jpg",
+  "pred_count": 24,
+  "gt_count": 24,
+  "n_groups": 2,
+  "n_candidates": 32
+ },
+ {
+  "file_name": "2312.jpg",
+  "pred_count": 8,
+  "gt_count": 14,
+  "n_groups": 1,
+  "n_candidates": 40
+ },
+ {
+  "file_name": "2313.jpg",
+  "pred_count": 6,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 42
+ },
+ {
+  "file_name": "2316.jpg",
+  "pred_count": 31,
+  "gt_count": 58,
+  "n_groups": 4,
+  "n_candidates": 62
+ },
+ {
+  "file_name": "2317.jpg",
+  "pred_count": 6,
+  "gt_count": 10,
+  "n_groups": 3,
+  "n_candidates": 38
+ },
+ {
+  "file_name": "232.jpg",
+  "pred_count": 21,
+  "gt_count": 27,
+  "n_groups": 1,
+  "n_candidates": 40
+ },
+ {
+  "file_name": "2320.jpg",
+  "pred_count": 97,
+  "gt_count": 99,
+  "n_groups": 1,
+  "n_candidates": 105
+ },
+ {
+  "file_name": "2321.jpg",
+  "pred_count": 73,
+  "gt_count": 80,
+  "n_groups": 1,
+  "n_candidates": 82
+ },
+ {
+  "file_name": "2322.jpg",
+  "pred_count": 55,
+  "gt_count": 103,
+  "n_groups": 1,
+  "n_candidates": 102
+ },
+ {
+  "file_name": "2323.jpg",
+  "pred_count": 33,
+  "gt_count": 32,
+  "n_groups": 14,
+  "n_candidates": 40
+ },
+ {
+  "file_name": "2326.jpg",
+  "pred_count": 156,
+  "gt_count": 240,
+  "n_groups": 1,
+  "n_candidates": 158
+ },
+ {
+  "file_name": "2327.jpg",
+  "pred_count": 51,
+  "gt_count": 50,
+  "n_groups": 7,
+  "n_candidates": 51
+ },
+ {
+  "file_name": "2328.jpg",
+  "pred_count": 214,
+  "gt_count": 262,
+  "n_groups": 1,
+  "n_candidates": 225
+ },
+ {
+  "file_name": "233.jpg",
+  "pred_count": 86,
+  "gt_count": 126,
+  "n_groups": 1,
+  "n_candidates": 105
+ },
+ {
+  "file_name": "2330.jpg",
+  "pred_count": 133,
+  "gt_count": 144,
+  "n_groups": 1,
+  "n_candidates": 168
+ },
+ {
+  "file_name": "2332.jpg",
+  "pred_count": 71,
+  "gt_count": 69,
+  "n_groups": 2,
+  "n_candidates": 86
+ },
+ {
+  "file_name": "2333.jpg",
+  "pred_count": 28,
+  "gt_count": 27,
+  "n_groups": 1,
+  "n_candidates": 37
+ },
+ {
+  "file_name": "2335.jpg",
+  "pred_count": 22,
+  "gt_count": 21,
+  "n_groups": 1,
+  "n_candidates": 38
+ },
+ {
+  "file_name": "234.jpg",
+  "pred_count": 34,
+  "gt_count": 38,
+  "n_groups": 1,
+  "n_candidates": 47
+ },
+ {
+  "file_name": "2342.jpg",
+  "pred_count": 113,
+  "gt_count": 501,
+  "n_groups": 3,
+  "n_candidates": 123
+ },
+ {
+  "file_name": "2343.jpg",
+  "pred_count": 27,
+  "gt_count": 27,
+  "n_groups": 2,
+  "n_candidates": 41
+ },
+ {
+  "file_name": "2344.jpg",
+  "pred_count": 25,
+  "gt_count": 25,
+  "n_groups": 3,
+  "n_candidates": 33
+ },
+ {
+  "file_name": "2347.jpg",
+  "pred_count": 4,
+  "gt_count": 1912,
+  "n_groups": 2,
+  "n_candidates": 10
+ },
+ {
+  "file_name": "2348.jpg",
+  "pred_count": 3,
+  "gt_count": 834,
+  "n_groups": 2,
+  "n_candidates": 20
+ },
+ {
+  "file_name": "2353.jpg",
+  "pred_count": 136,
+  "gt_count": 175,
+  "n_groups": 1,
+  "n_candidates": 136
+ },
+ {
+  "file_name": "2354.jpg",
+  "pred_count": 238,
+  "gt_count": 271,
+  "n_groups": 1,
+  "n_candidates": 253
+ },
+ {
+  "file_name": "2355.jpg",
+  "pred_count": 46,
+  "gt_count": 254,
+  "n_groups": 2,
+  "n_candidates": 81
+ },
+ {
+  "file_name": "2356.jpg",
+  "pred_count": 118,
+  "gt_count": 119,
+  "n_groups": 1,
+  "n_candidates": 120
+ },
+ {
+  "file_name": "2357.jpg",
+  "pred_count": 245,
+  "gt_count": 276,
+  "n_groups": 1,
+  "n_candidates": 252
+ },
+ {
+  "file_name": "2359.jpg",
+  "pred_count": 196,
+  "gt_count": 262,
+  "n_groups": 1,
+  "n_candidates": 202
+ },
+ {
+  "file_name": "236.jpg",
+  "pred_count": 11,
+  "gt_count": 11,
+  "n_groups": 1,
+  "n_candidates": 63
+ },
+ {
+  "file_name": "2360.jpg",
+  "pred_count": 9,
+  "gt_count": 1283,
+  "n_groups": 1,
+  "n_candidates": 18
+ },
+ {
+  "file_name": "2361.jpg",
+  "pred_count": 16,
+  "gt_count": 16,
+  "n_groups": 1,
+  "n_candidates": 24
+ },
+ {
+  "file_name": "2367.jpg",
+  "pred_count": 148,
+  "gt_count": 149,
+  "n_groups": 1,
+  "n_candidates": 172
+ },
+ {
+  "file_name": "2369.jpg",
+  "pred_count": 236,
+  "gt_count": 240,
+  "n_groups": 1,
+  "n_candidates": 245
+ },
+ {
+  "file_name": "237.jpg",
+  "pred_count": 54,
+  "gt_count": 65,
+  "n_groups": 1,
+  "n_candidates": 118
+ },
+ {
+  "file_name": "2373.jpg",
+  "pred_count": 123,
+  "gt_count": 130,
+  "n_groups": 1,
+  "n_candidates": 141
+ },
+ {
+  "file_name": "2378.jpg",
+  "pred_count": 57,
+  "gt_count": 62,
+  "n_groups": 3,
+  "n_candidates": 78
+ },
+ {
+  "file_name": "2379.jpg",
+  "pred_count": 117,
+  "gt_count": 119,
+  "n_groups": 1,
+  "n_candidates": 130
+ },
+ {
+  "file_name": "238.jpg",
+  "pred_count": 22,
+  "gt_count": 20,
+  "n_groups": 3,
+  "n_candidates": 54
+ },
+ {
+  "file_name": "2387.jpg",
+  "pred_count": 13,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 22
+ },
+ {
+  "file_name": "239.jpg",
+  "pred_count": 20,
+  "gt_count": 26,
+  "n_groups": 1,
+  "n_candidates": 32
+ },
+ {
+  "file_name": "2390.jpg",
+  "pred_count": 472,
+  "gt_count": 672,
+  "n_groups": 1,
+  "n_candidates": 473
+ },
+ {
+  "file_name": "2391.jpg",
+  "pred_count": 46,
+  "gt_count": 47,
+  "n_groups": 12,
+  "n_candidates": 70
+ },
+ {
+  "file_name": "2394.jpg",
+  "pred_count": 193,
+  "gt_count": 237,
+  "n_groups": 1,
+  "n_candidates": 197
+ },
+ {
+  "file_name": "2398.jpg",
+  "pred_count": 71,
+  "gt_count": 72,
+  "n_groups": 5,
+  "n_candidates": 76
+ },
+ {
+  "file_name": "2399.jpg",
+  "pred_count": 159,
+  "gt_count": 169,
+  "n_groups": 1,
+  "n_candidates": 174
+ },
+ {
+  "file_name": "24.jpg",
+  "pred_count": 30,
+  "gt_count": 27,
+  "n_groups": 16,
+  "n_candidates": 62
+ },
+ {
+  "file_name": "240.jpg",
+  "pred_count": 39,
+  "gt_count": 37,
+  "n_groups": 1,
+  "n_candidates": 58
+ },
+ {
+  "file_name": "2400.jpg",
+  "pred_count": 31,
+  "gt_count": 218,
+  "n_groups": 3,
+  "n_candidates": 35
+ },
+ {
+  "file_name": "2401.jpg",
+  "pred_count": 243,
+  "gt_count": 263,
+  "n_groups": 1,
+  "n_candidates": 252
+ },
+ {
+  "file_name": "2402.jpg",
+  "pred_count": 42,
+  "gt_count": 40,
+  "n_groups": 14,
+  "n_candidates": 64
+ },
+ {
+  "file_name": "2403.jpg",
+  "pred_count": 71,
+  "gt_count": 68,
+  "n_groups": 1,
+  "n_candidates": 90
+ },
+ {
+  "file_name": "2404.jpg",
+  "pred_count": 9,
+  "gt_count": 9,
+  "n_groups": 1,
+  "n_candidates": 24
+ },
+ {
+  "file_name": "2406.jpg",
+  "pred_count": 12,
+  "gt_count": 17,
+  "n_groups": 1,
+  "n_candidates": 26
+ },
+ {
+  "file_name": "2409.jpg",
+  "pred_count": 37,
+  "gt_count": 59,
+  "n_groups": 5,
+  "n_candidates": 55
+ },
+ {
+  "file_name": "241.jpg",
+  "pred_count": 33,
+  "gt_count": 35,
+  "n_groups": 1,
+  "n_candidates": 45
+ },
+ {
+  "file_name": "2410.jpg",
+  "pred_count": 18,
+  "gt_count": 25,
+  "n_groups": 2,
+  "n_candidates": 32
+ },
+ {
+  "file_name": "2411.jpg",
+  "pred_count": 7,
+  "gt_count": 9,
+  "n_groups": 1,
+  "n_candidates": 50
+ },
+ {
+  "file_name": "2412.jpg",
+  "pred_count": 8,
+  "gt_count": 15,
+  "n_groups": 1,
+  "n_candidates": 49
+ },
+ {
+  "file_name": "2413.jpg",
+  "pred_count": 8,
+  "gt_count": 8,
+  "n_groups": 1,
+  "n_candidates": 36
+ },
+ {
+  "file_name": "2415.jpg",
+  "pred_count": 19,
+  "gt_count": 17,
+  "n_groups": 1,
+  "n_candidates": 87
+ },
+ {
+  "file_name": "2416.jpg",
+  "pred_count": 38,
+  "gt_count": 38,
+  "n_groups": 1,
+  "n_candidates": 80
+ },
+ {
+  "file_name": "2417.jpg",
+  "pred_count": 12,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 57
+ },
+ {
+  "file_name": "2418.jpg",
+  "pred_count": 20,
+  "gt_count": 19,
+  "n_groups": 2,
+  "n_candidates": 57
+ },
+ {
+  "file_name": "2419.jpg",
+  "pred_count": 46,
+  "gt_count": 47,
+  "n_groups": 15,
+  "n_candidates": 66
+ },
+ {
+  "file_name": "2420.jpg",
+  "pred_count": 41,
+  "gt_count": 31,
+  "n_groups": 15,
+  "n_candidates": 104
+ },
+ {
+  "file_name": "2421.jpg",
+  "pred_count": 36,
+  "gt_count": 31,
+  "n_groups": 8,
+  "n_candidates": 59
+ },
+ {
+  "file_name": "2422.jpg",
+  "pred_count": 14,
+  "gt_count": 12,
+  "n_groups": 1,
+  "n_candidates": 36
+ }
+]

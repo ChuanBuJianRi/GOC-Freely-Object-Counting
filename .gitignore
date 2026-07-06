@@ -7,6 +7,7 @@ checkpoint/
 result/checkpoints/
 *.pt
 *.pth
+*.zip
 
 # Logs
 *.log
