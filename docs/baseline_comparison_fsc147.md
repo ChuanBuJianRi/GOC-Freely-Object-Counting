@@ -1,7 +1,8 @@
 # FSC147 Benchmark: 严格对比分析
 
 > 所有数据来自原论文声称的精度，未做复现实验。
-> 最后更新: 2026-07-01 (新增 CARPK 交叉验证结果)
+> 最后更新: 2026-07-08 (新增 ABC123 论文协议核对与官方 checkpoint 本地复现)
+> 当前 OV-CUD 可审计 FSC147 full-test 主结果以 `result/logs/fsc147_multires_extended.json` 为准：MAE=12.74 / RMSE=106.20。早期草稿中的 9.11/9.42 口径不作为本轮 ABC123 对比依据。
 
 ---
 
@@ -14,6 +15,7 @@ FSC147 上的方法按监督信号和推理输入可分为以下范式：
 | **Few-Shot Counting** | 1-3 个 exemplar bbox | Density map | LOCA, CounTR, BMNet+ |
 | **Zero-Shot Counting** | Text prompt / 类别描述 | Density map | SAVE, T2ICount, CounTX |
 | **Reference-less Counting** | 仅图像 | Density map | RCC, RepRPN-C |
+| **Blind Dense Regression** | 仅图像 | Density map + count | ABC123 |
 | **Training-Free Counting** | 图像 + optional prompt | 无训练 | OCCAM-S, CountingDINO |
 | **Prompt-Free + Class-Aware** (Ours) | 仅图像 | Instance mask + category label | **OV-CUD** |
 
@@ -25,7 +27,6 @@ FSC147 上的方法按监督信号和推理输入可分为以下范式：
 
 | 方法 | 年份/会议 | 推理输入 | MAE ↓ | RMSE ↓ | 备注 |
 |---|---|---|---|---|---|
-| **ABC123** | 2025 ECCV | 3 exemplars | **~6** | — | 2025 SOTA few-shot |
 | **GeCo** | 2024 NeurIPS | 3 exemplars | **~7** | — | Grounding-based |
 | **LOCA** | 2023 ICCV | 3 exemplars | **10.79** | 56.97 | 3-shot 最佳经典方法 |
 | **CounTR** | 2022 BMVC | 3 exemplars | **11.95** | 91.23 | Transformer + MAE 预训练 |
@@ -46,6 +47,8 @@ FSC147 上的方法按监督信号和推理输入可分为以下范式：
 
 | 方法 | 年份/会议 | 推理输入 | MAE ↓ | RMSE ↓ | 备注 |
 |---|---|---|---|---|---|
+| **ABC123 (paper, FSC<300)** | 2024 ECCV | 仅图像 | **11.75** | **33.41** | Prompt-free，但需要 density map 训练；论文剔除 GT>300 图 |
+| **ABC123 (local ckpt, full)** | 2024 ECCV | 仅图像 | 48.19 | 151.11 | 官方 README checkpoint 本地复现，未达到 paper FSC 表 |
 | **GCA-SUN** | 2024 | 仅图像 | **14.00** | 92.19 | Group contextual attention |
 | **MAFEA** | 2024 | 仅图像 | **13.23** | 105.99 | Multi-scale feature enhance |
 | **GeCo** (zero-shot) | 2024 NeurIPS | 仅图像 | **13.30** | 108.72 | Grounding counter |
@@ -69,8 +72,7 @@ FSC147 上的方法按监督信号和推理输入可分为以下范式：
 
 | 方法 | 推理输入 | 训练监督 | MAE ↓ | RMSE ↓ | 独特优势 |
 |---|---|---|---|---|---|
-| **OV-CUD (Ours)** | **仅图像** | **Instance mask + Category** | **9.11** | **32.87** | ✅ 输出类名 ✅ 无 prompt ✅ 无 count label |
-| **OV-CUD (Ours, latest)** | **仅图像** | **Instance mask + Category** | **9.11** | **32.87** | Exp9: 关系头微调 + tau_inst=0.97 |
+| **OV-CUD (Ours, current full-test)** | **仅图像** | **Instance mask + Category** | **12.74** | **106.20** | ✅ 输出类名 ✅ 无 prompt ✅ 无 count/density label |
 
 ---
 
@@ -78,7 +80,7 @@ FSC147 上的方法按监督信号和推理输入可分为以下范式：
 
 ### 3.1 与同范式方法对比 (Prompt-Free + 不需要 Count Label)
 
-OV-CUD 在以下约束下取得 MAE=9.42：
+OV-CUD 当前 full-test 可审计结果为 MAE=12.74 / RMSE=106.20：
 - ❌ **不需要 exemplar bbox**（排除所有 few-shot 方法）
 - ❌ **不需要 text prompt**（排除 SAVE, T2ICount, CounTX）
 - ❌ **不需要 density map / count label 训练**（排除 RCC, CounTR zero-shot, DAVE, LOCA zero-shot）
@@ -90,9 +92,13 @@ OV-CUD 在以下约束下取得 MAE=9.42：
 | OCCAM-S | 16.92 | 无训练 | 仅图像 |
 | RCC | 17.12 | Density map | 仅图像 |
 | CounTR (zero-shot) | 14.71 | Density map | 仅图像 |
-| **OV-CUD (Ours)** | **9.42** | Instance mask + Cat | **仅图像** |
+| **OV-CUD (Ours, full)** | **12.74** | Instance mask + Cat | **仅图像** |
+| ABC123 (paper, FSC<300) | 11.75 | Density map/count | 仅图像 |
+| ABC123 (local ckpt, full) | 48.19 | Density map/count | 仅图像 |
 
-OV-CUD 在 prompt-free 设定下显著优于所有公开方法，且训练监督更弱（无需 density map）。
+OV-CUD 与 ABC123 的主要差异不是只看 MAE：ABC123 paper 数字来自 FSC<300 subset 且需要 density-map/count 监督；OV-CUD full-test 使用全部 1,190 张图，并且训练不需要 count/density label。
+
+ABC123 的详细复现记录见 `docs/abc123_reproduction_report_20260708.md`。这里的 ABC123 paper 数字来自论文 FSC<300 subset，不是 full FSC147 test；local ckpt 数字来自官方 README checkpoint，在本地没有复现 paper table。
 
 ### 3.2 与全监督 SOTA 的差距
 
@@ -100,21 +106,21 @@ OV-CUD 在 prompt-free 设定下显著优于所有公开方法，且训练监督
 |---|---|---|---|
 | SAVE (zero-shot, text) | 8.89 | -0.53 | SAVE 需要 YOLOv8 检测 backbone + text prompt |
 | LOCA (3-shot) | 10.79 | +1.37 | LOCA 需要 3 个 exemplar bbox |
-| **OV-CUD (Ours)** | **9.42** | — | 无需任何 prompt，无需 count label |
+| **OV-CUD (Ours, full)** | **12.74** | — | 无需任何 prompt，无需 count/density label |
 
-OV-CUD 的 MAE=9.42 **已经接近甚至超过了部分需要 exemplar 的全监督方法**（如 LOCA 的 10.79，CounTR 的 11.95），且显著优于所有 prompt-free 方法。
+OV-CUD 的 full-test MAE=12.74 仍处在 prompt-free 方法中较强的位置，但论文写作时不应把它与剔除 GT>300 的 ABC123 paper 数字直接当同协议比较。
 
 ### 3.3 RMSE 分析
 
 | 方法 | RMSE | 特点 |
 |---|---|---|
 | SAViT | 31.26 | 最佳 RMSE，few-shot |
-| **OV-CUD (Ours)** | **33.18** | 第二低 RMSE，prompt-free |
+| **OV-CUD (Ours, full)** | **106.20** | 当前 full-test 可审计结果；受高密度图影响明显 |
 | SAVE | 35.83 | Zero-shot text |
 | LOCA | 56.97 | Few-shot |
 | SMFENet | 45.91 | Few-shot |
 
-OV-CUD 的 RMSE=33.18 在 prompt-free 设定下是最低的，甚至优于大多数 few-shot 方法。这说明我们的方法在高方差场景（大 count 图）上的鲁棒性较好。
+OV-CUD 当前 full-test RMSE 仍受 300+ 高密度图影响明显；论文写作中建议同时给 MAE、RMSE 和 GT-bin 切片，而不要只用单个总 RMSE 做强结论。
 
 ### 3.4 100+ 密集场景分析
 
@@ -213,7 +219,7 @@ OV-CUD 的预期定位: 如果我们在 CARPK 上达到 MAE < 10，将证明方�
 
 3. **负偏置 -5.81**：系统性地低估，主要因为 CARPK 密集停车场的候选 recall 仍有不足
 
-4. **两大数据集均已验证**：FSC147 MAE=9.11 + CARPK MAE=6.50，OV-CUD 在 prompt-free + count-supervision-free 设定下一致表现优异
+4. **两大数据集均已验证**：FSC147 当前 full-test MAE=12.74，CARPK 历史记录 MAE=6.50；最新 CARPK 可审计结果见 `result/logs/carpk_pts32_exp5c_best.json`，MAE=4.06。
 
 ---
 
@@ -241,4 +247,4 @@ OV-CUD 的预期定位: 如果我们在 CARPK 上达到 MAE < 10，将证明方�
 11. SAViT: Scale-Aware Vision Transformer for Few-Shot Counting (IJPRAI 2025)
 12. SMFENet: Similarity Matching Feature Enhancement Network (JCA 2025)
 13. GeCo: Grounded Counting (NeurIPS 2024)
-14. ABC123: A Benchmark for Class-Agnostic Counting (ECCV 2025)
+14. ABC123: ABC Easy as 123, a Blind Counter for Exemplar-Free Multi-Class Class-agnostic Counting (ECCV 2024)

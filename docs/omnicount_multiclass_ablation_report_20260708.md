@@ -16,7 +16,8 @@
 2. **OV-CUD prompt-free predicted class groups** 在 1,957 张图上达到 **MAE=4.68 / RMSE=8.46 / mRMSE=0.457 / mRMSE-nz=3.911**。
 3. 该结果优于 OV-CUD class-agnostic total count 的 **MAE=6.77 / RMSE=10.23**，说明输出类别组不是摆设。
 4. 本地补充的 **OWLv2 class-aware** 使用每张图 GT class list 作为 text prompts，在同一批 1,957 张图上达到 **MAE=4.87 / RMSE=9.65 / mRMSE=0.369 / mRMSE-nz=3.657**。
-5. OmniCount 论文 published methods 是 **class-name prompted** 协议，与 OV-CUD prompt-free 不是同协议；可作为参考表，但不能直接当公平主比较。
+5. 本地补充的 **ABC123 official checkpoint** 是 prompt-free dense-map regression baseline，在 OmniCount-191 total count 上 `max_density` 达到 **MAE=7.27 / RMSE=18.06**，但不能输出类别名或 per-class counts。
+6. OmniCount 论文 published methods 是 **class-name prompted** 协议，与 OV-CUD prompt-free 不是同协议；可作为参考表，但不能直接当公平主比较。
 
 ---
 
@@ -316,6 +317,7 @@ OWLv2 与 OV-CUD 都在高密度 bin 明显欠计数，说明检测式/候选式
 | Method / Protocol | 输入 | Class-wise output | MAE | RMSE | mRMSE |
 |---|---|---:|---:|---:|---:|
 | SAM2-only | Image only | 否 | 37.60 | 44.82 | - |
+| ABC123 local max_density | Image only | 否 | 7.27 | 18.06 | - |
 | OV-CUD class-agnostic | Image only | 否 | 6.77 | 10.23 | - |
 | OV-CUD predicted class groups | Image only | 是 | **4.68** | **8.46** | 0.457 |
 | OV-CUD oracle class grouping | Oracle eval only | 是 | 1.12 | 2.22 | 0.111 |
@@ -329,6 +331,7 @@ OWLv2 与 OV-CUD 都在高密度 bin 明显欠计数，说明检测式/候选式
 | TFOC | class names / text | - | - | 0.95 | 2.89 | OmniCount 论文 published |
 | OmniCount | class names + priors | - | - | **0.70** | **2.00** | OmniCount 论文 published |
 | OWLv2 class-aware | GT class list | 4.87 | 9.65 | **0.369** | 3.657 | 本地同 1,957 图 rerun |
+| ABC123 local max_density | image only | 7.27 | 18.06 | - | - | prompt-free，但 dense-map regression；无 per-class |
 | OV-CUD predicted groups | image only | **4.68** | **8.46** | 0.457 | 3.911 | 无类别提示 |
 
 推荐写法：
@@ -350,6 +353,7 @@ OWLv2 与 OV-CUD 都在高密度 bin 明显欠计数，说明检测式/候选式
 2. **类别分配瓶颈**：Oracle class grouping 从 MAE=4.68 降到 1.12，说明更好的类别校准或文本 prompt normalization 有明显空间。
 3. **Dedup 贡献被压缩**：`conf=0.1` 已过滤大量重复候选，使 relation dedup 与 IoU NMS 差异很小。
 4. **协议差异必须讲清楚**：published OmniCount methods 使用 class-name prompts；OV-CUD 是 image-only prompt-free。
+5. **ABC123 不是同范式主 baseline**：它是 prompt-free，但需要 density map/count 监督且输出 dense maps；只能作为 dense-regression reference。
 
 建议后续如有时间补一个实验：
 
@@ -366,7 +370,9 @@ OmniCount 高密度 Supermarket / Birds 子集上跑 multi-resolution candidates
 |---|---|
 | `script/eval_omnicount_multiclass_ablation.py` | OV-CUD OmniCount 多类别消融脚本 |
 | `script/run_omnicount_baselines.py` | OWLv2 baseline 脚本，已补 mRMSE / mRMSE-nz |
+| `script/eval_abc123_baseline.py` | ABC123 official checkpoint 多数据集评估脚本 |
 | `result/logs/omnicount_multiclass_ablation_full1957_fsc147head_conf01.json` | OV-CUD 主结果 |
 | `result/logs/omnicount_owlv2_classaware_full1957_conf05.json` | OWLv2 class-aware full result |
+| `result/logs/abc123_omnicount_test_full1957.json` | ABC123 OmniCount total-count full result |
 | `result/logs/omnicount_owlv2_classaware_100_conf05.json` | OWLv2 阈值选择记录 |
 | `docs/omnicount_multiclass_ablation_report_20260708.md` | 本中文实验记录 |
