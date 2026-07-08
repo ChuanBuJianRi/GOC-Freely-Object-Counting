@@ -5,10 +5,10 @@
 3. OWLv2 class-aware: class name prompts → per-class counts
 
 For comparison with published results from OmniCount paper (Table 1):
-  - GroundingDINO (text): mRMSE=1.29, mRMSE-nz=3.27
-  - CLIPSeg (text):       mRMSE=1.54, mRMSE-nz=4.28
-  - TFOC (text):          mRMSE=0.95, mRMSE-nz=2.89
-  - OmniCount (text):     mRMSE=0.70, mRMSE-nz=2.00
+  - GroundingDINO (class-name prompted, not same protocol): mRMSE=1.29, mRMSE-nz=3.27
+  - CLIPSeg (class-name prompted, not same protocol):       mRMSE=1.54, mRMSE-nz=4.28
+  - TFOC (class-name prompted, not same protocol):          mRMSE=0.95, mRMSE-nz=2.89
+  - OmniCount (class-name prompted, not same protocol):     mRMSE=0.70, mRMSE-nz=2.00
 
 Usage:
     # OWLv2 class-agnostic baseline
@@ -100,6 +100,8 @@ def main():
     if args.limit > 0:
         entries = entries[:args.limit]
     print(f"[data] {len(entries)} images")
+    eval_class_names = sorted({c for e in entries for c in e.get("unique_classes", [])})
+    print(f"[data] {len(eval_class_names)} classes in this evaluation split")
 
     # Load OWLv2
     print("[load] Loading OWLv2...")
@@ -123,6 +125,7 @@ def main():
         except Exception:
             continue
 
+        per_class_preds = None
         if args.mode == "class-agnostic":
             # Count all objects with generic prompt
             pred = detect_and_count(
@@ -141,10 +144,15 @@ def main():
                 pred_c = per_class_preds.get(cname, 0)
                 errors_per_class[cname].append({"pred": pred_c, "gt": gt_c})
 
-        results.append({
+        row = {
             "file_name": file_name, "category": category,
             "gt_count": gt_total, "pred_count": pred,
-        })
+            "unique_classes": unique_classes,
+            "gt_class_counts": entry.get("class_counts", {}),
+        }
+        if per_class_preds is not None:
+            row["pred_class_counts"] = per_class_preds
+        results.append(row)
         results_by_cat[category].append({
             "file_name": file_name, "gt_count": gt_total, "pred_count": pred,
         })
@@ -224,22 +232,56 @@ def main():
     # Per-class (class-aware mode only)
     per_class_summary = {}
     if args.mode == "class-aware" and errors_per_class:
+        rmse_all, mae_all, rmse_nz, mae_nz = [], [], [], []
+        for cname in eval_class_names:
+            cp = np.array([r.get("pred_class_counts", {}).get(cname, 0) for r in results], float)
+            cg = np.array([r.get("gt_class_counts", {}).get(cname, 0) for r in results], float)
+            ce = cp - cg
+            pos = cg > 0
+            cls_rmse = float(np.sqrt(np.mean(ce ** 2)))
+            cls_mae = float(np.mean(np.abs(ce)))
+            rmse_all.append(cls_rmse)
+            mae_all.append(cls_mae)
+            entry = {
+                "n_pos": int(pos.sum()),
+                "MAE": cls_mae,
+                "RMSE": cls_rmse,
+                "bias": float(np.mean(ce)),
+            }
+            if pos.any():
+                entry["MAE_nz"] = float(np.mean(np.abs(ce[pos])))
+                entry["RMSE_nz"] = float(np.sqrt(np.mean(ce[pos] ** 2)))
+                mae_nz.append(entry["MAE_nz"])
+                rmse_nz.append(entry["RMSE_nz"])
+            per_class_summary[cname] = entry
+        summary.update({
+            "mMAE": float(np.mean(mae_all)),
+            "mRMSE": float(np.mean(rmse_all)),
+            "mMAE_nz": float(np.mean(mae_nz)) if mae_nz else None,
+            "mRMSE_nz": float(np.mean(rmse_nz)) if rmse_nz else None,
+        })
+        print(f"mRMSE: {summary['mRMSE']:.3f}  mRMSE-nz: {summary['mRMSE_nz']:.3f}")
+
+        # Backward-compatible positive-only summary for quick inspection.
+        per_class_positive_summary = {}
         for cname, items in sorted(errors_per_class.items()):
-            if len(items) < 3:
-                continue
             cp = np.array([x["pred"] for x in items], float)
             cg = np.array([x["gt"] for x in items], float)
             ce = cp - cg
-            per_class_summary[cname] = {
+            per_class_positive_summary[cname] = {
                 "n": len(items), "MAE": float(np.mean(np.abs(ce))),
+                "RMSE": float(np.sqrt(np.mean(ce ** 2))),
                 "bias": float(np.mean(ce)),
             }
+    else:
+        per_class_positive_summary = {}
 
     output = {
         "summary": summary,
         "per_bin": per_bin,
         "per_category": per_cat,
         "per_class": per_class_summary,
+        "per_class_positive_only": per_class_positive_summary,
         "results": results,
     }
 

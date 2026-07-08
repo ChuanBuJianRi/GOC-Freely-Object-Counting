@@ -1,64 +1,73 @@
-# OmniCount-191 Multi-Class Ablation Report
+# OmniCount-191 多类别消融实验记录
 
-**Date**: 2026-07-08  
-**Branch**: `ljs`  
-**Goal**: Verify whether the FSC147 headline model (MAE 12.74) supports prompt-free multi-category counting on OmniCount-191, and provide protocol/category/dedup/difficulty ablations.
+**日期**: 2026-07-08
+**分支**: `ljs`
+**目标**: 使用 FSC147 主结果 MAE=12.74 的同一组 OV-CUD 学习模型，在 OmniCount-191 上验证 prompt-free 多类别计数能力，并补充 published prompted methods 与本地 OWLv2 class-aware baseline。
 
 ---
 
-## 1. Model Consistency Audit
+## 1. 结论摘要
 
-The OmniCount multi-class experiment uses the same trained OV-CUD model family as the FSC147 headline result (MAE 12.74):
+这组 OmniCount-191 实验是 **全量 test cache 1,957 张图像**，不是 500 张子集。500 张仅用于脚本调试和 OWLv2 阈值选择。
 
-| Component | FSC147 12.74 setup | OmniCount multi-class setup | Same? |
+最重要结论：
+
+1. **同一 FSC147 学习模型可以迁移到 OmniCount-191 多类别场景**。只替换 OmniCount 的 93 类文本原型，不重新训练模型。
+2. **OV-CUD prompt-free predicted class groups** 在 1,957 张图上达到 **MAE=4.68 / RMSE=8.46 / mRMSE=0.457 / mRMSE-nz=3.911**。
+3. 该结果优于 OV-CUD class-agnostic total count 的 **MAE=6.77 / RMSE=10.23**，说明输出类别组不是摆设。
+4. 本地补充的 **OWLv2 class-aware** 使用每张图 GT class list 作为 text prompts，在同一批 1,957 张图上达到 **MAE=4.87 / RMSE=9.65 / mRMSE=0.369 / mRMSE-nz=3.657**。
+5. OmniCount 论文 published methods 是 **class-name prompted** 协议，与 OV-CUD prompt-free 不是同协议；可作为参考表，但不能直接当公平主比较。
+
+---
+
+## 2. 模型一致性审计
+
+OmniCount 多类别实验使用的学习模型与 FSC147 headline result (MAE=12.74) 属于同一组模型：
+
+| 模块 | FSC147 12.74 设置 | OmniCount 多类别设置 | 是否一致 |
 |---|---|---|---|
-| Category head | `result/checkpoints/category_cosine_pts32.pt` | `result/checkpoints/category_cosine_pts32.pt` | Yes |
-| Relation head | `result/checkpoints/fsc147_relation_pts32_best.pt` / `fsc147_relation_pts32_exp5c.pt` | `result/checkpoints/fsc147_relation_pts32_best.pt` | Yes |
-| Relation weights | Exp5-C epoch 25 | Exp5-C epoch 25 | Yes |
-| Candidate strategy | FSC147 multi-resolution cache for dense bins | OmniCount pts=32 cache | Dataset-specific candidate cache |
-| Text prototypes | FSC147 class prototypes | OmniCount-191 class prototypes | Vocabulary swap only |
+| Category head | `result/checkpoints/category_cosine_pts32.pt` | `result/checkpoints/category_cosine_pts32.pt` | 是 |
+| Relation head | `result/checkpoints/fsc147_relation_pts32_best.pt` / `fsc147_relation_pts32_exp5c.pt` | `result/checkpoints/fsc147_relation_pts32_best.pt` | 是 |
+| Relation 权重 | Exp5-C epoch 25 | Exp5-C epoch 25 | 是 |
+| 候选策略 | FSC147 高密度图使用 multi-resolution cache | OmniCount pts=32 cache | 数据集相关候选缓存 |
+| 文本原型 | FSC147 类别原型 | OmniCount-191 93 类原型 | 只替换词表 |
 
-Checkpoint audit:
+Checkpoint 审计：
 
-| File | SHA256 prefix | Note |
+| 文件 | SHA256 前缀 | 说明 |
 |---|---:|---|
-| `category_cosine_pts32.pt` | `43509c6e4ff55498` | Same category projection head as FSC147 |
-| `fsc147_relation_pts32_best.pt` | `1bb7a1cfd950fde8` | Inference checkpoint |
-| `fsc147_relation_pts32_exp5c.pt` | `c0e16479f7d6cc4a` | Training checkpoint with optimizer |
-| `text_prototypes_omnicount.pt` | `26cd89b7f596a230` | OmniCount vocabulary prototypes |
+| `category_cosine_pts32.pt` | `43509c6e4ff55498` | 与 FSC147 主结果相同的类别投影头 |
+| `fsc147_relation_pts32_best.pt` | `1bb7a1cfd950fde8` | 推理版关系头 |
+| `fsc147_relation_pts32_exp5c.pt` | `c0e16479f7d6cc4a` | 训练版关系头，含 optimizer |
+| `text_prototypes_omnicount.pt` | `26cd89b7f596a230` | OmniCount 93 类文本原型 |
 
-`fsc147_relation_pts32_best.pt` and `fsc147_relation_pts32_exp5c.pt` have identical `relation_head` state dicts (`max_abs_diff=0.0`, epoch 25). Therefore, the OmniCount run uses the same learned category projection and relation model as the FSC147 headline model. The only required change is replacing the text prototype matrix so that the open-vocabulary head can score OmniCount's 93 test classes.
+`fsc147_relation_pts32_best.pt` 与 `fsc147_relation_pts32_exp5c.pt` 的 `relation_head` state dict 完全一致：`max_abs_diff=0.0`，epoch 均为 25。
 
-Important nuance: FSC147 MAE 12.74 also uses a multi-resolution candidate cache for high-density images. That cache is a dataset-specific proposal-generation strategy, not a different learned model.
+需要写清楚的 nuance：
+
+- 这里的“同一模型”指 **同一个 category projection head + 同一个 relation head 权重**。
+- OmniCount 必须替换文本原型矩阵，因为它是开放词表评估；这不是重新训练模型。
+- FSC147 MAE=12.74 使用了 FSC147 专用 multi-resolution candidate cache；OmniCount 当前使用 pts=32 cache。因此候选生成策略不是完全相同，但学习模型相同。
 
 ---
 
-## 2. Evaluation Script
+## 3. 数据与评估脚本
 
-New script:
+新增脚本：
 
 ```bash
 script/eval_omnicount_multiclass_ablation.py
 ```
 
-The script rebuilds OmniCount per-class ground truth from the original COCO-format annotations instead of trusting the cached `matched_class`, because the current OmniCount cache stores:
+该脚本从 OmniCount 原始 COCO-format annotations 重建 per-class GT，而不是直接使用缓存里的 `matched_class`。原因是当前 OmniCount cache 中：
 
 ```python
 "matched_class": torch.zeros(n_cand, dtype=torch.long)  # class-agnostic
 ```
 
-Predicted variants do **not** use GT-derived `valid` masks. Oracle variants decode cached SAM masks and match candidate masks to GT dot centers only for upper-bound analysis.
+预测分支不使用 GT-derived `valid` masks，避免 prompt-free 推理泄漏。Oracle 分支只在上限诊断中解码 SAM mask，并用 GT dot center 做候选-类别匹配。
 
-Metrics:
-
-| Metric | Definition |
-|---|---|
-| MAE/RMSE/bias | Image-level total count error |
-| mRMSE | Mean per-class RMSE over 93 OmniCount test classes |
-| mRMSE-nz | Mean per-class RMSE on images where that class appears |
-| Slices | By number of GT classes per image, super-category, and GT count bin |
-
-Main command:
+主命令：
 
 ```bash
 python3 script/eval_omnicount_multiclass_ablation.py \
@@ -74,59 +83,43 @@ python3 script/eval_omnicount_multiclass_ablation.py \
   --save-per-image
 ```
 
-Primary result artifact:
+主结果文件：
 
 ```bash
 result/logs/omnicount_multiclass_ablation_full1957_fsc147head_conf01.json
 ```
 
----
+数据统计：
 
-## 3. Dataset Summary
-
-Current processed OmniCount test cache:
-
-| Item | Value |
+| 项目 | 数值 |
 |---|---:|
-| Images | 1,957 |
-| Test classes observed | 93 |
-| Mean GT count/image | 6.03 |
-| Images with 1 class | 1,124 |
-| Images with 2+ classes | 833 |
-| Multi-class image ratio | 42.6% |
-
-Super-category distribution:
-
-| Super-category | Images |
-|---|---:|
-| Urban | 1,000 |
-| Fruits | 303 |
-| Wild | 255 |
-| Supermarket | 251 |
-| Satellite | 127 |
-| Pets | 11 |
-| Birds | 10 |
+| 图像数 | 1,957 |
+| 测试集中出现的类别数 | 93 |
+| 平均 GT count / image | 6.03 |
+| 单类别图像 | 1,124 |
+| 2+ 类别图像 | 833 |
+| 多类别图像比例 | 42.6% |
 
 ---
 
-## 4. Protocol Ablation
+## 4. OV-CUD 协议消融
 
-| Protocol | Prompt at inference | Per-class output | MAE | RMSE | bias | mRMSE | mRMSE-nz |
+| Protocol | 推理时提示 | 是否输出 per-class | MAE | RMSE | bias | mRMSE | mRMSE-nz |
 |---|---|---:|---:|---:|---:|---:|---:|
-| SAM2-only total | None | No | 37.60 | 44.82 | +37.60 | - | - |
-| Class-agnostic total | None | No | 6.77 | 10.23 | +5.47 | - | - |
-| Predicted class groups | None | Yes | **4.68** | **8.46** | -4.36 | 0.457 | 3.911 |
-| Oracle class grouping | GT for oracle only | Yes | **1.12** | **2.22** | -0.65 | 0.111 | 1.047 |
+| SAM2-only total | 无 | 否 | 37.60 | 44.82 | +37.60 | - | - |
+| OV-CUD class-agnostic total | 无 | 否 | 6.77 | 10.23 | +5.47 | - | - |
+| OV-CUD predicted class groups | 无 | 是 | **4.68** | **8.46** | -4.36 | 0.457 | 3.911 |
+| OV-CUD oracle class grouping | 仅 oracle 诊断 | 是 | **1.12** | **2.22** | -0.65 | 0.111 | 1.047 |
 
-Key finding:
+关键结论：
 
-- The real prompt-free per-class pipeline improves total MAE over class-agnostic counting: **6.77 -> 4.68**.
-- Oracle class grouping gives a strong upper bound: **4.68 -> 1.12**, showing that class assignment and candidate-class coverage remain the main bottlenecks.
-- This is the strongest OmniCount evidence for the paper: OV-CUD can output prompt-free class-wise counts, not merely a total count.
+- prompt-free predicted class groups 明显优于 class-agnostic total：**6.77 -> 4.68**。
+- Oracle class grouping 上限很高：**4.68 -> 1.12**，说明主要瓶颈是候选类别分配与候选覆盖，而不是“能不能做多类别输出”。
+- 这是目前最适合作为主文的 OmniCount 证据：OV-CUD 不接收类别提示，也能输出类别名和对应计数。
 
 ---
 
-## 5. Category Separation Ablation
+## 5. 类别分离消融
 
 | Variant | MAE | RMSE | bias | mRMSE | mRMSE-nz |
 |---|---:|---:|---:|---:|---:|
@@ -136,15 +129,15 @@ Key finding:
 | Full category + relation grouping | **4.68** | **8.46** | -4.36 | 0.457 | 3.911 |
 | Oracle category grouping | **1.12** | **2.22** | -0.65 | 0.111 | 1.047 |
 
-Interpretation:
+解释：
 
-- The learned/predicted grouping variants are numerically close under `conf_threshold=0.1`.
-- Oracle category grouping is much better, so the actionable bottleneck is not whether to use bucket vs `p_i · p_j`; it is assigning candidates to the right OmniCount class and retaining enough valid candidates.
-- In the paper, do **not** overclaim that category separation design alone is the source of OmniCount gains. Use this table as a diagnostic.
+- 在 `conf_threshold=0.1` 下，几种 predicted grouping 变体差异很小。
+- Oracle category grouping 大幅提升，说明真正的瓶颈是类别 assignment 和候选覆盖，而不是 bucket / `p_i·p_j` 这类聚类细节。
+- 论文中不建议把 OmniCount 作为 relation/category grouping 结构贡献的主要证据；它更适合证明 prompt-free per-class 输出。
 
 ---
 
-## 6. Dedup Ablation
+## 6. 去重消融
 
 | Variant | MAE | RMSE | bias | mRMSE | mRMSE-nz |
 |---|---:|---:|---:|---:|---:|
@@ -154,40 +147,40 @@ Interpretation:
 | Category + relation head | **4.68** | **8.46** | -4.36 | 0.457 | 3.911 |
 | Relation + adaptive area filter | 4.72 | 8.48 | -4.40 | 0.455 | 3.911 |
 
-Interpretation:
+解释：
 
-- On OmniCount, category filtering dominates the improvement over SAM2-only.
-- IoU NMS and relation-head dedup are almost identical in this setting. The current `conf_threshold=0.1` removes many duplicates before dedup, so relation-head effects are compressed.
-- The relation head should still be defended mainly with FSC147/CARPK component ablations, not with this OmniCount table.
+- OmniCount 上从 SAM2-only 到 OV-CUD 的主要收益来自类别过滤和候选筛选。
+- 当前阈值已经过滤掉大量重复候选，因此 IoU NMS 与 relation-head dedup 数字接近。
+- Relation head 的核心证据仍应放在 FSC147/CARPK 的主消融，不建议在 OmniCount 上强行声称 relation-head 显著贡献。
 
 ---
 
-## 7. Difficulty Slices
+## 7. 难度切片
 
-### 7.1 By Number of Classes Per Image
+### 7.1 按每图类别数
 
-Predicted class groups:
+OV-CUD predicted class groups：
 
-| #GT classes/image | Images | MAE | RMSE | bias |
+| GT 类别数 / 图 | 图像数 | MAE | RMSE | bias |
 |---|---:|---:|---:|---:|
 | 1 | 1,124 | 4.49 | 10.02 | -4.04 |
 | 2 | 311 | 4.17 | 5.02 | -3.88 |
 | 3 | 186 | 6.02 | 7.12 | -5.86 |
 | 4+ | 336 | 5.03 | 5.45 | -5.03 |
 
-Images with 2+ classes:
+2+ 类别图像：
 
-| Protocol | Images | MAE | RMSE | bias |
+| Protocol | 图像数 | MAE | RMSE | bias |
 |---|---:|---:|---:|---:|
 | Class-agnostic total | 833 | 4.98 | 8.09 | +3.52 |
 | Predicted class groups | 833 | **4.93** | **5.72** | -4.78 |
 | Oracle class grouping | 833 | **1.30** | **1.90** | -0.80 |
 
-### 7.2 By Super-Category
+### 7.2 按 super-category
 
-Predicted class groups:
+OV-CUD predicted class groups：
 
-| Super-category | Images | MAE | RMSE | bias |
+| Super-category | 图像数 | MAE | RMSE | bias |
 |---|---:|---:|---:|---:|
 | Birds | 10 | 14.30 | 14.56 | -14.30 |
 | Fruits | 303 | 4.27 | 4.38 | -4.27 |
@@ -197,83 +190,183 @@ Predicted class groups:
 | Urban | 1,000 | 3.82 | 4.84 | -3.42 |
 | Wild | 255 | 2.50 | 3.24 | -2.37 |
 
-Supermarket and Birds are the hardest groups. Supermarket has many fine-grained product classes and high object density; Birds has only 10 images but high counts.
+Supermarket 和 Birds 最难。Supermarket 有大量细粒度商品类别且密度高；Birds 图像数少但每图计数较高。
 
-### 7.3 By GT Count Bin
+### 7.3 按 GT count bin
 
-Predicted class groups:
+OV-CUD predicted class groups：
 
-| GT count bin | Images | MAE | RMSE | bias |
+| GT count bin | 图像数 | MAE | RMSE | bias |
 |---|---:|---:|---:|---:|
 | 0-10 | 1,772 | 3.15 | 3.81 | -2.79 |
 | 11-20 | 123 | 10.97 | 11.51 | -10.97 |
 | 21-50 | 42 | 26.38 | 27.44 | -26.38 |
 | 51-100 | 20 | 55.80 | 57.67 | -55.80 |
 
-The model undercounts high-density OmniCount images. This is consistent with FSC147/CARPK/PUCPR+ analysis: proposal density and small-object coverage remain the main limiting factors in dense scenes.
+高密度图像明显欠计数，这与 FSC147/CARPK/PUCPR+ 的结论一致：候选密度和小目标覆盖仍是主要瓶颈。
 
 ---
 
-## 8. Classification Head Check
+## 8. OmniCount 论文 published prompted table
 
-A 500-image multi-class subset was used to compare category heads:
+来源：
 
-| Category head | Prompt-free predicted groups MAE | Note |
-|---|---:|---|
-| COCO-80 cosine head + OmniCount prototypes | 14.88 | Poor transfer |
-| FSC147 pts32 cosine head + OmniCount prototypes (`conf=0.2`) | 6.97 | Better |
-| FSC147 pts32 cosine head + OmniCount prototypes (`conf=0.1`) | **5.08** | Best subset setting |
-| FSC147 pts32 cosine head + OmniCount prototypes (`conf=0.05`) | 14.71 | Over-counting |
+- AAAI 2025 论文页: https://ojs.aaai.org/index.php/AAAI/article/view/34151
+- arXiv 源文件: `arxiv_aaai.tex` 中 Table 1 (`tex_aaai/05_expt.tex`)
 
-This supports using the FSC147-trained category head for the full OmniCount result. It is also consistent with the paper narrative: the same FSC147 model transfers to OmniCount by swapping text prototypes.
+这些方法均为 **class-name prompted, not same protocol**，不是 OV-CUD 的 prompt-free 协议。它们可以作为参考表，不应作为同协议公平主表。
 
----
+| Method | 输入协议 | OmniCount-191 mRMSE | OmniCount-191 mRMSE-nz | 协议标注 |
+|---|---|---:|---:|---|
+| Grounding-DINO | class names as text prompts | 1.29 | 3.27 | class-name prompted, not same protocol |
+| CLIPSeg | class names as text prompts | 1.54 | 4.28 | class-name prompted, not same protocol |
+| TFOC | class names / text prompt | 0.95 | 2.89 | class-name prompted, not same protocol |
+| OmniCount | class names + semantic-geometric priors | **0.70** | **2.00** | class-name prompted, not same protocol |
+| OV-CUD predicted class groups | image only, no class prompt | 0.457 | 3.911 | prompt-free, our stricter protocol |
 
-## 9. Recommended Paper Usage
+解读：
 
-Recommended main text claim:
-
-> On OmniCount-191, using the same FSC147-trained OV-CUD model and only replacing text prototypes for the 93 OmniCount test classes, prompt-free predicted class groups achieve MAE 4.68 / RMSE 8.46 over 1,957 images. This outperforms class-agnostic total counting (MAE 6.77) and provides per-class counts without class prompts.
-
-Recommended table:
-
-| Method / Protocol | Prompt | Class-wise output | MAE | RMSE | mRMSE |
-|---|---|---:|---:|---:|---:|
-| SAM2-only | None | No | 37.60 | 44.82 | - |
-| OV-CUD class-agnostic | None | No | 6.77 | 10.23 | - |
-| OV-CUD predicted class groups | None | Yes | **4.68** | **8.46** | 0.457 |
-| OV-CUD oracle class grouping | Oracle eval only | Yes | 1.12 | 2.22 | 0.111 |
-
-Recommended wording:
-
-- Use "same learned model, OmniCount vocabulary prototypes" rather than "same exact prototype matrix".
-- Say "prompt-free per-class output" rather than "competitive with OmniCount paper under the same protocol", because OmniCount's official setting uses target class names and reports prompt-based multi-label mRMSE.
-- Do not overstate relation-head gains on OmniCount. The stronger relation-head evidence is FSC147/CARPK.
+- OV-CUD 的 `mRMSE=0.457` 低于 published prompted methods，但这个指标会被大量 GT=0 的类别稀释，不能单独用于强比较。
+- `mRMSE-nz=3.911` 更能反映“已出现类别”的误差。它弱于 OmniCount published `2.00`，接近 / 略弱于 Grounding-DINO `3.27` 和 TFOC `2.89`，但我们的输入更严格：不提供类别名。
+- 推荐写法：**OV-CUD 在无类别提示的条件下提供 per-class counts；prompted methods 仍在已知类别计数上更强。**
 
 ---
 
-## 10. Limitations and Next Steps
+## 9. 本地 OWLv2 class-aware baseline
 
-1. **High-density undercounting**: GT bins above 20 are strongly undercounted. OmniCount may benefit from the same multi-resolution/tiling proposal strategy used for FSC147 12.74.
-2. **Class assignment bottleneck**: Oracle class grouping improves MAE from 4.68 to 1.12. Better text prompts, class-name normalization, or light calibration may help.
-3. **Dedup effect is compressed**: Current confidence filtering removes many duplicate candidates before relation-head dedup. A lower threshold overcounts heavily, while `conf=0.1` is stable but makes dedup variants nearly identical.
-4. **Official metric mismatch**: OmniCount paper reports prompt-based multi-label mRMSE with class names specified by the user. OV-CUD's setting is stricter at inference because it receives no class prompts.
-
-Recommended next experiment if time permits:
+脚本：
 
 ```bash
-# Run OmniCount with multi-resolution candidates for high-density Supermarket/Birds images.
-# Goal: test whether the FSC147 12.74 proposal strategy also fixes OmniCount undercounting.
+script/run_omnicount_baselines.py
+```
+
+为本实验补充了 per-class 保存与 `mRMSE / mRMSE-nz` 统计。
+
+阈值选择：在前 100 张上扫 `conf_threshold`：
+
+| OWLv2 conf | 100 张 MAE | 100 张 RMSE | mRMSE | mRMSE-nz |
+|---:|---:|---:|---:|---:|
+| 0.1 | 12.75 | 27.36 | 3.341 | 9.177 |
+| 0.3 | 2.72 | 6.16 | 0.961 | 2.555 |
+| 0.5 | **2.59** | **3.88** | **0.644** | **1.564** |
+| 0.7 | 4.33 | 6.05 | 0.925 | 2.245 |
+
+最终 full run 使用 `conf_threshold=0.5`。
+
+命令：
+
+```bash
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+python3 script/run_omnicount_baselines.py \
+  --mode class-aware \
+  --limit -1 \
+  --conf-threshold 0.5 \
+  --out result/logs/omnicount_owlv2_classaware_full1957_conf05.json \
+  --device cuda
+```
+
+结果文件：
+
+```bash
+result/logs/omnicount_owlv2_classaware_full1957_conf05.json
+```
+
+### 9.1 OWLv2 class-aware 全量结果
+
+| Method | 输入协议 | 图像数 | MAE | RMSE | bias | mRMSE | mRMSE-nz |
+|---|---|---:|---:|---:|---:|---:|---:|
+| OWLv2 class-aware | 每张图 GT class list 作为 text prompts | 1,957 | 4.87 | 9.65 | -4.78 | **0.369** | **3.657** |
+| OV-CUD predicted class groups | image only，无 class prompt | 1,957 | **4.68** | **8.46** | -4.36 | 0.457 | 3.911 |
+
+解读：
+
+- OWLv2 使用 GT class list，输入更强；OV-CUD 完全不接收类别提示。
+- 在更强输入下，OWLv2 的 mRMSE / mRMSE-nz 略优于 OV-CUD，但 total MAE / RMSE 略弱于 OV-CUD。
+- 这张表非常适合回答 reviewer：“如果用 open-vocabulary detector，并给它类别提示，效果如何？”
+
+### 9.2 OWLv2 按 super-category
+
+| Super-category | 图像数 | MAE | RMSE | bias |
+|---|---:|---:|---:|---:|
+| Birds | 10 | 10.40 | 10.90 | -10.40 |
+| Fruits | 303 | 1.53 | 1.74 | -1.53 |
+| Pets | 11 | 6.27 | 7.40 | -6.27 |
+| Satellite | 127 | 2.22 | 4.25 | -2.22 |
+| Supermarket | 251 | 13.75 | 24.00 | -13.24 |
+| Urban | 1,000 | 4.61 | 5.50 | -4.59 |
+| Wild | 255 | 2.17 | 3.08 | -2.08 |
+
+### 9.3 OWLv2 按 GT count bin
+
+| GT count bin | 图像数 | MAE | RMSE | bias |
+|---|---:|---:|---:|---:|
+| 0-10 | 1,772 | 3.06 | 3.90 | -2.97 |
+| 11-20 | 123 | 11.41 | 12.00 | -11.39 |
+| 21-50 | 42 | 33.76 | 34.77 | -33.76 |
+| 51-100 | 20 | 64.50 | 65.86 | -64.50 |
+
+OWLv2 与 OV-CUD 都在高密度 bin 明显欠计数，说明检测式/候选式方法在密集场景仍受 proposal recall 和小目标可见性限制。
+
+---
+
+## 10. 推荐论文表格
+
+### 10.1 同协议主表：Prompt-free / no class list
+
+| Method / Protocol | 输入 | Class-wise output | MAE | RMSE | mRMSE |
+|---|---|---:|---:|---:|---:|
+| SAM2-only | Image only | 否 | 37.60 | 44.82 | - |
+| OV-CUD class-agnostic | Image only | 否 | 6.77 | 10.23 | - |
+| OV-CUD predicted class groups | Image only | 是 | **4.68** | **8.46** | 0.457 |
+| OV-CUD oracle class grouping | Oracle eval only | 是 | 1.12 | 2.22 | 0.111 |
+
+### 10.2 参考表：Prompted / class-name specified methods
+
+| Method | 输入 | MAE | RMSE | mRMSE | mRMSE-nz | 说明 |
+|---|---|---:|---:|---:|---:|---|
+| Grounding-DINO | class names | - | - | 1.29 | 3.27 | OmniCount 论文 published |
+| CLIPSeg | class names | - | - | 1.54 | 4.28 | OmniCount 论文 published |
+| TFOC | class names / text | - | - | 0.95 | 2.89 | OmniCount 论文 published |
+| OmniCount | class names + priors | - | - | **0.70** | **2.00** | OmniCount 论文 published |
+| OWLv2 class-aware | GT class list | 4.87 | 9.65 | **0.369** | 3.657 | 本地同 1,957 图 rerun |
+| OV-CUD predicted groups | image only | **4.68** | **8.46** | 0.457 | 3.911 | 无类别提示 |
+
+推荐写法：
+
+> We further compare OV-CUD with class-name prompted references on OmniCount-191. These methods receive the target class names or class list, whereas OV-CUD receives only the image. Despite this stricter protocol, OV-CUD achieves comparable total-count error and produces class-wise counts without prompts.
+
+中文写作口径：
+
+- 主文强调 **同协议 prompt-free 表**。
+- prompted methods 放 “reference comparison” 或 appendix。
+- 明确写 “not same protocol / stronger input”。
+- 不要声称 OV-CUD 在 OmniCount 官方 prompted protocol 上 SOTA。
+
+---
+
+## 11. 局限与下一步
+
+1. **高密度欠计数**：GT>20 的图像误差很大，OmniCount 可能需要复用 FSC147 的 multi-resolution / tiling 候选策略。
+2. **类别分配瓶颈**：Oracle class grouping 从 MAE=4.68 降到 1.12，说明更好的类别校准或文本 prompt normalization 有明显空间。
+3. **Dedup 贡献被压缩**：`conf=0.1` 已过滤大量重复候选，使 relation dedup 与 IoU NMS 差异很小。
+4. **协议差异必须讲清楚**：published OmniCount methods 使用 class-name prompts；OV-CUD 是 image-only prompt-free。
+
+建议后续如有时间补一个实验：
+
+```text
+OmniCount 高密度 Supermarket / Birds 子集上跑 multi-resolution candidates，
+验证 FSC147 12.74 的 proposal 策略是否也能缓解 OmniCount 欠计数。
 ```
 
 ---
 
-## 11. Files
+## 12. 文件索引
 
-| File | Purpose |
+| 文件 | 内容 |
 |---|---|
-| `script/eval_omnicount_multiclass_ablation.py` | New multi-class ablation evaluator |
-| `result/logs/omnicount_multiclass_ablation_full1957_fsc147head_conf01.json` | Primary full-test result |
-| `result/logs/omnicount_multiclass_ablation_mc500_fsc147head_conf01.json` | 500-image threshold validation |
-| `result/logs/omnicount_multiclass_ablation_mc500_cocohead.json` | COCO-head comparison |
-| `docs/omnicount_multiclass_ablation_report_20260708.md` | This report |
+| `script/eval_omnicount_multiclass_ablation.py` | OV-CUD OmniCount 多类别消融脚本 |
+| `script/run_omnicount_baselines.py` | OWLv2 baseline 脚本，已补 mRMSE / mRMSE-nz |
+| `result/logs/omnicount_multiclass_ablation_full1957_fsc147head_conf01.json` | OV-CUD 主结果 |
+| `result/logs/omnicount_owlv2_classaware_full1957_conf05.json` | OWLv2 class-aware full result |
+| `result/logs/omnicount_owlv2_classaware_100_conf05.json` | OWLv2 阈值选择记录 |
+| `docs/omnicount_multiclass_ablation_report_20260708.md` | 本中文实验记录 |
