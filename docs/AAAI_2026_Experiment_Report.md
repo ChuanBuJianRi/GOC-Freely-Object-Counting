@@ -166,6 +166,8 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 
 > FSC147-trained OV-CUD 无需任何 CARPK 微调即可达到 MAE=4.06。95% CI [3.72, 4.41] 极窄，结果高度可信。
 
+**2026-07-09 rerun 审计**: 使用当前代码、`category_cosine_pts32.pt`、`fsc147_relation_pts32_best.pt`、`tau_inst=0.99` 在 CARPK test full 459 上重跑，得到 MAE=4.0566 / RMSE=5.5094 / bias=-1.6166，与历史 `carpk_pts32_exp5c_best.json` 逐图完全一致。详见 `docs/carpk_full459_rerun_20260709.md`。
+
 ### 3.3 PUCPR+ — Additional Cross-Dataset Transfer
 
 | Setting | MAE | RMSE | SAM2 Recall |
