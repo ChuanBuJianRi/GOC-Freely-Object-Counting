@@ -38,7 +38,7 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 | 数据集 | 设定 | MAE | RMSE | 备注 |
 |---|---|---|---|---|
 | **FSC147 Test (historical cache-only)** | Prompt-free / Image-only | **12.74** | 106.20 | 1,189 rows; `7611.jpg` missing from final cache |
-| **FSC147 Test (audited current-code)** | Prompt-free / Image-only | **13.47** | 126.74 | Full 1,190 images; `7611.jpg` included via tiled fallback |
+| **FSC147 Test (audited current-code)** | Prompt-free / Image-only | **13.47** | 126.74 | Full 1,190 images; `7611.jpg` true MR100, fast=0 candidates |
 | **FSC147 Test (base pipeline)** | Prompt-free / Image-only | 16.54 | — | Full 1190 images, adaptive density only |
 | **CARPK Test** | Zero-shot transfer (FSC147→CARPK) | **4.06 ± 0.17** | 5.51 ± 0.24 | 459 images, 95% CI |
 | **PUCPR+ Test** | Zero-shot transfer + Tiling | **3.59** | 5.43 | 25 images, 2×2 tiling |
@@ -201,7 +201,7 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 - **累积改进**: Baseline 16.54 → P2 Multi-Res 13.45 → **P2 Extended 12.74 (-23.0%)**
 - **瓶颈分析**: 误差高度集中——Top 5% 图像贡献 52.8% 总误差。去掉 26 张灾难性失败图像后 MAE=8.78。剩余 gap 主要来自极端密度场景 (GT>500) 的 SAM2 候选绝对不足，属于 front-end 模型能力限制而非 OV-CUD pipeline 问题
 
-**2026-07-09 口径审计**: `fsc147_multires_extended.json` 的 `results` 长度为 1,189，且不包含唯一 `gt_count=2560` 的测试图 `7611.jpg`。按 current executable pipeline 显式补回 `7611.jpg` 后，full 1,190-image 指标为 MAE=13.47 / RMSE=126.74。后续论文主表应优先使用审计后的 1,190 图口径，12.74 仅保留为历史 cache-only headline。
+**2026-07-09 口径审计**: `fsc147_multires_extended.json` 的 `results` 长度为 1,189，且不包含唯一 `gt_count=2560` 的测试图 `7611.jpg`。按 current executable pipeline 显式补回 `7611.jpg` 后，full 1,190-image 指标为 MAE=13.47 / RMSE=126.74。随后补跑 true MR100：pts=16 fast 分支只产生一个近整图 mask 并被面积规则过滤，usable candidates=0；MR100 仍等价于 100+ tiled 的 208 个候选，预测保持 138，整体指标不变。后续论文主表应优先使用审计后的 1,190 图口径，12.74 仅保留为历史 cache-only headline。
 
 #### P3: Spatial Context Enhancement
 
@@ -230,7 +230,8 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 但历史 `fsc147_multires_extended.json` 和早期组件 rerun 都只包含 1,189 张；
 缺失图像为 `7611.jpg`。当前组件消融已补回该图并重跑，主表采用
 full 1,190-image 口径。旧 1,189 current-code A8 为 MAE=11.45，补回
-`7611.jpg` 后为 MAE=13.47。
+`7611.jpg` 后为 MAE=13.47。补跑 true MR100 后指标不变；`7611.jpg`
+的 fast 分支为 0 候选，MR100 分支实际仍只有 tiled 208 个候选。
 
 | Variant | 组件变化 | MAE | RMSE | Δ vs Full |
 |---|---|---:|---:|---:|

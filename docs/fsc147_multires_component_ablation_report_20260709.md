@@ -1,7 +1,7 @@
 # FSC147 Multi-Resolution 组件级消融实验记录
 
 **日期**: 2026-07-09
-**目标**: 审计 FSC147 full-test multi-resolution pipeline 的组件级消融，并修正此前只评估 1,189 张图的问题。FSC147 test split 实际为 1,190 张，其中 `7611.jpg` 在原始图像和标注中存在，但缺失于 final multires cache。
+**目标**: 审计 FSC147 full-test multi-resolution pipeline 的组件级消融，并修正此前只评估 1,189 张图的问题。FSC147 test split 实际为 1,190 张，其中 `7611.jpg` 在原始图像和标注中存在，但最初缺失于 final multires cache。
 
 ---
 
@@ -11,7 +11,7 @@
 |---|---:|---:|---:|---:|---|
 | 历史主结果 `fsc147_multires_extended.json` | 1,189 | 12.74 | 106.20 | -6.03 | 文件内 `results` 长度为 1,189，且无 `gt_count=2560` 样本 |
 | current-code 组件 rerun | 1,189 | 11.45 | 105.56 | -6.72 | 同一 current-code 路由，但按 cache 存在性跳过 `7611.jpg` |
-| **current-code 修正版 rerun** | **1,190** | **13.47** | **126.74** | **-8.75** | 显式补回 `7611.jpg`，本报告主表采用此口径 |
+| **current-code 修正版 rerun** | **1,190** | **13.47** | **126.74** | **-8.75** | 显式补回 `7611.jpg`；补 true MR100 后指标不变 |
 
 `7611.jpg` 的审计结果：
 
@@ -21,13 +21,15 @@
 | GT count | 2,560 |
 | 原图 | `/home/czp/official_code/dataset/FSC147/images_384_VarV2/7611.jpg` |
 | 标注 | `/home/czp/official_code/dataset/FSC147/annotation_FSC147_384.json` |
-| 缺失 cache | `fsc147_test_fast`, `fsc147_test_multires`, `fsc147_test_multires_all`, `fsc147_test_multires_51_100` |
-| 可用 fallback cache | `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled/7611.pt` |
-| fallback candidates | 208 |
+| 初始缺失 cache | `fsc147_test_fast`, `fsc147_test_multires`, `fsc147_test_multires_all`, `fsc147_test_multires_51_100` |
+| 初始可用 fallback cache | `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled/7611.pt` |
+| tiled candidates | 208 |
+| fast rerun 结果 | pts=16 全图 SAM2 只生成 1 个整图 mask，area ratio≈0.99999，被 `area_ratio > 0.95` 过滤；最终 fast usable candidates=0 |
+| true MR100 cache | `fsc147_test_fast/7611.pt` 为 0 候选，`fsc147_test_multires/7611.pt` 为 208 候选，已同步到 `fsc147_test_multires_all/7611.pt` |
 | A8 prediction | 138 |
 | 单图绝对误差 | 2,422 |
 
-结论：FSC147 全量测试应按 **1,190 张** 报告。此前 1,189 张结果是 cache-only 口径，会静默跳过一个极端高密度失败样本，因此不应继续写成 full 1190。
+结论：FSC147 全量测试应按 **1,190 张** 报告。此前 1,189 张结果是 cache-only 口径，会静默跳过一个极端高密度失败样本，因此不应继续写成 full 1190。补 true MR100 后，`7611.jpg` 仍只能由 tiled 分支提供 208 个候选，预测仍为 138，说明主要瓶颈是 proposal recall，而不是 fallback 评估口径。
 
 ---
 
@@ -37,8 +39,8 @@
 
 - FSC147 test split: 1,190 张；
 - 修正版评估: 1,190 张全部计入；
-- `7611.jpg` 使用 100+ tiled cache fallback；
-- 在 A7 `no_100plus_multires` 中，因该场景显式移除 100+ 前端且 fast cache 也缺失，`7611.jpg` 按 0 候选预测计入，而不是跳过。
+- `7611.jpg` 已补 true 100+ MR cache：fast 分支 0 候选，tiled 分支 208 候选，merge 后 208 候选；
+- 在 A7 `no_100plus_multires` 中，因该场景显式移除 100+ 前端，`7611.jpg` 只剩 fast 0-candidate cache，预测为 0，而不是跳过。
 
 固定参数：
 
@@ -172,6 +174,12 @@ O3 per-bin：
 
 ```text
 On the full 1,190-image FSC147 test split, the current multi-resolution OV-CUD pipeline obtains 13.47 MAE and 126.74 RMSE. The previously logged 12.74 MAE result was produced on a 1,189-image cache-only protocol that omitted 7611.jpg, an extreme-density image with 2,560 objects.
+```
+
+补 true MR100 后的审计表述：
+
+```text
+For 7611.jpg, re-running the pts=16 fast frontend produced no usable proposals: SAM2 returned only a near-full-image mask, which was filtered by the area-ratio rule. The resulting true MR100 cache is therefore identical to the 100+ tiled candidates (208 proposals), and the prediction remains 138.
 ```
 
 组件结论可以写：

@@ -21974,10 +21974,10 @@
     "O2_oracle_dedup": 138,
     "O3_proposal_cover": 208,
     "n_conf_filtered": 70,
-    "n_groups_A8": 21,
+    "n_groups_A8": 14,
     "file_name": "7611.jpg",
-    "cache_path": "/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled/7611.pt",
-    "cache_source": "tiled100_fallback_missing_final",
+    "cache_path": "/home/czp/ws_yiyang/ovcud_cache/fsc147_test_multires_all/7611.pt",
+    "cache_source": "final_mr100",
     "model_source": "pts32"
    },
    {
@@ -33284,8 +33284,8 @@
    },
    {
     "file_name": "7611.jpg",
-    "cache_path": "/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled/7611.pt",
-    "cache_source": "tiled100_fallback_missing_mr100",
+    "cache_path": "/home/czp/ws_yiyang/ovcud_cache/fsc147_test_multires/7611.pt",
+    "cache_source": "mr100",
     "model_source": "pts32",
     "gt_count": 2560,
     "A6_no_51_100_multires": 138,
@@ -44046,8 +44046,8 @@
    {
     "file_name": "7611.jpg",
     "cache_path": "/home/czp/ws_yiyang/ovcud_cache/fsc147_test_fast/7611.pt",
-    "cache_source": "missing_cache_zero_candidate",
-    "model_source": "none",
+    "cache_source": "fast",
+    "model_source": "fast",
     "gt_count": 2560,
     "A7_no_100plus_multires": 0,
     "n_candidates": 0
