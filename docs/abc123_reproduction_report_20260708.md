@@ -1,6 +1,6 @@
 # ABC123 复现实验记录
 
-**日期**: 2026-07-08；2026-07-09 补充 FSC147 full-test 切片分析
+**日期**: 2026-07-08；2026-07-09 补充 FSC147 full-test 切片分析与复现差异排查
 **分支**: `ljs`
 **论文**: ABC Easy as 123: A Blind Counter for Exemplar-Free Multi-Class Class-agnostic Counting, arXiv:2309.04820v2
 **官方仓库**: https://github.com/ActiveVisionLab/ABC123
@@ -214,6 +214,46 @@ ABC123 可以在论文中引用，但建议拆成两行：
 
 ```text
 ABC123 reports strong prompt-free dense-regression results on the FSC147 subset with fewer than 300 objects. On our full FSC147 test evaluation using the released checkpoint, the method suffers from severe undercounting on the 300+ images; these 1.93% images account for 85.1% of the squared error. We therefore report ABC123 as a dense-map-supervised reference rather than a same-protocol full-test baseline.
+```
+
+### 4.8 复现差异排查
+
+针对“为什么与 ABC123 论文 FSC147 数字差很多，是否是我们复现有问题”，2026-07-09 做了逐项核查。结论是：目前没有发现我们 wrapper 的明显实现错误；更准确的判断是，官方仓库没有释放论文 FSC147 table 所需的完整评估 adapter / 权重 / split 口径，导致本地只能报告 “official README checkpoint reproduction”，不能声称复现了 paper FSC147 11.75。
+
+| 排查项 | 结果 | 结论 |
+|---|---|---|
+| 官方 checkpoint | 使用 README 下载的 `/tmp/ABC123/checkpoints/model_chkpt.ckpt`；`epoch=86`，metadata `best val_DDP_MAE=8.9605` | 权重来源正确 |
+| 权重加载 | 官方 `ABC123` 类与本地 wrapper 均为 `missing=0, unexpected=0` | 不是部分权重漏加载 |
+| 模型结构 | 官方 `ABC123test.yml` 为 `counting_head=5_32`、`gtd_scale=400`、`upsample_padding_mode=replicate` | 与本地脚本一致 |
+| counting head | 官方 `models/counting_head.py` 与本地 einops-free 实现在同一随机/真实特征上 `count max diff=0.0`、`density max diff=0.0` | head 实现等价 |
+| 官方完整 forward | 直接实例化官方 `models/ABC123.py`，与本地 wrapper 在 `4756.jpg`、`1971.jpg` 上 `feature/count/density max diff=0.0` | 本地 wrapper 与官方 forward 完全一致 |
+| 预处理 | 官方 `ToTensor()+Resize(224)` 与本地 PIL resize 后转 tensor，在 test 前 200 张上 mean abs pred delta：`sum=0.0679`、`max_density=0.0338` | resize 顺序差异可以忽略 |
+| ImageNet normalization | 官方 `data.py` 没有对输入调用 Normalize；额外加 normalization 会使前 200 张 MAE 变差 | 不应加 ImageNet normalization |
+| `gtd_scale` | 官方 test config 明确为 `400`；不除以 400 会让输出 count 放大 400 倍 | scale 处理正确 |
+| 官方仓库支持 | `/tmp/ABC123/data.py` 只支持 MCAC/MCAC-M1；README 只提供 MCAC/MCAC-M1 testing 命令 | FSC147 评估 adapter 未公开 |
+| FSC147 split 口径 | 本地 test 中 `GT>300` 为 `23/1190=1.93%`；论文文字称 test exclusion 为 `1.1%`，val exclusion `3.0%` 与本地 val `3.03%` 接近 | test split/版本口径可能不完全一致 |
+| 论文可视化样例 | 15 张 FSC examples 均在本地 val split；论文视觉预测 MAE 约 `1.21`，本地 official checkpoint `sum` MAE 约 `28.63`、`max_density` MAE 约 `17.85` | 差距不是 full-test 高密度图或聚合指标导致 |
+
+论文 FSC examples 的关键样例：
+
+| Image | Paper GT | Paper pred | Local sum | Local max_density |
+|---|---:|---:|---:|---:|
+| `1971.jpg` | 19 | 19.5 | 67.9 | 26.0 |
+| `3266.jpg` | 20 | 20.2 | 59.1 | 31.7 |
+| `4756.jpg` | 14 | 14.7 | 2.8 | 2.0 |
+| `7265.jpg` | 42 | 40.7 | 127.2 | 86.4 |
+
+这组检查说明：即使不看 full test 的 `GT>300` 极端图，官方 README checkpoint 在论文展示的 val examples 上也不能复现论文预测。因此主要差异更可能来自以下几类：
+
+1. 论文 FSC147 evaluation 使用了未公开的 sub-class combine / FSC adapter，而不是仓库 README 的 MCAC testing pipeline；
+2. README example weights 可能不是生成 FSC147 table / figures 的同一 checkpoint；
+3. FSC147/FSC133 数据版本或 test split 口径与本地 `Train_Test_Val_FSC_147.json` 有差异；
+4. 旧环境差异例如 PyTorch 1.12 / timm 1.0.3 可能带来小数值变化，但无法解释 `11.75 -> 37.51` 这种 MAE 级别差距。
+
+因此主文建议写成：
+
+```text
+We audited the released ABC123 checkpoint and code path. The local wrapper exactly matches the official forward pass and uses the official test configuration, but the released repository does not contain the FSC147 evaluation adapter used for the published table. We therefore cite the published ABC123 FSC147 (<300) result separately and report our released-checkpoint rerun as a reproducibility audit, not as a successful reproduction of the paper number.
 ```
 
 ---
