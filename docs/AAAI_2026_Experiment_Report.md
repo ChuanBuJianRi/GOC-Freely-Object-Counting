@@ -203,6 +203,8 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 
 **2026-07-09 口径审计**: `fsc147_multires_extended.json` 的 `results` 长度为 1,189，且不包含唯一 `gt_count=2560` 的测试图 `7611.jpg`。按 current executable pipeline 显式补回 `7611.jpg` 后，full 1,190-image 指标为 MAE=13.47 / RMSE=126.74。随后补跑 true MR100：pts=16 fast 分支只产生一个近整图 mask 并被面积规则过滤，usable candidates=0；MR100 仍等价于 100+ tiled 的 208 个候选，预测保持 138，整体指标不变。后续论文主表应优先使用审计后的 1,190 图口径，12.74 仅保留为历史 cache-only headline。
 
+**Extreme-density rescue 试验**: 对 `7611.jpg` 进一步测试 4x4 tiled rescue。无 GT 触发条件 `fast n_candidates == 0` 在 FSC147 test 上只触发 `7611.jpg`。4x4 tiled ov25 将该图 candidates 208→1997、O3 cover 208→1868、prediction 138→1098；如果仅替换该图，full 1190 MAE 从 13.47 降到 12.67，RMSE 从 126.74 降到 113.71。该结果目前作为探索性 rescue policy 记录，详见 `docs/fsc147_extreme_density_rescue_tiling_20260709.md`。
+
 #### P3: Spatial Context Enhancement
 
 在 dedup 阶段添加空间距离惩罚 (spatial weight=0/5/10)，结果无显著差异 (MAE≈13.45)。原因: relation head 的 pairwise features 已包含 6 维 bbox geometrics，clustering 已使用 spatial sub-clustering，空间信息已被充分利用。

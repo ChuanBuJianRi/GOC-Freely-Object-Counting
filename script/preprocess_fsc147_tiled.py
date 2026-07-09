@@ -117,6 +117,39 @@ def merge_masks_by_iou(masks, bboxes, iou_thresh=0.7):
     return kept
 
 
+def bbox_iou_xywh(a, b):
+    ax1, ay1, aw, ah = a
+    bx1, by1, bw, bh = b
+    ax2, ay2 = ax1 + aw, ay1 + ah
+    bx2, by2 = bx1 + bw, by1 + bh
+    ix1, iy1 = max(ax1, bx1), max(ay1, by1)
+    ix2, iy2 = min(ax2, bx2), min(ay2, by2)
+    iw, ih = max(0, ix2 - ix1), max(0, iy2 - iy1)
+    inter = iw * ih
+    if inter == 0:
+        return 0.0
+    return inter / max(aw * ah + bw * bh - inter, 1.0)
+
+
+def merge_masks_by_bbox(bboxes, iou_thresh=0.7):
+    n = len(bboxes)
+    if n <= 1:
+        return list(range(n))
+    areas = [b[2] * b[3] for b in bboxes]
+    order = sorted(range(n), key=lambda i: areas[i], reverse=True)
+    kept = []
+    for i in order:
+        dup = False
+        for j in kept:
+            if bbox_iou_xywh(bboxes[i], bboxes[j]) > iou_thresh:
+                dup = True
+                break
+        if not dup:
+            kept.append(i)
+    kept.sort()
+    return kept
+
+
 # ---------------------------------------------------------------------------
 # Dot-based matching (FSC147 specific)
 # ---------------------------------------------------------------------------
@@ -164,7 +197,8 @@ def dot_based_matching(
 # Process single image with tiling
 # ---------------------------------------------------------------------------
 def process_image_tiled(image, file_name, ann_entry, class_idx, class_name,
-                         amg, encoder, n_tiles, overlap, upscale=False):
+                         amg, encoder, n_tiles, overlap, upscale=False,
+                         merge_mode="mask"):
     h, w = image.shape[:2]
     tiles = compute_tiles(h, w, n_tiles, overlap)
 
@@ -223,8 +257,15 @@ def process_image_tiled(image, file_name, ann_entry, class_idx, class_name,
     if len(all_masks) == 0:
         return None
 
-    # Merge overlapping candidates from different tiles
-    keep_idx = merge_masks_by_iou(all_masks, all_bboxes, iou_thresh=0.7)
+    # Merge overlapping candidates from different tiles. Mask IoU is the
+    # original recipe; bbox mode is used for extreme rescue sweeps where
+    # dense tiling can make full mask-pair IoU prohibitively slow.
+    if merge_mode == "bbox":
+        keep_idx = merge_masks_by_bbox(all_bboxes, iou_thresh=0.7)
+    elif merge_mode == "mask":
+        keep_idx = merge_masks_by_iou(all_masks, all_bboxes, iou_thresh=0.7)
+    else:
+        raise ValueError(f"unknown merge_mode: {merge_mode}")
     masks = [all_masks[i] for i in keep_idx]
     bboxes = [all_bboxes[i] for i in keep_idx]
     n_cand = len(masks)
@@ -241,14 +282,19 @@ def process_image_tiled(image, file_name, ann_entry, class_idx, class_name,
     kept_idx = []
     for i in order:
         dup = False
-        mi = masks[i].astype(bool)
         for j in kept_idx:
-            mj = masks[j].astype(bool)
-            inter = float(np.logical_and(mi, mj).sum())
-            union = float(np.logical_or(mi, mj).sum())
-            if union > 0 and inter / union > 0.9:
-                dup = True
-                break
+            if merge_mode == "bbox":
+                if bbox_iou_xywh(bboxes[i], bboxes[j]) > 0.9:
+                    dup = True
+                    break
+            else:
+                mi = masks[i].astype(bool)
+                mj = masks[j].astype(bool)
+                inter = float(np.logical_and(mi, mj).sum())
+                union = float(np.logical_or(mi, mj).sum())
+                if union > 0 and inter / union > 0.9:
+                    dup = True
+                    break
         if not dup:
             kept_idx.append(i)
     kept_idx = sorted(kept_idx)
@@ -307,6 +353,7 @@ def main():
     ap.add_argument("--pts-per-side", type=int, default=32)
     ap.add_argument("--upscale", action="store_true",
                     help="Upscale each tile to original image resolution before SAM2")
+    ap.add_argument("--merge-mode", choices=["mask", "bbox"], default="mask")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
 
@@ -388,6 +435,7 @@ def main():
             image, fn, entry, class_idx, class_name,
             amg, encoder, args.tiles, args.overlap,
             upscale=args.upscale,
+            merge_mode=args.merge_mode,
         )
         if result is None:
             print(f"  [warn] No candidates for {fn}")
