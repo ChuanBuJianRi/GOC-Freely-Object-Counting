@@ -301,9 +301,12 @@ def decode_cover_sets_from_masks(d, points):
     return cover
 
 
-def source_cover_sets(stem, final_d, ann, dirs):
+def source_cover_sets(stem, final_d, ann, dirs, cache_source=""):
     """Reconstruct final-cache candidate dot coverage from source caches."""
     points = ann.get(f"{stem}.jpg", {}).get("points", [])
+    if str(cache_source).startswith("tiled"):
+        return decode_cover_sets_from_masks(final_d, points)
+
     fast_path = dirs["fast"] / f"{stem}.pt"
     mr100_path = dirs["mr100"] / f"{stem}.pt"
     mr51_path = dirs["mr51"] / f"{stem}.pt"
@@ -356,6 +359,30 @@ def match_cover_by_bbox(final_d, source_bbox, source_cover):
         used.add(chosen)
         cover.append(source_cover[chosen])
     return cover
+
+
+def gt_count_from_ann(stem, ann):
+    entry = ann.get(f"{stem}.jpg", {})
+    if "gt_count" in entry:
+        return int(entry["gt_count"])
+    return len(entry.get("points", []))
+
+
+def empty_prediction_row(stem, ann):
+    gt_count = gt_count_from_ann(stem, ann)
+    return {
+        "gt_count": gt_count,
+        "n_candidates": 0,
+        "A1_filter_only": 0,
+        "A2_iou_nms05": 0,
+        "A3_global_relation": 0,
+        "A4_group_no_spatial": 0,
+        "A5_no_adaptive_dedup": 0,
+        "A8_full": 0,
+        "O1_oracle_category": 0,
+        "O2_oracle_dedup": 0,
+        "O3_proposal_cover": 0,
+    }
 
 
 def evaluate_one(d, category_head, relation_head, text_prototypes, device, cover_sets=None):
@@ -445,21 +472,48 @@ def evaluate_one(d, category_head, relation_head, text_prototypes, device, cover
 
 
 def load_cache_for_scenario(stem, scenario, dirs):
+    file_name = f"{stem}.pt"
     if scenario == "final_multires":
-        p = dirs["final"] / f"{stem}.pt"
+        p = dirs["final"] / file_name
+        if p.exists():
+            if (dirs["mr100"] / file_name).exists():
+                cache_source = "final_mr100"
+            elif (dirs["mr51"] / file_name).exists():
+                cache_source = "final_mr51"
+            else:
+                cache_source = "final_fast"
+            return torch.load(p, map_location="cpu", weights_only=False), p, cache_source
+        fallback = dirs["tiled100"] / file_name
+        if fallback.exists():
+            return (
+                torch.load(fallback, map_location="cpu", weights_only=False),
+                fallback,
+                "tiled100_fallback_missing_final",
+            )
     elif scenario == "no_51_100_multires":
-        p = dirs["mr100"] / f"{stem}.pt"
-        if not p.exists():
-            p = dirs["fast"] / f"{stem}.pt"
+        p = dirs["mr100"] / file_name
+        if p.exists():
+            return torch.load(p, map_location="cpu", weights_only=False), p, "mr100"
+        fallback = dirs["tiled100"] / file_name
+        if fallback.exists():
+            return (
+                torch.load(fallback, map_location="cpu", weights_only=False),
+                fallback,
+                "tiled100_fallback_missing_mr100",
+            )
+        p = dirs["fast"] / file_name
+        if p.exists():
+            return torch.load(p, map_location="cpu", weights_only=False), p, "fast"
     elif scenario == "no_100plus_multires":
-        p = dirs["mr51"] / f"{stem}.pt"
-        if not p.exists():
-            p = dirs["fast"] / f"{stem}.pt"
+        p = dirs["mr51"] / file_name
+        if p.exists():
+            return torch.load(p, map_location="cpu", weights_only=False), p, "mr51"
+        p = dirs["fast"] / file_name
+        if p.exists():
+            return torch.load(p, map_location="cpu", weights_only=False), p, "fast"
     else:
         raise ValueError(scenario)
-    if not p.exists():
-        return None, p
-    return torch.load(p, map_location="cpu", weights_only=False), p
+    return None, p, "missing_cache_zero_candidate"
 
 
 def aggregate_rows(rows, keys):
@@ -527,18 +581,21 @@ def main():
             "cache_final": str(dirs["final"]),
             "cache_no_51_100": f"{dirs['mr100']} over {dirs['fast']}",
             "cache_no_100plus": f"{dirs['mr51']} over {dirs['fast']}",
-            "note": "A8 is anchored to result/logs/fsc147_multires_extended.json.",
+            "fallback_policy": (
+                "If a FSC147 test image is missing from the merged multires cache but has "
+                "a 100+ tiled cache, evaluate that tiled cache with the pts32 heads. If "
+                "the scenario intentionally removes that frontend and no fast cache exists, "
+                "include the image as a zero-candidate prediction instead of skipping it."
+            ),
+            "note": "A8 1189-image anchor is result/logs/fsc147_multires_extended.json.",
         }
     }
 
-    def model_for(stem, scenario):
-        use_pts32 = False
-        if scenario == "final_multires":
-            use_pts32 = (dirs["mr100"] / f"{stem}.pt").exists() or (dirs["mr51"] / f"{stem}.pt").exists()
-        elif scenario == "no_51_100_multires":
-            use_pts32 = (dirs["mr100"] / f"{stem}.pt").exists()
-        elif scenario == "no_100plus_multires":
-            use_pts32 = (dirs["mr51"] / f"{stem}.pt").exists()
+    def model_for_cache(cache_source):
+        use_pts32 = (
+            cache_source in {"final_mr100", "final_mr51", "mr100", "mr51"}
+            or str(cache_source).startswith("tiled")
+        )
         if use_pts32:
             return category_pts32, relation_pts32, "pts32"
         return category_fast, relation_fast, "fast"
@@ -558,16 +615,19 @@ def main():
     t0 = time.time()
     for i, name in enumerate(names):
         stem = Path(name).stem
-        d, cache_path = load_cache_for_scenario(stem, "final_multires", dirs)
+        d, cache_path, cache_source = load_cache_for_scenario(stem, "final_multires", dirs)
         if d is None:
-            continue
-        category_head, relation_head, model_source = model_for(stem, "final_multires")
-        cover_sets = None
-        if not args.skip_oracle:
-            cover_sets = source_cover_sets(stem, d, ann, dirs)
-        row = evaluate_one(d, category_head, relation_head, text_prototypes, args.device, cover_sets)
+            row = empty_prediction_row(stem, ann)
+            model_source = "none"
+        else:
+            category_head, relation_head, model_source = model_for_cache(cache_source)
+            cover_sets = None
+            if not args.skip_oracle:
+                cover_sets = source_cover_sets(stem, d, ann, dirs, cache_source)
+            row = evaluate_one(d, category_head, relation_head, text_prototypes, args.device, cover_sets)
         row["file_name"] = name
         row["cache_path"] = str(cache_path)
+        row["cache_source"] = cache_source
         row["model_source"] = model_source
         rows.append(row)
         if (i + 1) % 100 == 0:
@@ -589,14 +649,17 @@ def main():
         t1 = time.time()
         for i, name in enumerate(names):
             stem = Path(name).stem
-            d, cache_path = load_cache_for_scenario(stem, scenario, dirs)
+            d, cache_path, cache_source = load_cache_for_scenario(stem, scenario, dirs)
             if d is None:
-                continue
-            category_head, relation_head, model_source = model_for(stem, scenario)
-            row = evaluate_one(d, category_head, relation_head, text_prototypes, args.device, None)
+                row = empty_prediction_row(stem, ann)
+                model_source = "none"
+            else:
+                category_head, relation_head, model_source = model_for_cache(cache_source)
+                row = evaluate_one(d, category_head, relation_head, text_prototypes, args.device, None)
             srows.append({
                 "file_name": name,
                 "cache_path": str(cache_path),
+                "cache_source": cache_source,
                 "model_source": model_source,
                 "gt_count": row["gt_count"],
                 label: row["A8_full"],

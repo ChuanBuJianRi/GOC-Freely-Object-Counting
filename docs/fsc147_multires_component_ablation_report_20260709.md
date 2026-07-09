@@ -1,22 +1,33 @@
 # FSC147 Multi-Resolution 组件级消融实验记录
 
 **日期**: 2026-07-09
-**目标**: 围绕当前 FSC147 full-test multi-resolution pipeline，补齐 reviewer 最关心的组件级消融：固定同一批 1,189 张可评估 test 图像，依次去掉类别过滤、IoU NMS / relation dedup、semantic grouping、adaptive dedup 和高密度前端 cache，并补充 oracle 诊断。
+**目标**: 审计 FSC147 full-test multi-resolution pipeline 的组件级消融，并修正此前只评估 1,189 张图的问题。FSC147 test split 实际为 1,190 张，其中 `7611.jpg` 在原始图像和标注中存在，但缺失于 final multires cache。
 
 ---
 
-## 1. 重要结论
+## 1. 口径审计结论
 
-本次 full rerun 发现一个需要在论文整理前统一的口径问题：
+| 记录 | 图像数 | MAE | RMSE | bias | 说明 |
+|---|---:|---:|---:|---:|---|
+| 历史主结果 `fsc147_multires_extended.json` | 1,189 | 12.74 | 106.20 | -6.03 | 文件内 `results` 长度为 1,189，且无 `gt_count=2560` 样本 |
+| current-code 组件 rerun | 1,189 | 11.45 | 105.56 | -6.72 | 同一 current-code 路由，但按 cache 存在性跳过 `7611.jpg` |
+| **current-code 修正版 rerun** | **1,190** | **13.47** | **126.74** | **-8.75** | 显式补回 `7611.jpg`，本报告主表采用此口径 |
 
-| 项目 | MAE | RMSE | bias | 说明 |
-|---|---:|---:|---:|---|
-| 历史主结果日志 `fsc147_multires_extended.json` | 12.74 | 106.20 | -6.03 | 之前报告使用的 headline |
-| 本次 current-code A8 rerun | **11.45** | **105.56** | -6.72 | 同一 final multires cache，按当前可执行代码重跑 |
+`7611.jpg` 的审计结果：
 
-Anchor 状态为 `MISMATCH`，MAE 差 `1.29`。逐图比较中，1,189 张里有 406 张预测不同，平均绝对预测差 `2.41`。主要原因不是 cache 缺失，而是历史 `12.74` 文件的生成脚本/中间组合口径与当前可执行脚本不完全一致。
+| 字段 | 值 |
+|---|---|
+| FSC147 split | test |
+| GT count | 2,560 |
+| 原图 | `/home/czp/official_code/dataset/FSC147/images_384_VarV2/7611.jpg` |
+| 标注 | `/home/czp/official_code/dataset/FSC147/annotation_FSC147_384.json` |
+| 缺失 cache | `fsc147_test_fast`, `fsc147_test_multires`, `fsc147_test_multires_all`, `fsc147_test_multires_51_100` |
+| 可用 fallback cache | `/home/czp/ws_yiyang/ovcud_cache/fsc147_test_tiled/7611.pt` |
+| fallback candidates | 208 |
+| A8 prediction | 138 |
+| 单图绝对误差 | 2,422 |
 
-因此本文档的主表采用 **本次 current-code rerun** 作为组件消融 anchor；历史 `12.74` 仍作为此前 headline 记录，不建议在没有统一 provenance 前直接把 `11.45` 替换为论文主数字。
+结论：FSC147 全量测试应按 **1,190 张** 报告。此前 1,189 张结果是 cache-only 口径，会静默跳过一个极端高密度失败样本，因此不应继续写成 full 1190。
 
 ---
 
@@ -25,9 +36,9 @@ Anchor 状态为 `MISMATCH`，MAE 差 `1.29`。逐图比较中，1,189 张里有
 评估数据：
 
 - FSC147 test split: 1,190 张；
-- 可评估 cache: 1,189 张；
-- 缺失图像: `7611.jpg`；
-- GT bins: `0-10 / 11-20 / 21-50 / 51-100 / 100+`。
+- 修正版评估: 1,190 张全部计入；
+- `7611.jpg` 使用 100+ tiled cache fallback；
+- 在 A7 `no_100plus_multires` 中，因该场景显式移除 100+ 前端且 fast cache 也缺失，`7611.jpg` 按 0 候选预测计入，而不是跳过。
 
 固定参数：
 
@@ -43,23 +54,21 @@ Anchor 状态为 `MISMATCH`，MAE 差 `1.29`。逐图比较中，1,189 张里有
 
 模型口径：
 
-| Cache 类型 | Category head | Relation head |
+| Cache 来源 | Category head | Relation head |
 |---|---|---|
-| fast/base | `category_cosine_fast.pt` | `fsc147_relation_best.pt` |
-| multi-resolution | `category_cosine_pts32.pt` | `fsc147_relation_pts32_best.pt` |
+| `final_fast` / `fast` | `category_cosine_fast.pt` | `fsc147_relation_best.pt` |
+| `final_mr100` / `final_mr51` / `mr100` / `mr51` / tiled fallback | `category_cosine_pts32.pt` | `fsc147_relation_pts32_best.pt` |
 
-新增脚本：
+运行命令：
 
 ```bash
 python3 script/ablation_fsc147_multires_components.py \
-  --out result/logs/fsc147_multires_component_ablation.json
+  --out result/logs/fsc147_multires_component_ablation_1190.json
 ```
 
 ---
 
 ## 3. 组件级消融
-
-定义：
 
 | ID | Variant | 目的 |
 |---|---|---|
@@ -70,28 +79,27 @@ python3 script/ablation_fsc147_multires_components.py \
 | A5 | no adaptive dedup | 使用 spatial refinement，但大 group 不启用 adaptive/greedy dedup |
 | A8 | full current pipeline | 完整 current-code rerun |
 
-主表：
+1190 图主表：
 
 | Variant | MAE | RMSE | bias | 相对 A8 |
 |---|---:|---:|---:|---:|
-| A1 filter only | 13.38 | 105.79 | -3.53 | +1.93 |
-| A2 IoU NMS@0.5 | 13.07 | 105.77 | -4.36 | +1.63 |
-| A3 global relation | **11.32** | 105.59 | -7.09 | -0.13 |
-| A4 group no spatial | 11.40 | 105.57 | -6.88 | -0.05 |
-| A5 no adaptive dedup | 12.37 | 105.65 | -5.11 | +0.92 |
-| A8 full | 11.45 | **105.56** | -6.72 | 0.00 |
+| A1 filter only | 15.40 | 126.93 | -5.57 | +1.93 |
+| A2 IoU NMS@0.5 | 15.10 | 126.91 | -6.39 | +1.62 |
+| A3 global relation | **13.34** | 126.77 | -9.12 | -0.13 |
+| A4 group no spatial | 13.43 | 126.75 | -8.91 | -0.05 |
+| A5 no adaptive dedup | 14.39 | 126.81 | -7.14 | +0.92 |
+| A8 full | 13.47 | **126.74** | -8.75 | 0.00 |
 
 解读：
 
-1. **Relation head 明显优于 IoU NMS**：A2 `13.07` → A3 `11.32`，说明 learned relation dedup 是有贡献的。
-2. **Adaptive dedup 有贡献**：A5 `12.37` → A8 `11.45`，大 group 的 adaptive/greedy dedup 带来约 `0.92` MAE 改善。
-3. **Semantic/spatial grouping 在 FSC147 single-class 上不是主要收益来源**：A3/A4/A8 差异很小，A3 甚至略优。这不否定 multi-category claim；它说明 FSC147 本身是单类别标注，不适合证明 semantic grouping 的主要价值。OmniCount 多类别表更适合支撑该 claim。
+1. Relation head 仍明显优于 IoU NMS：A2 `15.10` → A3 `13.34`。
+2. Adaptive dedup 仍有稳定贡献：A5 `14.39` → A8 `13.47`。
+3. A3/A4/A8 非单调，说明 FSC147 的 single-class 标注不适合单独证明 semantic/category grouping；multi-category claim 应主要由 OmniCount 多类别实验支撑。
+4. 1190 口径下 RMSE 明显升高，主要由 `7611.jpg` 这个 GT=2,560 的极端密度样本带来。
 
 ---
 
 ## 4. 高密度前端消融
-
-定义：
 
 | ID | Variant | 说明 |
 |---|---|---|
@@ -99,33 +107,32 @@ python3 script/ablation_fsc147_multires_components.py \
 | A7 | no 100+ multires | 去掉 100+ bin 的 MR overlay，只保留 51-100 MR |
 | A8 | full | 同时保留 51-100 和 100+ MR |
 
-结果：
+1190 图结果：
 
 | Variant | MAE | RMSE | bias | 主要影响 |
 |---|---:|---:|---:|---|
-| A6 no 51-100 MR | 13.64 | 106.13 | -10.78 | 51-100 欠计数明显 |
-| A7 no 100+ MR | 24.21 | 122.26 | -21.07 | 100+ 大幅崩溃 |
-| A8 full | **11.45** | **105.56** | -6.72 | 当前最好 |
+| A6 no 51-100 MR | 15.66 | 127.21 | -12.80 | 51-100 欠计数明显 |
+| A7 no 100+ MR | 26.34 | 142.97 | -23.20 | 100+ 大幅退化 |
+| A8 full | **13.47** | **126.74** | -8.75 | 当前 1190 口径最好 |
 
-Per-bin：
+Per-bin MAE：
 
 | Variant | 0-10 | 11-20 | 21-50 | 51-100 | 100+ |
 |---|---:|---:|---:|---:|---:|
-| A6 no 51-100 MR | 1.60 | 2.19 | 5.78 | 18.24 | 43.87 |
-| A7 no 100+ MR | 1.60 | 2.19 | 5.78 | 8.00 | 122.07 |
-| A8 full | **1.60** | **2.19** | **5.78** | **8.00** | **43.87** |
+| A6 no 51-100 MR | 1.60 | 2.19 | 5.78 | 18.24 | 56.06 |
+| A7 no 100+ MR | 1.60 | 2.19 | 5.78 | 8.00 | 134.57 |
+| A8 full | **1.60** | **2.19** | **5.78** | **8.00** | **56.06** |
 
 结论：
 
 - 51-100 MR overlay 主要把 51-100 MAE 从 `18.24` 降到 `8.00`；
-- 100+ MR overlay 更关键，把 100+ MAE 从 `122.07` 降到 `43.87`；
-- 这组结果强支撑 multi-resolution frontend 是最终性能的关键，而不是单纯阈值调参。
+- 100+ MR overlay 更关键，把 100+ MAE 从 `134.57` 降到 `56.06`；
+- 这组结果强支撑 multi-resolution frontend 是最终性能的关键，而不是单纯阈值调参；
+- `7611.jpg` 纳入后，100+ bin 更能反映极端密度场景下的 proposal recall 瓶颈。
 
 ---
 
 ## 5. Oracle 诊断
-
-定义：
 
 | ID | Variant | 说明 |
 |---|---|---|
@@ -133,52 +140,52 @@ Per-bin：
 | O2 | oracle dot-sharing dedup | 保持预测 grouping，用 GT dot-sharing 替换 same-instance components |
 | O3 | proposal cover upper bound | 只统计 final candidates 覆盖到的 unique GT dots |
 
-结果：
+1190 图结果：
 
 | Variant | MAE | RMSE | bias | 解释 |
 |---|---:|---:|---:|---|
-| O1 oracle category | 11.21 | 105.47 | -7.02 | 比 A8 只好 `0.24`，分类不是主瓶颈 |
-| O2 oracle dot-sharing dedup | 18.10 | 110.77 | -17.88 | 在 MR 合并 cache 上不是有效 upper bound |
-| O3 proposal cover upper bound | **6.01** | **66.60** | -6.01 | proposal recall 仍限制极端密度图 |
+| O1 oracle category | 13.17 | 125.55 | -8.99 | 比 A8 只好 `0.30`，分类不是主瓶颈 |
+| O2 oracle dot-sharing dedup | 20.12 | 131.10 | -19.90 | 在 MR 合并 cache 上不是有效 upper bound |
+| O3 proposal cover upper bound | **7.98** | **95.29** | -7.98 | proposal recall 仍限制极端密度图 |
 
 O3 per-bin：
 
-| Bin | MAE | RMSE | bias |
-|---|---:|---:|---:|
-| 0-10 | 0.70 | 1.49 | -0.70 |
-| 11-20 | 1.42 | 3.19 | -1.42 |
-| 21-50 | 4.13 | 8.67 | -4.13 |
-| 51-100 | 2.57 | 7.21 | -2.57 |
-| 100+ | 22.48 | 164.14 | -22.48 |
+| Bin | #Images | MAE | RMSE | bias |
+|---|---:|---:|---:|---:|
+| 0-10 | 60 | 0.70 | 1.49 | -0.70 |
+| 11-20 | 268 | 1.42 | 3.19 | -1.42 |
+| 21-50 | 413 | 4.13 | 8.67 | -4.13 |
+| 51-100 | 254 | 2.57 | 7.21 | -2.57 |
+| 100+ | 195 | 34.43 | 234.89 | -34.43 |
 
 结论：
 
 - O1 接近 A8，说明 current pipeline 的主要误差不是类别分类；
 - O3 显著低于 A8，说明如果 proposal 覆盖更完整，仍有较大提升空间；
-- O2 在 MR cache 上变差，因为 MR 合并后的候选可能一个 mask 覆盖多个 dots，简单 dot-sharing components 会过度合并，不能作为真正 upper bound。写论文时建议只把 O2 放在诊断/附录，不作为“上界”主张。
+- O2 在 MR cache 上变差，因为 MR 合并后的候选可能一个 mask 覆盖多个 dots，简单 dot-sharing components 会过度合并，不能作为真正 upper bound。论文中建议只作为诊断放入附录。
 
 ---
 
 ## 6. 写作建议
 
-主文可以使用的结论：
+建议主文使用 1190 审计口径：
 
 ```text
-On the FSC147 full test split, replacing learned relation deduplication with class-bucket IoU NMS increases MAE from 11.45 to 13.07 under the current multi-resolution protocol. Removing the 100+ multi-resolution frontend causes a much larger degradation (11.45 to 24.21), confirming that dense-scene candidate recall is the dominant bottleneck for extreme counts.
+On the full 1,190-image FSC147 test split, the current multi-resolution OV-CUD pipeline obtains 13.47 MAE and 126.74 RMSE. The previously logged 12.74 MAE result was produced on a 1,189-image cache-only protocol that omitted 7611.jpg, an extreme-density image with 2,560 objects.
 ```
 
-但需要避免写：
+组件结论可以写：
 
 ```text
+Replacing learned relation deduplication with class-bucket IoU NMS increases MAE from 13.47 to 15.10 under the audited 1,190-image protocol. Removing the 100+ multi-resolution frontend causes a much larger degradation (13.47 to 26.34), confirming that dense-scene candidate recall is the dominant bottleneck for extreme counts.
+```
+
+需要避免写：
+
+```text
+The 12.74 result is full 1,190-image audited FSC147.
 Every grouping subcomponent monotonically improves FSC147.
 Oracle dot-sharing dedup is a strict upper bound.
-The current rerun exactly reproduces the historical 12.74 log.
-```
-
-更稳妥的最终表述：
-
-```text
-We report component ablations using the current executable multi-resolution pipeline. This rerun improves over the historical 12.74 log (11.45 MAE), but we keep the historical number as the audited headline until all generation provenance is unified. The ablation trends are stable: learned relation dedup outperforms IoU NMS, adaptive dedup is beneficial, and multi-resolution candidate generation is essential for dense bins.
 ```
 
 ---
@@ -187,6 +194,7 @@ We report component ablations using the current executable multi-resolution pipe
 
 | 文件 | 说明 |
 |---|---|
-| `script/ablation_fsc147_multires_components.py` | 新增 full-test multi-resolution 组件消融脚本 |
-| `result/logs/fsc147_multires_component_ablation.json` | 全量 1,189 图结果 |
+| `script/ablation_fsc147_multires_components.py` | full-test multi-resolution 组件消融脚本，已加入缺 cache 图像的显式 fallback/zero-candidate 处理 |
+| `result/logs/fsc147_multires_component_ablation.json` | 旧 1,189 图 current-code 结果，保留用于 provenance 对照 |
+| `result/logs/fsc147_multires_component_ablation_1190.json` | 修正版 1,190 图结果 |
 | `docs/fsc147_multires_component_ablation_report_20260709.md` | 本中文实验记录 |

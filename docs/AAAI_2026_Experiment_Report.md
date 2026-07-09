@@ -37,7 +37,8 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 
 | 数据集 | 设定 | MAE | RMSE | 备注 |
 |---|---|---|---|---|
-| **FSC147 Test** | Prompt-free / Image-only | **12.74** | 106.20 | Full 1190 images, P2 Multi-Res Extended |
+| **FSC147 Test (historical cache-only)** | Prompt-free / Image-only | **12.74** | 106.20 | 1,189 rows; `7611.jpg` missing from final cache |
+| **FSC147 Test (audited current-code)** | Prompt-free / Image-only | **13.47** | 126.74 | Full 1,190 images; `7611.jpg` included via tiled fallback |
 | **FSC147 Test (base pipeline)** | Prompt-free / Image-only | 16.54 | — | Full 1190 images, adaptive density only |
 | **CARPK Test** | Zero-shot transfer (FSC147→CARPK) | **4.06 ± 0.17** | 5.51 ± 0.24 | 459 images, 95% CI |
 | **PUCPR+ Test** | Zero-shot transfer + Tiling | **3.59** | 5.43 | 25 images, 2×2 tiling |
@@ -51,8 +52,8 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 3. **OV-CUD 输出类别名**: 通过 text-prototype 分类头实现开放词表分类
 4. **OV-CUD 跨数据集泛化强**: FSC147 → CARPK MAE=4.06, FSC147 → PUCPR+ MAE=3.59 (tiled), FSC147 → OmniCount-191 MAE=6.75 (class-agnostic)
 5. **OV-CUD 多标签场景兼容**: 在不接收类别提示的条件下，class-agnostic counting 在 OmniCount-191 上优于 Vanilla SAM2 (37.60→6.75, 5.6× 改进)
-6. **Prompt-free 优于 Prompt-based 检测**: OV-CUD prompt-free MAE=12.74 vs OWLv2 prompt-based MAE=43.61 (3.4× better on full FSC147 test)
-7. **Multi-Resolution Fusion 是关键改进**: 融合 pts=16 coarse + pts=32 tiled fine 候选，Overall MAE 16.54→12.74 (-23.0%)
+6. **Prompt-free 优于 Prompt-based 检测**: 历史 OV-CUD prompt-free MAE=12.74，审计 full-1190 current-code MAE=13.47；仍显著优于 OWLv2 prompt-based MAE=43.61
+7. **Multi-Resolution Fusion 是关键改进**: 融合 pts=16 coarse + pts=32 tiled fine 候选；历史 cache-only headline 为 12.74，审计 full-1190 current-code 为 13.47
 8. **Relation head + dedup 是核心**: 消融实验证明每个组件都不可缺
 
 ---
@@ -200,6 +201,8 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 - **累积改进**: Baseline 16.54 → P2 Multi-Res 13.45 → **P2 Extended 12.74 (-23.0%)**
 - **瓶颈分析**: 误差高度集中——Top 5% 图像贡献 52.8% 总误差。去掉 26 张灾难性失败图像后 MAE=8.78。剩余 gap 主要来自极端密度场景 (GT>500) 的 SAM2 候选绝对不足，属于 front-end 模型能力限制而非 OV-CUD pipeline 问题
 
+**2026-07-09 口径审计**: `fsc147_multires_extended.json` 的 `results` 长度为 1,189，且不包含唯一 `gt_count=2560` 的测试图 `7611.jpg`。按 current executable pipeline 显式补回 `7611.jpg` 后，full 1,190-image 指标为 MAE=13.47 / RMSE=126.74。后续论文主表应优先使用审计后的 1,190 图口径，12.74 仅保留为历史 cache-only headline。
+
 #### P3: Spatial Context Enhancement
 
 在 dedup 阶段添加空间距离惩罚 (spatial weight=0/5/10)，结果无显著差异 (MAE≈13.45)。原因: relation head 的 pairwise features 已包含 6 维 bbox geometrics，clustering 已使用 spatial sub-clustering，空间信息已被充分利用。
@@ -223,23 +226,24 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 2026-07-09 已补 FSC147 full-test multi-resolution 组件级消融。完整记录见
 `docs/fsc147_multires_component_ablation_report_20260709.md`。
 
-**重要口径说明**: 本次 current-code rerun 在同一 final multires cache 上得到
-MAE=11.45，而历史 headline 日志 `fsc147_multires_extended.json` 为 MAE=12.74。
-两者 anchor 不完全一致，因此在统一生成 provenance 前，12.74 仍保留为历史主结果，
-11.45 作为 current-code component-ablation anchor。
+**重要口径说明**: 2026-07-09 审计发现 FSC147 test split 为 1,190 张，
+但历史 `fsc147_multires_extended.json` 和早期组件 rerun 都只包含 1,189 张；
+缺失图像为 `7611.jpg`。当前组件消融已补回该图并重跑，主表采用
+full 1,190-image 口径。旧 1,189 current-code A8 为 MAE=11.45，补回
+`7611.jpg` 后为 MAE=13.47。
 
 | Variant | 组件变化 | MAE | RMSE | Δ vs Full |
 |---|---|---:|---:|---:|
-| A1 filter only | category confidence filter, no dedup | 13.38 | 105.79 | +1.93 |
-| A2 IoU NMS@0.5 | class-bucket heuristic NMS, no relation head | 13.07 | 105.77 | +1.63 |
-| A3 global relation | relation dedup, no semantic grouping | **11.32** | 105.59 | -0.13 |
-| A4 group no spatial | semantic grouping, no spatial refinement | 11.40 | 105.57 | -0.05 |
-| A5 no adaptive dedup | full grouping, fixed relation dedup | 12.37 | 105.65 | +0.92 |
-| A8 full current pipeline | full current rerun | 11.45 | **105.56** | 0.00 |
+| A1 filter only | category confidence filter, no dedup | 15.40 | 126.93 | +1.93 |
+| A2 IoU NMS@0.5 | class-bucket heuristic NMS, no relation head | 15.10 | 126.91 | +1.62 |
+| A3 global relation | relation dedup, no semantic grouping | **13.34** | 126.77 | -0.13 |
+| A4 group no spatial | semantic grouping, no spatial refinement | 13.43 | 126.75 | -0.05 |
+| A5 no adaptive dedup | full grouping, fixed relation dedup | 14.39 | 126.81 | +0.92 |
+| A8 full current pipeline | full current rerun | 13.47 | **126.74** | 0.00 |
 
 **关键发现**:
-1. Learned relation dedup 明显优于 IoU NMS：A2 13.07 → A3 11.32。
-2. Adaptive dedup 有贡献：A5 12.37 → A8 11.45。
+1. Learned relation dedup 明显优于 IoU NMS：A2 15.10 → A3 13.34。
+2. Adaptive dedup 有贡献：A5 14.39 → A8 13.47。
 3. FSC147 是单类别标注，semantic/spatial grouping 不呈现单调收益；multi-category claim 仍应主要由 OmniCount 支撑。
 
 ### 4.2 分类头消融 (P1-2)
@@ -525,12 +529,14 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 
 所有阈值在 FSC147 **validation set (1,286 images)** 选定后冻结至 test set (1,190 images)：
 
+注：下表保留历史 threshold sweep 记录，其中 Test MAE=12.74 对应 1,189-image cache-only headline；2026-07-09 审计后的 current-code full-1190 A8 为 13.47。
+
 | Threshold | Value | Val MAE | Test MAE | Selected On |
 |---|---|---|---|---|
-| τ_inst | 0.99 | 36.50 | 12.74 | Val sweep 0.4→0.995 |
+| τ_inst | 0.99 | 36.50 | 12.74 historical / 13.47 audited | Val sweep 0.4→0.995 |
 | τ_affinity | 0.1 | — | — | Clustering sensitivity analysis |
-| conf_threshold | 0.2 | 36.50 (0.0: 36.43) | 12.74 | Val sweep 0.0→0.3 |
-| density_threshold | 50 | 36.50 (all same) | 12.74 | Val sweep 30→100 |
+| conf_threshold | 0.2 | 36.50 (0.0: 36.43) | 12.74 historical / 13.47 audited | Val sweep 0.0→0.3 |
+| density_threshold | 50 | 36.50 (all same) | 12.74 historical / 13.47 audited | Val sweep 30→100 |
 
 **Val Sweep 验证:**
 
@@ -555,11 +561,12 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 |---|---|---|---|---|---|---|---|
 | Heuristic NMS (no relation head) | 26.65 | 1.42 | 2.13 | 5.86 | 19.54 | 121.91 | -26.17 |
 | Relation Head (no tiling) | 16.54 | 1.52 | 2.17 | 5.71 | 9.37 | 73.46 | -69.32 |
-| **Relation Head + P2 Extended** | **12.74** | 1.60 | 2.19 | 5.78 | 11.31 | 47.44 | -6.03 |
+| **Relation Head + P2 Extended (historical)** | **12.74** | 1.60 | 2.19 | 5.78 | 11.31 | 47.44 | -6.03 |
+| **Relation Head + P2 Extended (audited current-code)** | **13.47** | 1.60 | 2.19 | 5.78 | 8.00 | 56.06 | -8.75 |
 
 - Relation head 相比 heuristic NMS 改善 37.9% (16.54 vs 26.65)
-- P2 Extended (relation head + multi-res) 相比 heuristic NMS 改善 52.2% (12.74 vs 26.65)
-- 100+ bin 改善最为显著: 121.91→47.44 (-61.1%)
+- P2 Extended (relation head + multi-res) 相比 heuristic NMS 仍显著更好；审计口径为 13.47 vs 26.65
+- 100+ bin 改善最为显著；审计口径为 121.91→56.06
 - **结论**: Learned relation head 是 OV-CUD 的核心组件，bbox-IoU heuristic 无法替代
 | pts_per_side | 32 | FSC147 val | SAM2 candidate density |
 
@@ -897,10 +904,10 @@ Training supervision comparison:
 
 ### 13.1 投稿前必做
 
-- [ ] 在完整 FSC147 test set (1190 张图) 上运行 Exp11 最佳配置，获取最终主结果
+- [x] 在完整 FSC147 test set (1190 张图) 上运行 current-code multi-resolution 配置，补回 `7611.jpg` 后得到 MAE=13.47 / RMSE=126.74
 - [ ] 固定所有 random seed (0, 1, 2)，报告 mean ± std
 - [ ] 在完整 FSC147 test set 上运行 bootstrap CI (n=1000)
-- [ ] 重新运行逐组件消融 (A0-A8) 获取完整的组件贡献表
+- [x] 重新运行核心组件消融 A1/A2/A3/A4/A5/A8 与高密度前端 A6/A7；完整记录见 `docs/fsc147_multires_component_ablation_report_20260709.md`
 - [ ] 准备 qualitative visualization (成功案例 ×4 + 失败案例 ×2)
 - [ ] 整理 per-image prediction JSON (用于 supplementary material)
 - [ ] 确认所有 baseline 数字来源 (original paper / reproduced)
