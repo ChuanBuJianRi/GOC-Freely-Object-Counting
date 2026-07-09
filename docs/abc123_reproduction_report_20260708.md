@@ -1,6 +1,6 @@
 # ABC123 复现实验记录
 
-**日期**: 2026-07-08
+**日期**: 2026-07-08；2026-07-09 补充 FSC147 full-test 切片分析
 **分支**: `ljs`
 **论文**: ABC Easy as 123: A Blind Counter for Exemplar-Free Multi-Class Class-agnostic Counting, arXiv:2309.04820v2
 **官方仓库**: https://github.com/ActiveVisionLab/ABC123
@@ -102,6 +102,15 @@ script/eval_abc123_baseline.py
 
 ## 4. FSC147 复现结果
 
+2026-07-09 重新跑 full test，结果与 2026-07-08 记录一致：
+
+```bash
+python3 script/eval_abc123_baseline.py \
+  --dataset fsc147 --split test \
+  --batch-size 64 --device cuda \
+  --out result/logs/abc123_fsc147_test_full1190.json
+```
+
 ### 4.1 FSC147 test full 1,190
 
 | Protocol | 图像数 | MAE | RMSE | bias | mean GT | mean pred |
@@ -148,6 +157,63 @@ result/logs/abc123_fsc147_test_le300.json
 ```text
 official README checkpoint reproduction on local FSC147 protocol.
 Published FSC147 paper table is cited separately and marked as not reproduced locally.
+```
+
+### 4.4 Full vs GT<300 vs GT>300
+
+本地 test split 没有恰好 GT=300 的图，因此 `GT<300` 与脚本中的 `GT<=300` 在本次统计中等价。ABC123 论文只给 `GT<300` 口径，但 full test 的高密度图对结论影响很大。
+
+| Subset | 图像数 | mean GT | ABC123 sum MAE/RMSE | ABC123 max_density MAE/RMSE | 主要结论 |
+|---|---:|---:|---:|---:|---|
+| Full test | 1,190 | 66.25 | 48.19 / 151.11 | 43.89 / 150.71 | 全量口径，RMSE 很高 |
+| GT<300 | 1,167 | 54.51 | 37.51 / 58.96 | 32.63 / 55.48 | 仍未复现论文 11.75 |
+| GT>300 | 23 | 661.87 | 590.34 / 1002.52 | 615.34 / 1009.48 | 极端欠计数 |
+
+关键观察：
+
+- `GT>300` 只有 23 张，占 full test 的 **1.93%**。
+- 但这 23 张贡献了 ABC123 `sum` 的 **23.7% 绝对误差** 和 **85.1% 平方误差**。
+- 因此 ABC123 论文只报 `GT<300` 是一个很强的评估限制；full-test RMSE 不能从 paper table 推断。
+- 即使在 `GT<300` 子集，本地 official checkpoint 仍明显弱于 paper table：`sum` MAE `37.51` vs paper `11.75`。
+
+### 4.5 按 GT count bin 的 full-test 切片
+
+| GT bin | 图像数 | mean GT | sum MAE/RMSE/bias | max_density MAE/RMSE/bias |
+|---|---:|---:|---:|---:|
+| 0-10 | 60 | 9.15 | 9.76 / 12.75 / +7.50 | 3.78 / 5.28 / -0.23 |
+| 11-20 | 268 | 14.81 | 14.44 / 25.75 / +9.55 | 8.96 / 17.69 / +0.35 |
+| 21-50 | 413 | 33.67 | 22.79 / 30.38 / +1.59 | 18.36 / 24.01 / -11.22 |
+| 51-100 | 254 | 72.57 | 47.30 / 57.40 / -12.46 | 41.56 / 49.52 / -32.34 |
+| 101-300 | 172 | 155.57 | 104.02 / 124.14 / -67.10 | 100.65 / 124.02 / -99.43 |
+| 301+ | 23 | 661.87 | 590.34 / 1002.52 / -581.04 | 615.34 / 1009.48 / -615.34 |
+
+这个切片显示 ABC123 的 official checkpoint 在低计数图上还能工作，尤其 `max_density` 在 `0-20` 区间相对稳定；但从 `51-100` 开始系统性欠计数，`301+` 基本失效。`sum` 在低计数区间偏过计数，在高计数区间偏欠计数；`max_density` 更保守，因此低计数更好、高计数更差。
+
+### 4.6 最大误差样例
+
+| Image | GT | sum pred | max_density pred | sum error |
+|---|---:|---:|---:|---:|
+| `1123.jpg` | 3701 | 0.6 | 0.5 | -3700.4 |
+| `7611.jpg` | 2560 | 0.0 | 0.0 | -2560.0 |
+| `2159.jpg` | 621 | 84.4 | 67.6 | -536.6 |
+| `6860.jpg` | 512 | 7.1 | 2.2 | -504.9 |
+| `7473.jpg` | 508 | 7.4 | 6.5 | -500.6 |
+
+这些样例解释了 full-test RMSE 为什么接近 `151`：并不是全体样本都差，而是少数超高密度图的预测几乎塌到 0 或几十。
+
+### 4.7 对论文比较的建议
+
+ABC123 可以在论文中引用，但建议拆成两行：
+
+| Method | Protocol | MAE/RMSE | 用途 |
+|---|---|---:|---|
+| ABC123 paper | FSC147 GT<300, published, dense-map supervised | 11.75 / 33.41 | 说明 prompt-free dense regression 的 published reference |
+| ABC123 local official ckpt | FSC147 full 1,190, official README checkpoint | 48.19 / 151.11 | 说明本地 full-test 复现与真实全量压力 |
+
+不要把 ABC123 paper `GT<300` 数字直接与 OV-CUD full-test `1,190` 数字当作同协议比较。更稳妥的写法是：
+
+```text
+ABC123 reports strong prompt-free dense-regression results on the FSC147 subset with fewer than 300 objects. On our full FSC147 test evaluation using the released checkpoint, the method suffers from severe undercounting on the 300+ images; these 1.93% images account for 85.1% of the squared error. We therefore report ABC123 as a dense-map-supervised reference rather than a same-protocol full-test baseline.
 ```
 
 ---
