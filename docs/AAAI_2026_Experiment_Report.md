@@ -220,18 +220,27 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 
 ### 4.1 组件消融 (主文 Table 3)
 
-在 FSC147 sample100 上逐步移除各组件：
+2026-07-09 已补 FSC147 full-test multi-resolution 组件级消融。完整记录见
+`docs/fsc147_multires_component_ablation_report_20260709.md`。
 
-| Variant | Category | A_sem | A_inst | A_part | MAE | Δ |
-|---|---|---|---|---|---|---|
-| Category only (NMS) | ✅ | ❌ | ❌ | ❌ | — | — |
-| + Semantic Relation | ✅ | ✅ | ❌ | ❌ | — | — |
-| + Instance Dedup | ✅ | ✅ | ✅ | ❌ | — | — |
-| **Full Model** | ✅ | ✅ | ✅ | ✅ | **8.73** | — |
-| Oracle Category | Oracle | ✅ | ✅ | ✅ | — | — |
-| Oracle Dedup | ✅ | ✅ | Oracle | ✅ | — | — |
+**重要口径说明**: 本次 current-code rerun 在同一 final multires cache 上得到
+MAE=11.45，而历史 headline 日志 `fsc147_multires_extended.json` 为 MAE=12.74。
+两者 anchor 不完全一致，因此在统一生成 provenance 前，12.74 仍保留为历史主结果，
+11.45 作为 current-code component-ablation anchor。
 
-**注**: 完整逐组件消融 (A0-A8) 因时间限制未全部执行，但聚类消融 (P1-3) 和代表选择消融 (P1-4) 提供了组件级分析。
+| Variant | 组件变化 | MAE | RMSE | Δ vs Full |
+|---|---|---:|---:|---:|
+| A1 filter only | category confidence filter, no dedup | 13.38 | 105.79 | +1.93 |
+| A2 IoU NMS@0.5 | class-bucket heuristic NMS, no relation head | 13.07 | 105.77 | +1.63 |
+| A3 global relation | relation dedup, no semantic grouping | **11.32** | 105.59 | -0.13 |
+| A4 group no spatial | semantic grouping, no spatial refinement | 11.40 | 105.57 | -0.05 |
+| A5 no adaptive dedup | full grouping, fixed relation dedup | 12.37 | 105.65 | +0.92 |
+| A8 full current pipeline | full current rerun | 11.45 | **105.56** | 0.00 |
+
+**关键发现**:
+1. Learned relation dedup 明显优于 IoU NMS：A2 13.07 → A3 11.32。
+2. Adaptive dedup 有贡献：A5 12.37 → A8 11.45。
+3. FSC147 是单类别标注，semantic/spatial grouping 不呈现单调收益；multi-category claim 仍应主要由 OmniCount 支撑。
 
 ### 4.2 分类头消融 (P1-2)
 
