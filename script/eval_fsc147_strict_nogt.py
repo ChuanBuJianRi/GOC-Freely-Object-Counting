@@ -90,7 +90,16 @@ def load_safe_cache(path: Path) -> dict[str, Any]:
         )
     z = d["z"].float()
     bbox = d["bbox"].float()
-    if z.ndim != 2 or bbox.shape != (len(z), 4):
+    if (
+        str(d.get("img_id")) != path.stem
+        or Path(str(d.get("file_name"))).stem != path.stem
+        or int(d.get("height", 0)) <= 0
+        or int(d.get("width", 0)) <= 0
+        or z.ndim != 2
+        or bbox.shape != (len(z), 4)
+        or not torch.isfinite(z).all()
+        or not torch.isfinite(bbox).all()
+    ):
         raise RuntimeError(f"invalid tensors in {path}")
     return d
 
