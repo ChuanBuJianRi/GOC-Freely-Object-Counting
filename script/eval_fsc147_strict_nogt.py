@@ -48,6 +48,16 @@ FORBIDDEN_FIELDS = {
 }
 GT_BINS = (("0-10", 0, 10), ("11-20", 11, 20), ("21-50", 21, 50),
            ("51-100", 51, 100), ("100+", 101, 10**9))
+CODE_ASSETS = (
+    Path(__file__).resolve(),
+    REPO / "script/ablation_fsc147_multires_components.py",
+    REPO / "script/train_candidate_filter.py",
+    REPO / "script/train_category_v2.py",
+    REPO / "code/clustering/first_neighbor.py",
+    REPO / "code/counting/deduplicate.py",
+    REPO / "code/counting/representative.py",
+    REPO / "code/matrix/pairwise_features.py",
+)
 
 
 def sha256(path: Path) -> str:
@@ -56,6 +66,10 @@ def sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def code_asset_sha256() -> dict[str, str]:
+    return {str(path.relative_to(REPO)): sha256(path) for path in CODE_ASSETS}
 
 
 def config_key(config: dict[str, float]) -> str:
@@ -514,7 +528,11 @@ def run_validation(args: argparse.Namespace) -> None:
             "fast_zero": int(np.sum(np.asarray(fast_raw) == 0)),
             "tiled_zero": int(np.sum(np.asarray(tiled_raw) == 0)),
         },
-        "assets": {"paths": models["paths"], "sha256": models["sha256"]},
+        "assets": {
+            "paths": models["paths"],
+            "sha256": models["sha256"],
+            "code_sha256": code_asset_sha256(),
+        },
         "rescue_selection": {
             "path": str(args.rescue_selection),
             "sha256": sha256(args.rescue_selection),
@@ -587,6 +605,8 @@ def run_test(args: argparse.Namespace) -> None:
     models = load_models(args.checkpoint_dir, args.device)
     if models["sha256"] != frozen["assets"]["sha256"]:
         raise RuntimeError("checkpoint hashes differ from validation-frozen config")
+    if code_asset_sha256() != frozen["assets"].get("code_sha256"):
+        raise RuntimeError("prediction code differs from validation-frozen config")
     rescue_selection = load_rescue_selection(args.rescue_selection, models)
     if sha256(args.rescue_selection) != frozen.get("rescue_selection", {}).get("sha256"):
         raise RuntimeError("train-only rescue selection differs from validation-frozen config")
@@ -704,6 +724,8 @@ def run_test_plan(args: argparse.Namespace) -> None:
     models = load_models(args.checkpoint_dir, args.device)
     if models["sha256"] != frozen["assets"]["sha256"]:
         raise RuntimeError("checkpoint hashes differ from validation-frozen config")
+    if code_asset_sha256() != frozen["assets"].get("code_sha256"):
+        raise RuntimeError("prediction code differs from validation-frozen config")
     fast_config = frozen["selected"]["fast_config"]
     route = frozen["selected"]["route"]
     routed_by_seed = {str(seed): [] for seed in SEEDS}
