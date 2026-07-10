@@ -74,8 +74,8 @@ T4 recipe 将只由 official-train 的 3 个 fast-zero failure cases（`2737.jpg
 
 预注册网格：
 
-- candidate filter threshold：`0, 0.05, 0.1, 0.2, 0.3, 0.4`
-- category confidence threshold：`0, 0.1, 0.2, 0.3`
+- candidate filter threshold：`0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6`
+- category confidence threshold：`0, 0.1, 0.2, 0.3, 0.4, 0.5`
 - `tau_inst`：`0.99, 0.999`
 - predicted fast count route threshold：`10, 20, 30, 40, 50, 75, 100`，并比较 always-fast/always-tiled
 

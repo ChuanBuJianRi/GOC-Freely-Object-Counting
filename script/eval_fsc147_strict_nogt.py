@@ -311,8 +311,8 @@ def grid() -> list[dict[str, float]]:
     return [
         {"filter_threshold": filter_threshold, "category_threshold": category_threshold,
          "tau_inst": tau_inst}
-        for filter_threshold in (0.0, 0.05, 0.1, 0.2, 0.3, 0.4)
-        for category_threshold in (0.0, 0.1, 0.2, 0.3)
+        for filter_threshold in (0.0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6)
+        for category_threshold in (0.0, 0.1, 0.2, 0.3, 0.4, 0.5)
         for tau_inst in (0.99, 0.999)
     ]
 
