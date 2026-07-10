@@ -38,6 +38,8 @@ from script.train_candidate_filter import (  # noqa: E402
 DEFAULT_SPLIT = Path("/home/czp/official_code/dataset/FSC147/Train_Test_Val_FSC_147.json")
 DEFAULT_ANN = Path("/home/czp/official_code/dataset/FSC147/annotation_FSC147_384.json")
 DEFAULT_CACHE_ROOT = Path("/home/czp/ws_yiyang/ovcud_cache")
+DEFAULT_RESCUE_SELECTION = REPO / "result/configs/fsc147_train_rescue_selection.json"
+DEFAULT_VAL_TARGETS = REPO / "result/configs/fsc147_val_count_targets.json"
 SEEDS = (17, 42, 73)
 SAFE_FIELDS = {"schema", "img_id", "file_name", "z", "bbox", "height", "width", "source_cache"}
 FORBIDDEN_FIELDS = {
@@ -182,6 +184,23 @@ def load_models(checkpoint_dir: Path, device: str) -> dict[str, Any]:
     return models
 
 
+def load_rescue_selection(path: Path, models: dict[str, Any]) -> dict[str, Any]:
+    selection = json.loads(path.read_text())
+    protocol = selection.get("protocol", {})
+    if (
+        selection.get("frozen") is not True
+        or protocol.get("selection_split") != "official-train fast-zero images"
+        or protocol.get("validation_images_loaded") != 0
+        or protocol.get("test_images_loaded") != 0
+        or protocol.get("prediction_gt_fields") != []
+        or selection.get("assets", {}).get("candidate_filter_sha256")
+        != models["sha256"]["filter_tiled"]
+        or selection.get("selected", {}).get("recipe") not in {"2x2", "3x3", "4x4"}
+    ):
+        raise RuntimeError("rescue frontend was not selected by the strict train-only protocol")
+    return selection
+
+
 @torch.no_grad()
 def prepare_sample(d: dict[str, Any], models: dict[str, Any], resolution: str,
                    device: str) -> dict[str, Any]:
@@ -261,10 +280,23 @@ def metric(predictions: list[float], targets: list[float]) -> dict[str, float | 
     }
 
 
-def load_targets(names: list[str], annotation_path: Path) -> list[int]:
-    # This function is intentionally separate from every prediction function.
+def load_test_targets_after_predictions(names: list[str], annotation_path: Path) -> list[int]:
+    # Full annotation access is restricted to the post-prediction test metric phase.
     annotation = json.loads(annotation_path.read_text())
     return [ab.gt_count_from_ann(Path(name).stem, annotation) for name in names]
+
+
+def load_isolated_targets(names: list[str], target_path: Path, split_key: str) -> list[int]:
+    shard = json.loads(target_path.read_text())
+    targets = shard.get("targets", {})
+    if (
+        shard.get("schema") != "fsc147-count-target-v1"
+        or shard.get("official_split") != split_key
+        or shard.get("nonselected_images_loaded") != 0
+        or set(targets) != set(names)
+    ):
+        raise RuntimeError(f"target shard is not exact isolated {split_key} data: {target_path}")
+    return [int(targets[name]) for name in names]
 
 
 def grid() -> list[dict[str, float]]:
@@ -371,6 +403,7 @@ def run_validation(args: argparse.Namespace) -> None:
     assert_exact_cache(args.val_fast_cache, names)
     assert_exact_cache(args.val_tiled_cache, names)
     models = load_models(args.checkpoint_dir, args.device)
+    rescue_selection = load_rescue_selection(args.rescue_selection, models)
 
     fast_predictions, fast_raw = validation_frontend_predictions(
         names, args.val_fast_cache, models, "fast", args.device
@@ -378,8 +411,8 @@ def run_validation(args: argparse.Namespace) -> None:
     tiled_predictions, tiled_raw = validation_frontend_predictions(
         names, args.val_tiled_cache, models, "tiled", args.device
     )
-    # GT is loaded only after all validation predictions have been produced.
-    targets = load_targets(names, args.annotation)
+    # Only the isolated val shard is loaded after all validation predictions.
+    targets = load_isolated_targets(names, args.val_targets, "val")
     fast_summary = summarize_configs(fast_predictions, targets)
     tiled_summary = summarize_configs(tiled_predictions, targets)
     fast_key = select_config(fast_summary)
@@ -406,11 +439,16 @@ def run_validation(args: argparse.Namespace) -> None:
             "training_labels": "official-train FSC dots only",
             "relation_initialization": "scratch; COCO pretraining forbidden",
             "selection_split": "official val 1286",
+            "selection_target_shard": str(args.val_targets),
+            "selection_target_shard_sha256": sha256(args.val_targets),
             "test_read": False,
             "seeds": list(SEEDS),
             "grid": grid(),
             "route_grid": [row["policy"] for row in route_sweep.values()],
-            "t4_policy": "if raw fast candidate count is zero, use predeclared 4x4 image-only cache",
+            "fast_zero_rescue": (
+                f"if raw fast candidate count is zero, use train-selected "
+                f"{rescue_selection['selected']['recipe']} image-only tiled cache"
+            ),
         },
         "selected": {
             "fast_config": json.loads(fast_key),
@@ -434,6 +472,12 @@ def run_validation(args: argparse.Namespace) -> None:
             "tiled_zero": int(np.sum(np.asarray(tiled_raw) == 0)),
         },
         "assets": {"paths": models["paths"], "sha256": models["sha256"]},
+        "rescue_selection": {
+            "path": str(args.rescue_selection),
+            "sha256": sha256(args.rescue_selection),
+            "selected": rescue_selection["selected"],
+            "protocol": rescue_selection["protocol"],
+        },
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n")
@@ -500,6 +544,10 @@ def run_test(args: argparse.Namespace) -> None:
     models = load_models(args.checkpoint_dir, args.device)
     if models["sha256"] != frozen["assets"]["sha256"]:
         raise RuntimeError("checkpoint hashes differ from validation-frozen config")
+    rescue_selection = load_rescue_selection(args.rescue_selection, models)
+    if sha256(args.rescue_selection) != frozen.get("rescue_selection", {}).get("sha256"):
+        raise RuntimeError("train-only rescue selection differs from validation-frozen config")
+    expected_rescue_source = rescue_selection["selected"]["expected_source_cache"]
     fast_config = frozen["selected"]["fast_config"]
     tiled_config = frozen["selected"]["tiled_config"]
     route = frozen["selected"]["route"]
@@ -523,14 +571,17 @@ def run_test(args: argparse.Namespace) -> None:
             rescue_path = args.test_rescue_cache / f"{stem}.pt"
             if not rescue_path.exists():
                 raise FileNotFoundError(f"zero-fast image lacks image-only T4 cache: {rescue_path}")
-            rescue = prepare_sample(load_safe_cache(rescue_path), models, "tiled", args.device)
+            rescue_sample = load_safe_cache(rescue_path)
+            if rescue_sample.get("source_cache") != expected_rescue_source:
+                raise RuntimeError(f"test rescue recipe differs from train selection: {rescue_path}")
+            rescue = prepare_sample(rescue_sample, models, "tiled", args.device)
         for seed in SEEDS:
             fast_prediction = count_prepared(fast, seed, fast_config)
             use_tiled = route["mode"] == "always_tiled" or (
                 route["mode"] == "predicted_count" and fast_prediction >= route["threshold"]
             )
             if rescue is not None:
-                source = "t4_4x4_fast_zero"
+                source = f"rescue_{rescue_selection['selected']['recipe']}_fast_zero"
                 prediction = count_prepared(rescue, seed, tiled_config)
             elif use_tiled:
                 if tiled is None:
@@ -554,7 +605,7 @@ def run_test(args: argparse.Namespace) -> None:
         raise RuntimeError("fast-zero observations differ from the frozen image-only tile plan")
 
     # Test annotations enter only after predictions for all 1,190 images exist.
-    targets = load_targets(names, args.annotation)
+    targets = load_test_targets_after_predictions(names, args.annotation)
     runs = {}
     for seed in SEEDS:
         key = str(seed)
@@ -655,12 +706,14 @@ def main() -> None:
     parser.add_argument("phase", choices=("validate", "plan-test", "test"))
     parser.add_argument("--split-file", type=Path, default=DEFAULT_SPLIT)
     parser.add_argument("--annotation", type=Path, default=DEFAULT_ANN)
+    parser.add_argument("--val-targets", type=Path, default=DEFAULT_VAL_TARGETS)
     parser.add_argument("--checkpoint-dir", type=Path, default=REPO / "result/checkpoints/cp_strict")
     parser.add_argument("--val-fast-cache", type=Path, default=DEFAULT_CACHE_ROOT / "fsc147_nogt_val_fast")
     parser.add_argument("--val-tiled-cache", type=Path, default=DEFAULT_CACHE_ROOT / "fsc147_nogt_val_tiled2x2")
     parser.add_argument("--test-fast-cache", type=Path, default=DEFAULT_CACHE_ROOT / "fsc147_nogt_test_fast")
     parser.add_argument("--test-tiled-cache", type=Path, default=DEFAULT_CACHE_ROOT / "fsc147_nogt_test_tiled2x2")
     parser.add_argument("--test-rescue-cache", type=Path, default=DEFAULT_CACHE_ROOT / "fsc147_nogt_test_rescue4x4")
+    parser.add_argument("--rescue-selection", type=Path, default=DEFAULT_RESCUE_SELECTION)
     parser.add_argument("--frozen-config", type=Path)
     parser.add_argument("--tile-plan", type=Path)
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")

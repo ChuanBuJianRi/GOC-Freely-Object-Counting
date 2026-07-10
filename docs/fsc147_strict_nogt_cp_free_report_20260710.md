@@ -38,7 +38,7 @@ Validation/test inference cache 只允许：
 
 `valid, purity, coverage, iou, matched_class, matched_instance_id, gt_count, class_name, is_part, is_countable, points`
 
-加载器发现任一禁止字段会直接终止。GT annotation 在全部 1,190 张预测生成后才读入并用于计算指标。
+加载器发现任一禁止字段会直接终止。Validation 不再调用合并的 annotation JSON，而只在全部 val 预测生成后加载物理隔离的 `fsc147_val_count_targets.json`；完整 annotation 仅在全部 1,190 张 test 预测生成后读入并用于计算指标。
 
 ### 3.2 学习组件
 
@@ -64,7 +64,7 @@ Candidate filter 只在 train 阶段把“候选覆盖至少一个 train dot”�
 - raw fast candidate count为 0 的触发条件本身不读取 `valid` 或 GT count；但历史 4x4 配方是在查看 test `7611.jpg` 后形成，当前不能直接计入 strict 主结果。
 - 不通过 cache 文件是否存在判断密度；val/test fast 与 tiled cache 必须分别精确覆盖完整 split。
 
-T4 是否进入 strict 主结果将只由 official-train 的 3 个 fast-zero failure cases（`2737.jpg`、`2979.jpg`、`7454.jpg`）选择；若 train-side 对照不能支持 4x4，则 strict 主结果关闭 T4，历史 7611 rescue 只作 post-hoc 诊断。
+T4 recipe 将只由 official-train 的 3 个 fast-zero failure cases（`2737.jpg`、`2979.jpg`、`7454.jpg`）在 2x2/3x3/4x4 间选择。固定使用 pts32 candidate filter 的 `p>=0.5` 预测候选数，按 train count MAE、RMSE、较低 tile 数依次排序；预测全部完成后才加载隔离的 3-image train target shard。若 train-side 对照不支持 4x4，则不能沿用历史 7611 选择。
 
 ## 4. Validation-only 选择
 
@@ -76,6 +76,8 @@ T4 是否进入 strict 主结果将只由 official-train 的 3 个 fast-zero fai
 - predicted fast count route threshold：`10, 20, 30, 40, 50, 75, 100`，并比较 always-fast/always-tiled
 
 pts16/pts32 frontend 参数先分别按三个 relation seeds 的 validation mean MAE 选择，再选择一个共同路由策略。test 不参与任何选择。
+
+Validation count shard 由 `export_fsc147_count_targets.py` 逐个打开 official-val cache 导出，manifest 记录 `nonselected_images_loaded=0`；validation 进程不会解析包含 test GT 的 44 MB 合并 annotation 文件。
 
 > 待 validation safe tiled cache 完成后填入冻结配置与 validation 指标。
 
@@ -90,6 +92,8 @@ pts16/pts32 frontend 参数先分别按三个 relation seeds 的 validation mean
 - `script/train_category_v2.py --prototype_label_map`：global→train-local 标签映射。
 - `script/train_relation_1152.py --require_train_only_vocabulary`：禁止 COCO 初始化并绑定上游资产哈希。
 - `script/export_fsc147_inference_cache.py`：物理删除 GT 字段。
+- `script/export_fsc147_count_targets.py`：导出物理隔离的 train/val count shard。
 - `script/preprocess_fsc147_tiled_nogt.py`：不加载 annotation 的 tiled candidate 生成。
+- `script/select_fsc147_train_rescue.py`：仅用 train fast-zero failure cases 冻结 rescue recipe。
 - `script/eval_fsc147_strict_nogt.py`：validation freeze 与 test 两阶段入口。
 - `result/configs/fsc147_nogt_fast_zero_images.json`：由 raw fast candidate count 导出的 T4 预计算集合。
