@@ -348,6 +348,8 @@ def main():
     ap.add_argument("--split-file", default=None, help="official split JSON used when --images-file is omitted")
     ap.add_argument("--split-key", default="val", help="split selected from --split-file")
     ap.add_argument("--min-count", type=int, default=0, help="minimum GT count for split-file filtering")
+    ap.add_argument("--num-shards", type=int, default=1)
+    ap.add_argument("--shard-index", type=int, default=0)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--class-map", default="/home/czp/official_code/dataset/FSC147/ImageClasses_FSC147.txt")
     ap.add_argument("--categories-json", default="result/checkpoints/text_prototypes_fsc147_categories.json")
@@ -391,7 +393,14 @@ def main():
         ]
     else:
         ap.error("one of --images-file or --split-file is required")
-    print(f"[init] {len(img_files)} images to process")
+    if args.num_shards < 1 or not 0 <= args.shard_index < args.num_shards:
+        ap.error("--num-shards must be positive and --shard-index must be in range")
+    total_images = len(img_files)
+    img_files = img_files[args.shard_index::args.num_shards]
+    print(
+        f"[init] {len(img_files)}/{total_images} images to process "
+        f"(shard {args.shard_index}/{args.num_shards})"
+    )
 
     # Build SAM2
     print(f"[init] Building SAM2 AMG (pts={args.pts_per_side}, {args.tiles}×{args.tiles} tiles, "
