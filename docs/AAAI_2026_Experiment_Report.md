@@ -1,8 +1,10 @@
 # OV-CUD AAAI 2026 投稿 — 完整实验报告
 
-**日期**: 2026-07-04 (最终版)
+**日期**: 2026-07-10 (协议审计更新)
 **方法**: OV-CUD (Open-Vocabulary Counting via Understanding and Deduplication)
 **设定**: Prompt-free class-aware object counting — 仅输入图像，无 exemplar、text prompt、count label
+
+> **2026-07-10 关键协议审计**：当前 FSC147、CARPK、OmniCount 和 MCAC 主评测脚本使用 cache 中由 GT dot coverage 生成的 `valid` 筛选推理候选。因而历史 headline 与本报告中标记为 cache-compatible 的结果不是严格 no-GT inference，暂不能作为 reviewer-ready prompt-free 主结果。MCAC 已补 strict `candidate_filter=all` sanity；其他数据集仍需统一重跑。详见 `docs/mcac_full2115_leaveoneout_report_20260710.md`。
 
 ---
 
@@ -39,11 +41,13 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 |---|---|---|---|---|
 | **FSC147 Test (historical cache-only)** | Prompt-free / Image-only | **12.74** | 106.20 | 1,189 rows; `7611.jpg` missing from final cache |
 | **FSC147 Test (audited current-code)** | Prompt-free / Image-only | **13.47** | 126.74 | Full 1,190 images; `7611.jpg` true MR100, fast=0 candidates |
+| **FSC147 Test (4x4 rescue exploratory)** | Cache-compatible / Image-only | **12.67** | 113.71 | Same learned heads; no-GT trigger, but candidate validity still GT-derived |
 | **FSC147 Test (base pipeline)** | Prompt-free / Image-only | 16.54 | — | Full 1190 images, adaptive density only |
 | **CARPK Test** | Zero-shot transfer (FSC147→CARPK) | **4.06 ± 0.17** | 5.51 ± 0.24 | 459 images, 95% CI |
 | **PUCPR+ Test** | Zero-shot transfer + Tiling | **3.59** | 5.43 | 25 images, 2×2 tiling |
 | **COCO val** | Multi-category (80 classes) | **6.94** | 10.04 | 300 images, class-aware evaluation |
 | **OmniCount-191 Test** | Prompt-free / Class-agnostic | **6.75** | 10.24 | 1,909 images, 93 classes, multi-label |
+| **MCAC Test (strict no-GT)** | Prompt-free / Anonymous groups | **32.11** | 53.79 | Full 2,115 images, 3,630 image-class pairs |
 
 ### 关键 Claim
 
@@ -54,7 +58,7 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 5. **OV-CUD 多标签场景兼容**: 在不接收类别提示的条件下，class-agnostic counting 在 OmniCount-191 上优于 Vanilla SAM2 (37.60→6.75, 5.6× 改进)
 6. **Prompt-free 优于 Prompt-based 检测**: 历史 OV-CUD prompt-free MAE=12.74，审计 full-1190 current-code MAE=13.47；仍显著优于 OWLv2 prompt-based MAE=43.61
 7. **Multi-Resolution Fusion 是关键改进**: 融合 pts=16 coarse + pts=32 tiled fine 候选；历史 cache-only headline 为 12.74，审计 full-1190 current-code 为 13.47
-8. **Relation head + dedup 是核心**: 消融实验证明每个组件都不可缺
+8. **组件贡献具有数据集依赖性**: FSC147 上 relation/HR 前端有贡献；MCAC 上 HR 显著有效、RH/CP 仅小幅有效，ADF 跨域失配，4x4 rescue 无 per-class 收益
 
 ---
 
@@ -207,6 +211,8 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 
 **Extreme-density rescue 试验**: 对 `7611.jpg` 进一步测试 4x4 tiled rescue。无 GT 触发条件 `fast n_candidates == 0` 在 FSC147 test 上只触发 `7611.jpg`。4x4 tiled ov25 将该图 candidates 208→1997、O3 cover 208→1868、prediction 138→1098；如果仅替换该图，full 1190 MAE 从 13.47 降到 12.67，RMSE 从 126.74 降到 113.71。该结果目前作为探索性 rescue policy 记录，详见 `docs/fsc147_extreme_density_rescue_tiling_20260709.md`。
 
+**协议限制补充**：上述 12.67 与 13.47 都沿用 GT-dot-derived `valid` 候选筛选。12.67 可以用于分析 rescue proposal 的潜力，但在替换为可部署 countability/foreground filter 并完成 strict full-test 重跑前，不应升级为 prompt-free headline。
+
 #### P3: Spatial Context Enhancement
 
 在 dedup 阶段添加空间距离惩罚 (spatial weight=0/5/10)，结果无显著差异 (MAE≈13.45)。原因: relation head 的 pairwise features 已包含 6 维 bbox geometrics，clustering 已使用 spatial sub-clustering，空间信息已被充分利用。
@@ -220,6 +226,19 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 **结果**: P1+P2 MAE=14.54 vs P2-only 14.03 (退步 +0.51)。虽然 bias 改善 62% (-10.41→-3.92)，但 count classifier 误报率过高。
 
 **舍弃原因**: DINOv2 全局特征无法可靠区分 "一个大物体" vs "多个小物体合并"。保留为 future work (需 mask-level 精确标签)。
+
+### 3.5 MCAC Full-2115 多类别评测
+
+2026-07-10 已补齐 MCAC test 2,115 张，并完成 M1-M6、严格 no-GT sanity 和 OCCAM-M 本地共享候选对比。完整报告见 `docs/mcac_full2115_leaveoneout_report_20260710.md`。
+
+| 方法 | 监督/协议 | Per-class MAE | Per-class RMSE | Total MAE/RMSE |
+|---|---|---:|---:|---:|
+| ABC123 published | prompt-free，density-map supervised | **9.52** | **17.64** | - |
+| OCCAM-M local shared pts32 | training-free，strict candidate inference | 22.74 | 38.89 | 49.93 / 66.13 |
+| OV-CUD M6 strict no-GT | no count/density supervision | 32.11 | 53.79 | **36.85 / 50.34** |
+| OV-CUD M6 cache-compatible | GT-derived candidate validity，诊断项 | 34.94 | 57.90 | 29.65 / 50.61 |
+
+MCAC 的核心结论是负结果而非 SOTA：严格 OV-CUD 落后于 OCCAM 和 ABC123；主要误差来自 51+ 高密度类别的系统性欠计数。MCAC 类别匿名，因此该实验不能证明类别名正确性，semantic-name claim 仍由 OmniCount-191 承担。
 
 ---
 
@@ -250,6 +269,8 @@ full 1,190-image 口径。旧 1,189 current-code A8 为 MAE=11.45，补回
 1. Learned relation dedup 明显优于 IoU NMS：A2 15.10 → A3 13.34。
 2. Adaptive dedup 有贡献：A5 14.39 → A8 13.47。
 3. FSC147 是单类别标注，semantic/spatial grouping 不呈现单调收益；multi-category claim 仍应主要由 OmniCount 支撑。
+
+**MCAC leave-one-out 补充**：在 full 2,115 cache-compatible 诊断口径下，M1/M2/M3/M4/M5/M6 的 per-class MAE 分别为 35.26/31.02/35.01/39.99/34.94/34.94。HR 明显有益；RH/CP 仅小幅有益；关闭 ADF 反而改善 3.93 MAE；T4 rescue 无 per-class 收益。该表使用 GT-derived `valid`，不进入严格 prompt-free 主表。
 
 ### 4.2 分类头消融 (P1-2)
 
