@@ -414,6 +414,9 @@ def main() -> None:
                 [row["pred_count"] for row in test_rows],
                 [row["gt_count"] for row in test_rows],
             )
+            test_without_7611 = [
+                row for row in test_rows if row["file_name"] != "7611.jpg"
+            ]
             results[key] = {
                 "condition": condition,
                 "seed": model_seed,
@@ -421,6 +424,10 @@ def main() -> None:
                 "validation_sweep": val_sweep,
                 "validation_routing": val_routing,
                 "test_metrics": test_summary,
+                "test_metrics_without_7611": metrics(
+                    [row["pred_count"] for row in test_without_7611],
+                    [row["gt_count"] for row in test_without_7611],
+                ),
                 "test_per_gt_bin": per_bin(test_rows),
                 "test_routing": test_routing,
                 "test_rows": test_rows,
