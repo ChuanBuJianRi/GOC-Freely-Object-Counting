@@ -15,6 +15,7 @@ SPLIT_FILE = Path("/home/czp/official_code/dataset/FSC147/Train_Test_Val_FSC_147
 CACHE_ROOT = Path("/home/czp/ws_yiyang/ovcud_cache")
 PRETRAINED = REPO / "result/checkpoints/coco_relation_1152.pt"
 TEXT_PROTO = REPO / "result/checkpoints/text_prototypes_fsc147.pt"
+SAM_PYTHON = Path("/home/czp/ws_yiyang/FreeCounting/venv/bin/python3")
 
 
 def run_logged(command: list[str], log_path: Path, dry_run: bool) -> None:
@@ -133,7 +134,8 @@ def main() -> None:
         tiled_dir = CACHE_ROOT / "fsc147_val_tiled_51plus"
         multires_dir = CACHE_ROOT / "fsc147_val_multires_51plus"
         tiled_command = [
-            python, "script/preprocess_fsc147_tiled.py",
+            str(SAM_PYTHON if SAM_PYTHON.exists() else python),
+            "script/preprocess_fsc147_tiled.py",
             "--split-file", str(SPLIT_FILE), "--split-key", "val", "--min-count", "51",
             "--out-dir", str(tiled_dir), "--tiles", "2", "--overlap", "0.25",
             "--pts-per-side", "32", "--device", args.device,
