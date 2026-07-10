@@ -49,8 +49,10 @@ def main() -> None:
                         default=REPO / "result/checkpoints/cp_strict")
     parser.add_argument("--log-dir", type=Path,
                         default=REPO / "result/logs/cp_strict_training")
-    parser.add_argument("--stages", nargs="+", choices=("category", "relation", "eval"),
-                        default=["category", "relation", "eval"])
+    parser.add_argument(
+        "--stages", nargs="+", choices=("category", "relation", "val-cache", "eval"),
+        default=["category", "relation", "val-cache", "eval"],
+    )
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--device", default="cuda")
@@ -127,11 +129,30 @@ def main() -> None:
                         args.dry_run,
                     )
 
+    if "val-cache" in args.stages:
+        tiled_dir = CACHE_ROOT / "fsc147_val_tiled_51plus"
+        multires_dir = CACHE_ROOT / "fsc147_val_multires_51plus"
+        tiled_command = [
+            python, "script/preprocess_fsc147_tiled.py",
+            "--split-file", str(SPLIT_FILE), "--split-key", "val", "--min-count", "51",
+            "--out-dir", str(tiled_dir), "--tiles", "2", "--overlap", "0.25",
+            "--pts-per-side", "32", "--device", args.device,
+        ]
+        run_logged(tiled_command, args.log_dir / "validation_tiled_cache.log", args.dry_run)
+        merge_command = [
+            python, "script/build_multires_cache.py",
+            "--cache-16", str(CACHE_ROOT / "fsc147_train_fast"),
+            "--cache-32", str(tiled_dir),
+            "--out-dir", str(multires_dir), "--iou-thresh", "0.5",
+        ]
+        run_logged(merge_command, args.log_dir / "validation_multires_merge.log", args.dry_run)
+
     if "eval" in args.stages:
         command = [
             python, "script/eval_cp_pretraining_multiseed.py",
             "--checkpoint-dir", str(args.checkpoint_dir),
             "--cache-root", str(CACHE_ROOT),
+            "--val-multires-cache", str(CACHE_ROOT / "fsc147_val_multires_51plus"),
             "--split-file", str(SPLIT_FILE),
             "--annotation", str(
                 Path("/home/czp/official_code/dataset/FSC147/annotation_FSC147_384.json")

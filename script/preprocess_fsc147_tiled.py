@@ -344,7 +344,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ann", default="/home/czp/official_code/dataset/FSC147/annotation_FSC147_384.json")
     ap.add_argument("--img-dir", default="/home/czp/official_code/dataset/FSC147/images_384_VarV2")
-    ap.add_argument("--images-file", required=True, help="JSON list of image filenames to process")
+    ap.add_argument("--images-file", default=None, help="JSON list of image filenames to process")
+    ap.add_argument("--split-file", default=None, help="official split JSON used when --images-file is omitted")
+    ap.add_argument("--split-key", default="val", help="split selected from --split-file")
+    ap.add_argument("--min-count", type=int, default=0, help="minimum GT count for split-file filtering")
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--class-map", default="/home/czp/official_code/dataset/FSC147/ImageClasses_FSC147.txt")
     ap.add_argument("--categories-json", default="result/checkpoints/text_prototypes_fsc147_categories.json")
@@ -374,9 +377,20 @@ def main():
             if len(parts) >= 2:
                 img_to_class[parts[0]] = parts[1]
 
-    # Load image list
-    with open(args.images_file) as f:
-        img_files = json.load(f)
+    # Load image list. Split-derived lists avoid hand-maintained validation files.
+    if args.images_file:
+        with open(args.images_file) as f:
+            img_files = json.load(f)
+    elif args.split_file:
+        split = json.load(open(args.split_file))
+        if args.split_key not in split:
+            raise KeyError(f"split key {args.split_key!r} not found in {args.split_file}")
+        img_files = [
+            fn for fn in split[args.split_key]
+            if len(ann.get(fn, {}).get("points", [])) >= args.min_count
+        ]
+    else:
+        ap.error("one of --images-file or --split-file is required")
     print(f"[init] {len(img_files)} images to process")
 
     # Build SAM2

@@ -168,6 +168,7 @@ def load_cache(path: Path):
 
 def validation_predictions(
     names: list[str], ann: dict[str, Any], cache_root: Path,
+    val_multires_dir: Path,
     category_fast, category_pts32, relation_fast, relation_pts32,
     text_proto, taus: tuple[float, ...], device: str,
 ) -> tuple[dict[float, list[int]], list[int], dict[str, int]]:
@@ -179,8 +180,12 @@ def validation_predictions(
         gt_count = ab.gt_count_from_ann(stem, ann)
         use_pts32 = gt_count > 50
         resolution = "pts32" if use_pts32 else "pts16"
-        cache_dir = cache_root / ("fsc147_train_pts32" if use_pts32 else "fsc147_train_fast")
+        cache_dir = val_multires_dir if use_pts32 else cache_root / "fsc147_train_fast"
         d = load_cache(cache_dir / f"{stem}.pt")
+        if use_pts32 and d is None:
+            raise FileNotFoundError(
+                f"validation multires cache missing for high-density image: {stem}"
+            )
         prepared = prepare_count(
             d,
             category_pts32 if use_pts32 else category_fast,
@@ -307,6 +312,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkpoint-dir", type=Path, default=DEFAULT_CKPT_DIR)
     parser.add_argument("--cache-root", type=Path, default=DEFAULT_CACHE_ROOT)
+    parser.add_argument(
+        "--val-multires-cache", type=Path,
+        default=DEFAULT_CACHE_ROOT / "fsc147_val_multires_51plus",
+    )
     parser.add_argument("--split-file", type=Path, default=DEFAULT_SPLIT)
     parser.add_argument("--annotation", type=Path, default=DEFAULT_ANN)
     parser.add_argument("--seeds", type=int, nargs="+", default=[17, 42, 73])
@@ -327,6 +336,17 @@ def main() -> None:
     if args.limit <= 0 and (len(val_names) != 1286 or len(test_names) != 1190):
         raise RuntimeError("unexpected official FSC-147 validation/test split size")
     ann = json.loads(args.annotation.read_text())
+    expected_val_multires = {
+        Path(name).stem for name in val_names
+        if ab.gt_count_from_ann(Path(name).stem, ann) > 50
+    }
+    available_val_multires = {
+        path.stem for path in args.val_multires_cache.glob("*.pt")
+    }
+    if args.limit <= 0 and expected_val_multires != available_val_multires:
+        raise RuntimeError(
+            "official-val multires cache must exactly match the 386 GT>50 validation images"
+        )
     taus = tuple(sorted(set(args.taus)))
 
     category_paths = {
@@ -379,7 +399,7 @@ def main() -> None:
             relation_fast = load_relation_head(str(paths[0]), args.device)
             relation_pts32 = load_relation_head(str(paths[1]), args.device)
             val_pred, val_gt, val_routing = validation_predictions(
-                val_names, ann, args.cache_root,
+                val_names, ann, args.cache_root, args.val_multires_cache,
                 category_fast, category_pts32, relation_fast, relation_pts32,
                 text_proto, taus, args.device,
             )
@@ -421,6 +441,10 @@ def main() -> None:
             "official_train_only": True,
             "model_selection": "fixed internal 10% split of official train; split_seed=20260710",
             "threshold_selection": "official FSC-147 validation only",
+            "validation_frontend": (
+                "GT<=50: pts16; GT>50: pts16 + 2x2 tiled pts32 merged with bbox-IoU@0.5"
+            ),
+            "validation_multires_cache": str(args.val_multires_cache),
             "test_selection": "no test metric is read before tau is frozen",
             "tau_grid": list(taus),
             "confidence_threshold": ab.CONF,
