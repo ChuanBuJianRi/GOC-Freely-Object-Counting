@@ -68,7 +68,15 @@ Relation label 审计发现仓库当前若干 FSC 预处理源码曾把 `matched
 - raw fast candidate count为 0 的触发条件本身不读取 `valid` 或 GT count；但历史 4x4 配方是在查看 test `7611.jpg` 后形成，当前不能直接计入 strict 主结果。
 - 不通过 cache 文件是否存在判断密度；val/test fast 与 tiled cache 必须分别精确覆盖完整 split。
 
-T4 recipe 将只由 official-train 的 3 个 fast-zero failure cases（`2737.jpg`、`2979.jpg`、`7454.jpg`）在 2x2/3x3/4x4 间选择。固定使用 pts32 candidate filter 的 `p>=0.5` 预测候选数，按 train count MAE、RMSE、较低 tile 数依次排序；预测全部完成后才加载隔离的 3-image train target shard。若 train-side 对照不支持 4x4，则不能沿用历史 7611 选择。
+Official-train 缺失 fast cache 的 3 张图中，`2737.jpg` 与 `2979.jpg` 是本地 0-byte 损坏文件，不能作为模型 failure；可解码的真实 fast-zero case 只有 `7454.jpg`（GT 197）。T4 recipe 仅在该图上于 2x2/3x3/4x4 间选择，固定使用 pts32 candidate filter 的 `p>=0.5` 预测候选数，按 train count MAE、RMSE、较低 tile 数依次排序；预测完成后才加载隔离的 1-image train target shard。该选择不接触 test GT，但单样本 calibration 的局限必须披露。
+
+| train recipe | raw candidates | filter count | GT | 绝对误差 |
+|---|---:|---:|---:|---:|
+| 2x2 | 70 | 22 | 197 | 175 |
+| 3x3 | 294 | 90 | 197 | 107 |
+| **4x4（冻结选择）** | **439** | **117** | **197** | **80** |
+
+选择记录：`result/configs/fsc147_train_rescue_selection.json`；`test_images_loaded=0`，pts32 candidate-filter SHA-256 前缀为 `55d530c3c942ecb8`。
 
 ## 4. Validation-only 选择
 

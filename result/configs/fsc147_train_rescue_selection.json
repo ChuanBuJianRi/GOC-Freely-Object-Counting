@@ -1,0 +1,107 @@
+{
+  "date": "2026-07-10",
+  "frozen": true,
+  "protocol": {
+    "selection_split": "official-train fast-zero images",
+    "selection_images": [
+      "7454.jpg"
+    ],
+    "validation_images_loaded": 0,
+    "test_images_loaded": 0,
+    "prediction_gt_fields": [],
+    "gt_read": "isolated official-train target shard, after all frontend predictions",
+    "selection_metric": "candidate-filter count MAE; RMSE and lower tile count tie-break",
+    "candidate_filter_threshold": 0.5
+  },
+  "selected": {
+    "recipe": "4x4",
+    "expected_source_cache": "tiled-nogt-4x4-overlap0.25-bbox",
+    "metrics": {
+      "n": 1,
+      "MAE": 80.0,
+      "RMSE": 80.0,
+      "bias": -80.0,
+      "mean_pred": 117.0,
+      "mean_gt": 197.0
+    }
+  },
+  "results": {
+    "2x2": {
+      "metrics": {
+        "n": 1,
+        "MAE": 175.0,
+        "RMSE": 175.0,
+        "bias": -175.0,
+        "mean_pred": 22.0,
+        "mean_gt": 197.0
+      },
+      "raw_candidate_mean": 70.0,
+      "source_cache_values": [
+        "tiled-nogt-2x2-overlap0.25-bbox"
+      ],
+      "rows": [
+        {
+          "file_name": "7454.jpg",
+          "pred_valid_candidates": 22,
+          "raw_candidates": 70,
+          "gt_count": 197
+        }
+      ]
+    },
+    "3x3": {
+      "metrics": {
+        "n": 1,
+        "MAE": 107.0,
+        "RMSE": 107.0,
+        "bias": -107.0,
+        "mean_pred": 90.0,
+        "mean_gt": 197.0
+      },
+      "raw_candidate_mean": 294.0,
+      "source_cache_values": [
+        "tiled-nogt-3x3-overlap0.25-bbox"
+      ],
+      "rows": [
+        {
+          "file_name": "7454.jpg",
+          "pred_valid_candidates": 90,
+          "raw_candidates": 294,
+          "gt_count": 197
+        }
+      ]
+    },
+    "4x4": {
+      "metrics": {
+        "n": 1,
+        "MAE": 80.0,
+        "RMSE": 80.0,
+        "bias": -80.0,
+        "mean_pred": 117.0,
+        "mean_gt": 197.0
+      },
+      "raw_candidate_mean": 439.0,
+      "source_cache_values": [
+        "tiled-nogt-4x4-overlap0.25-bbox"
+      ],
+      "rows": [
+        {
+          "file_name": "7454.jpg",
+          "pred_valid_candidates": 117,
+          "raw_candidates": 439,
+          "gt_count": 197
+        }
+      ]
+    }
+  },
+  "assets": {
+    "candidate_filter": "/home/czp/ljs/Freely-Object-Counting/result/checkpoints/fsc147_candidate_filter_pts32_trainonly.pt",
+    "candidate_filter_sha256": "55d530c3c942ecb873fbbb7433b74ab24c23a2f544f9ff206f79832daec2de11",
+    "target_shard": "/home/czp/ljs/Freely-Object-Counting/result/configs/fsc147_train_fast_zero_count_targets.json",
+    "target_shard_sha256": "881f797284ce9d82e2c9c59f7e133574eba3bb0a5dac06ee225154e4c0420ab2",
+    "cache_paths": {
+      "2x2": "/home/czp/ws_yiyang/ovcud_cache/fsc147_nogt_train_rescue2x2",
+      "3x3": "/home/czp/ws_yiyang/ovcud_cache/fsc147_nogt_train_rescue3x3",
+      "4x4": "/home/czp/ws_yiyang/ovcud_cache/fsc147_nogt_train_rescue4x4"
+    }
+  }
+}
