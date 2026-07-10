@@ -123,8 +123,9 @@ def process_image(image: np.ndarray, name: str, amg, encoder: DINOv2RegionEncode
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--split-file", type=Path, required=True)
-    parser.add_argument("--split-key", choices=("val", "test"), required=True)
+    parser.add_argument("--split-file", type=Path)
+    parser.add_argument("--split-key", choices=("val", "test"))
+    parser.add_argument("--images-file", type=Path, help="JSON list produced by an image-only router")
     parser.add_argument("--img-dir", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--tiles", type=int, default=2)
@@ -138,11 +139,19 @@ def main() -> None:
     if args.num_shards < 1 or not 0 <= args.shard_index < args.num_shards:
         parser.error("invalid shard configuration")
 
-    names = list(json.loads(args.split_file.read_text())[args.split_key])
+    if args.images_file:
+        payload = json.loads(args.images_file.read_text())
+        names = list(payload["tile_names"] if isinstance(payload, dict) else payload)
+        split_label = "routed"
+    elif args.split_file and args.split_key:
+        names = list(json.loads(args.split_file.read_text())[args.split_key])
+        split_label = args.split_key
+    else:
+        parser.error("provide --images-file or both --split-file and --split-key")
     shard_names = names[args.shard_index::args.num_shards]
     args.out_dir.mkdir(parents=True, exist_ok=True)
     print(
-        f"[init] split={args.split_key} shard={args.shard_index}/{args.num_shards} "
+        f"[init] split={split_label} shard={args.shard_index}/{args.num_shards} "
         f"images={len(shard_names)}/{len(names)}",
         flush=True,
     )

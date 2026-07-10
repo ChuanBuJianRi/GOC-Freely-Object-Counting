@@ -164,10 +164,11 @@ def prepare_sample(d: dict[str, Any], models: dict[str, Any], resolution: str,
     filter_probability = torch.sigmoid(
         candidate_filter(z.to(device), geometry.to(device))
     ).cpu().numpy()
+    relation_ranking_score = category_confidence * filter_probability
     relation = {}
     for seed in SEEDS:
         relation[seed] = ab.relation_matrices(
-            d, z, probs, category_confidence,
+            d, z, probs, relation_ranking_score,
             models[f"relation_{resolution}_{seed}"], device,
         )
     return {
@@ -176,6 +177,7 @@ def prepare_sample(d: dict[str, Any], models: dict[str, Any], resolution: str,
         "probs": probs,
         "category_confidence": category_confidence,
         "filter_probability": filter_probability,
+        "relation_ranking_score": relation_ranking_score,
         "bbox": bbox,
         "image_area": float(int(d["height"]) * int(d["width"])),
         "semantic_affinity": ab.semantic_affinity(probs),
@@ -352,7 +354,7 @@ def run_validation(args: argparse.Namespace) -> None:
     )
     selected_route_key = json.dumps(route, sort_keys=True, separators=(",", ":"))
     output = {
-        "date": "2026-07-11",
+        "date": "2026-07-10",
         "frozen": True,
         "protocol": {
             "prediction_gt_fields": [],
@@ -428,7 +430,16 @@ def run_test(args: argparse.Namespace) -> None:
     split = json.loads(args.split_file.read_text())
     names = list(split["test"])
     assert_exact_cache(args.test_fast_cache, names)
-    assert_exact_cache(args.test_tiled_cache, names)
+    if args.tile_plan is None:
+        raise RuntimeError("test phase requires --tile-plan")
+    tile_plan = json.loads(args.tile_plan.read_text())
+    if tile_plan.get("frozen_config_sha256") != sha256(args.frozen_config):
+        raise RuntimeError("tile plan was not generated from the supplied frozen config")
+    tile_names = list(tile_plan["tile_names"])
+    if not set(tile_names).issubset(names):
+        raise RuntimeError("tile plan contains names outside the official test split")
+    assert_exact_cache(args.test_tiled_cache, tile_names)
+    tile_stems = {Path(name).stem for name in tile_names}
     models = load_models(args.checkpoint_dir, args.device)
     if models["sha256"] != frozen["assets"]["sha256"]:
         raise RuntimeError("checkpoint hashes differ from validation-frozen config")
@@ -443,9 +454,11 @@ def run_test(args: argparse.Namespace) -> None:
         fast = prepare_sample(
             load_safe_cache(args.test_fast_cache / f"{stem}.pt"), models, "fast", args.device
         )
-        tiled = prepare_sample(
-            load_safe_cache(args.test_tiled_cache / f"{stem}.pt"), models, "tiled", args.device
-        )
+        tiled = None
+        if stem in tile_stems:
+            tiled = prepare_sample(
+                load_safe_cache(args.test_tiled_cache / f"{stem}.pt"), models, "tiled", args.device
+            )
         rescue = None
         if fast["n"] == 0:
             rescue_path = args.test_rescue_cache / f"{stem}.pt"
@@ -457,11 +470,19 @@ def run_test(args: argparse.Namespace) -> None:
             use_tiled = route["mode"] == "always_tiled" or (
                 route["mode"] == "predicted_count" and fast_prediction >= route["threshold"]
             )
-            source = "tiled2x2" if use_tiled else "fast"
-            prediction = count_prepared(tiled, seed, tiled_config) if use_tiled else fast_prediction
             if rescue is not None:
                 source = "t4_4x4_fast_zero"
                 prediction = count_prepared(rescue, seed, tiled_config)
+            elif use_tiled:
+                if tiled is None:
+                    raise RuntimeError(
+                        f"routed image is absent from frozen tile plan: {name}, seed={seed}"
+                    )
+                source = "tiled2x2"
+                prediction = count_prepared(tiled, seed, tiled_config)
+            else:
+                source = "fast"
+                prediction = fast_prediction
             prediction_rows[str(seed)].append({
                 "file_name": name, "pred_count": prediction, "source": source,
                 "raw_fast_candidates": fast["n"], "raw_tiled_candidates": tiled["n"],
@@ -487,7 +508,7 @@ def run_test(args: argparse.Namespace) -> None:
     maes = np.asarray([runs[str(seed)]["metrics"]["MAE"] for seed in SEEDS])
     rmses = np.asarray([runs[str(seed)]["metrics"]["RMSE"] for seed in SEEDS])
     output = {
-        "date": "2026-07-11",
+        "date": "2026-07-10",
         "protocol": frozen["protocol"] | {
             "test_read": "only after all predictions were materialized",
             "test_images": len(names),
@@ -510,9 +531,59 @@ def run_test(args: argparse.Namespace) -> None:
     print(f"[save] {args.out}")
 
 
+def run_test_plan(args: argparse.Namespace) -> None:
+    frozen = json.loads(args.frozen_config.read_text())
+    if not frozen.get("frozen") or frozen.get("protocol", {}).get("test_read") is not False:
+        raise RuntimeError("test planning requires an untouched validation-frozen config")
+    split = json.loads(args.split_file.read_text())
+    names = list(split["test"])
+    assert_exact_cache(args.test_fast_cache, names)
+    models = load_models(args.checkpoint_dir, args.device)
+    if models["sha256"] != frozen["assets"]["sha256"]:
+        raise RuntimeError("checkpoint hashes differ from validation-frozen config")
+    fast_config = frozen["selected"]["fast_config"]
+    route = frozen["selected"]["route"]
+    routed_by_seed = {str(seed): [] for seed in SEEDS}
+    fast_zero = []
+    for index, name in enumerate(names):
+        stem = Path(name).stem
+        prepared = prepare_sample(
+            load_safe_cache(args.test_fast_cache / f"{stem}.pt"), models, "fast", args.device
+        )
+        if prepared["n"] == 0:
+            fast_zero.append(name)
+            continue
+        for seed in SEEDS:
+            prediction = count_prepared(prepared, seed, fast_config)
+            use_tiled = route["mode"] == "always_tiled" or (
+                route["mode"] == "predicted_count" and prediction >= route["threshold"]
+            )
+            if use_tiled:
+                routed_by_seed[str(seed)].append(name)
+        if (index + 1) % 250 == 0:
+            print(f"[test plan] {index+1}/{len(names)}", flush=True)
+    union = sorted(set().union(*(set(value) for value in routed_by_seed.values())))
+    output = {
+        "date": "2026-07-10",
+        "prediction_gt_fields": [],
+        "test_annotations_read": False,
+        "frozen_config": str(args.frozen_config),
+        "frozen_config_sha256": sha256(args.frozen_config),
+        "route": route,
+        "tile_names": union,
+        "tile_count": len(union),
+        "routed_by_seed": routed_by_seed,
+        "fast_zero_names": fast_zero,
+    }
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n")
+    print(json.dumps({"tile_count": len(union), "fast_zero": fast_zero}, indent=2))
+    print(f"[save] {args.out}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("validate", "test"))
+    parser.add_argument("phase", choices=("validate", "plan-test", "test"))
     parser.add_argument("--split-file", type=Path, default=DEFAULT_SPLIT)
     parser.add_argument("--annotation", type=Path, default=DEFAULT_ANN)
     parser.add_argument("--checkpoint-dir", type=Path, default=REPO / "result/checkpoints/cp_strict")
@@ -522,6 +593,7 @@ def main() -> None:
     parser.add_argument("--test-tiled-cache", type=Path, default=DEFAULT_CACHE_ROOT / "fsc147_nogt_test_tiled2x2")
     parser.add_argument("--test-rescue-cache", type=Path, default=DEFAULT_CACHE_ROOT / "fsc147_nogt_test_rescue4x4")
     parser.add_argument("--frozen-config", type=Path)
+    parser.add_argument("--tile-plan", type=Path)
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--bootstrap", type=int, default=5000)
     parser.add_argument("--bootstrap-seed", type=int, default=20260711)
@@ -529,9 +601,13 @@ def main() -> None:
     args = parser.parse_args()
     if args.phase == "validate":
         run_validation(args)
-    else:
+    elif args.phase == "plan-test":
         if args.frozen_config is None:
-            parser.error("test phase requires --frozen-config")
+            parser.error("plan-test phase requires --frozen-config")
+        run_test_plan(args)
+    else:
+        if args.frozen_config is None or args.tile_plan is None:
+            parser.error("test phase requires --frozen-config and --tile-plan")
         run_test(args)
 
 
