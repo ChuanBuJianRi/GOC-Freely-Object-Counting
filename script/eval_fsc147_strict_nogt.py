@@ -247,31 +247,61 @@ def prepare_sample(d: dict[str, Any], models: dict[str, Any], resolution: str,
     }
 
 
-def count_prepared(prepared: dict[str, Any], seed: int, config: dict[str, float]) -> int:
+def groups_for_gate(prepared: dict[str, Any], filter_threshold: float,
+                    category_threshold: float) -> list[list[int]]:
     n = prepared["n"]
     if n == 0:
-        return 0
+        return []
     indices = [
         index for index in range(n)
-        if prepared["filter_probability"][index] >= config["filter_threshold"]
-        and prepared["category_confidence"][index] >= config["category_threshold"]
+        if prepared["filter_probability"][index] >= filter_threshold
+        and prepared["category_confidence"][index] >= category_threshold
     ]
     if not indices:
-        return 0
+        return []
     local_groups = ab.cluster_full(
         prepared["probs"], prepared["semantic_affinity"], prepared["bbox"],
         indices, prepared["image_area"],
     )
-    groups = [[indices[index] for index in group] for group in local_groups]
+    return [[indices[index] for index in group] for group in local_groups]
+
+
+def count_groups(prepared: dict[str, Any], groups: list[list[int]], seed: int,
+                 tau_inst: float) -> int:
+    if not groups:
+        return 0
     previous = ab.TAU_INST
     try:
-        ab.TAU_INST = config["tau_inst"]
+        ab.TAU_INST = tau_inst
         return int(ab.dedup_count(
             groups, prepared["relation"][seed], prepared["probs"], prepared["bbox"],
-            prepared["image_area"], n, adaptive=True,
+            prepared["image_area"], prepared["n"], adaptive=True,
         ))
     finally:
         ab.TAU_INST = previous
+
+
+def count_prepared(prepared: dict[str, Any], seed: int, config: dict[str, float]) -> int:
+    groups = groups_for_gate(
+        prepared, config["filter_threshold"], config["category_threshold"]
+    )
+    return count_groups(prepared, groups, seed, config["tau_inst"])
+
+
+def count_prepared_grid(prepared: dict[str, Any],
+                        configurations: list[dict[str, float]]) -> dict[str, dict[str, int]]:
+    counts = {config_key(config): {} for config in configurations}
+    group_cache: dict[tuple[float, float], list[list[int]]] = {}
+    for config in configurations:
+        gate = (config["filter_threshold"], config["category_threshold"])
+        if gate not in group_cache:
+            group_cache[gate] = groups_for_gate(prepared, *gate)
+        key = config_key(config)
+        for seed in SEEDS:
+            counts[key][str(seed)] = count_groups(
+                prepared, group_cache[gate], seed, config["tau_inst"]
+            )
+    return counts
 
 
 def metric(predictions: list[float], targets: list[float]) -> dict[str, float | int]:
@@ -330,10 +360,10 @@ def validation_frontend_predictions(names: list[str], cache_dir: Path, models: d
         d = load_safe_cache(cache_dir / f"{Path(name).stem}.pt")
         prepared = prepare_sample(d, models, resolution, device)
         raw_candidates.append(prepared["n"])
-        for config in configurations:
-            key = config_key(config)
-            for seed in SEEDS:
-                predictions[key][str(seed)].append(count_prepared(prepared, seed, config))
+        sample_counts = count_prepared_grid(prepared, configurations)
+        for key, per_seed in sample_counts.items():
+            for seed, count in per_seed.items():
+                predictions[key][seed].append(count)
         if (index + 1) % 250 == 0:
             print(
                 f"[{resolution}] validation {index+1}/{len(names)} "
