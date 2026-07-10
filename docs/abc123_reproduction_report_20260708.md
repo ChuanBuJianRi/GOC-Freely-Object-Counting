@@ -350,3 +350,22 @@ python3 script/eval_abc123_baseline.py \
   --batch-size 64 --device cuda \
   --out result/logs/abc123_omnicount_test_full1957.json
 ```
+
+---
+
+## 9. 2026-07-10 MCAC 官方协议复现补充
+
+ABC123 的 MCAC published 指标已经使用官方 checkpoint、官方 `MCAC_Dataset` 和官方 density matching 重新验证。完整 2,115 张、3,630 个 image-class pairs 的结果如下：
+
+| 口径 | 图像数 | Per-class MAE | Per-class RMSE |
+|---|---:|---:|---:|
+| ABC123 published | - | 9.52 | 17.64 |
+| local full，torchvision 0.13 resize 语义 | 2,115 | **9.46** | **17.52** |
+| local full，当前 torchvision 默认 resize | 2,115 | 9.56 | 17.76 |
+| local official `drop_last=True` | 2,114 | 9.45 | 17.51 |
+
+主要本地结果相对 published 只差 `-0.06 MAE / -0.12 RMSE`，因此结论与前文 FSC147 复现不同：**MCAC published 9.52/17.64 可以认为已成功复现**。FSC147 仍缺少官方 adapter，不能据此反推 FSC147 的 11.75 已复现。
+
+同时需要保留一个协议限制：ABC123 的 per-class matching 忽略未匹配的额外 density heads。主要复现行的全部 5 heads total MAE/RMSE 为 58.70/90.20；零目标图 `2277443934862561` 的全 head 预测总数为 401.20，但不进入官方 per-class 指标。
+
+详细配置、切片、bootstrap CI、`drop_last` 漏样本和逐图结果见 `docs/abc123_mcac_reproduction_report_20260710.md`。

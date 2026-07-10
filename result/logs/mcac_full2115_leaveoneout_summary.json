@@ -1399,6 +1399,20 @@
       "source": "arXiv:2309.04820v2 MCAC test table",
       "protocol_note": "prompt-free, density-map supervised, anonymous density heads"
     },
+    "abc123_official_checkpoint_local_full2115": {
+      "method": "ABC123 released checkpoint",
+      "num_images": 2115,
+      "num_image_class_pairs": 3630,
+      "MAE": 9.459508982588975,
+      "RMSE": 17.51856493429674,
+      "bias": -1.5030729937003784,
+      "matched_total_MAE": 11.544343502797824,
+      "matched_total_RMSE": 22.020348206038282,
+      "all_five_heads_total_MAE": 58.70061626841086,
+      "all_five_heads_total_RMSE": 90.19638248632555,
+      "source": "local official checkpoint rerun with torchvision 0.13 Tensor Resize semantics",
+      "protocol_note": "Official density matching ignores prediction heads not assigned to a nonzero GT density map"
+    },
     "occam_shared_pts32_local": {
       "method": "OCCAM-M (local training-free reimplementation)",
       "num_images": 2115,

@@ -16,15 +16,19 @@
 3. 将 FSC147 的无 GT 触发规则 `fast n_candidates == 0 -> 4x4 tiled rescue` 迁移到 MCAC；共触发 3 张。
 4. 修复 OCCAM GT 类别解析不一致，完成共享 pts32 候选上的 2,115 张 OCCAM-M 全量复现。
 5. 审计发现现有主评测代码使用 GT-dot-derived `valid` 筛选候选；因此补跑严格 `candidate_filter=all` 的无 GT M6/M5 sanity。
+6. 使用 ABC123 官方 checkpoint 和官方 MCAC 数据协议重跑 full 2,115，得到 9.46 / 17.52，成功复现 published 9.52 / 17.64。
 
 最重要的结果如下：
 
 | 方法/口径 | 是否在推理候选筛选中使用 GT | Per-class MAE | Per-class RMSE | Total MAE | Total RMSE |
 |---|---:|---:|---:|---:|---:|
 | ABC123 published | 否；但使用 density-map 监督 | **9.52** | **17.64** | - | - |
+| ABC123 local official ckpt，full 2,115 | 否；但使用 density-map 监督 | **9.46** | **17.52** | 58.70\* | 90.20\* |
 | OCCAM-M local，shared pts32 | 否 | 22.74 | 38.89 | 49.93 | 66.13 |
 | Ours M6，严格 no-GT | 否 | 32.11 | 53.79 | **36.85** | **50.34** |
 | Ours M6，现有 cache-compatible | **是** | 34.94 | 57.90 | 29.65 | 50.61 |
+
+\* ABC123 total 指标为全部 5 个 heads 的预测总和；published per-class matching 会忽略未匹配的额外 heads，因此这两个口径不等价。
 
 结论不能写成“我们在 MCAC 上达到 SOTA”：
 
@@ -208,12 +212,14 @@ M6 strict 的 image-bootstrap 95% CI：MAE [30.66, 33.66]，RMSE [51.47, 56.06]�
 | 方法 | Prompt | 计数监督 | 输出 | 候选/协议 | Per-class MAE | Per-class RMSE |
 |---|---|---|---|---|---:|---:|
 | ABC123 published | 无 | density map + count | 匿名 density heads | 论文 MCAC test | **9.52** | **17.64** |
+| ABC123 local official ckpt | 无 | density map + count | 匿名 density heads | full 2,115，官方数据协议 | **9.46** | **17.52** |
 | OCCAM-M local | 无 | 无训练 | 匿名 clusters | shared pts32 SAM + local FINCH | 22.74 | 38.89 |
 | Ours M6 strict | 无 | 无 count/density supervision | FSC prototype anonymous buckets | all candidates + Hungarian | 32.11 | 53.79 |
 
 说明：
 
-- ABC123 数字直接引用 arXiv:2309.04820v2 published table，没有伪装成本地复现；其 density-map 监督强于 ours/OCCAM。
+- ABC123 published 数字直接引用 arXiv:2309.04820v2；local 行使用官方 checkpoint、官方 `MCAC_Dataset` 和原版 torchvision resize 语义。完整 2,115 张为 9.46/17.52，官方 `drop_last=True` 的 2,114 张为 9.45/17.51，说明 published 9.52/17.64 已成功复现。
+- ABC123 per-class matching 只评估与非零 GT density map 匹配的 heads，忽略额外 heads。其全部 5 heads total MAE/RMSE 为 58.70/90.20；零目标图 `2277443934862561` 的全 head 预测总数为 401.20，但不进入 per-class 分母。
 - OCCAM 行是本地共享候选适配，不是 OCCAM 论文公开 MCAC 数字。它复用与 ours 相同的 pts32 SAM pool，再运行 OCCAM area filtering、mask-IoU dedup、ResNet50 和 FINCH。
 - OCCAM spatial matching MAE/RMSE 为 22.74/38.89；count-optimal matching 诊断 MAE 为 16.28。
 - OCCAM total-count 为 49.93/66.13，差于 ours strict 的 36.85/50.34，说明其额外 cluster 较多；仅看 per-class matching 会忽略这些 cluster。
@@ -251,7 +257,11 @@ M6 strict 的 image-bootstrap 95% CI：MAE [30.66, 33.66]，RMSE [51.47, 56.06]�
 | `script/preprocess_mcac_rescue_tiled.py` | 无 GT 触发的 MCAC 4x4 rescue overlay |
 | `script/eval_mcac.py` | M1-M6、overlay、完整性校验及 strict candidate filter |
 | `script/eval_mcac_occam.py` | OCCAM shared-cache MCAC 全量评测 |
+| `script/eval_abc123_mcac_official.py` | ABC123 官方 MCAC 协议 full/drop-last 双口径复现 |
 | `script/summarize_mcac_full2115.py` | 指标复算、CI、切片和协议校验 |
+| `docs/abc123_mcac_reproduction_report_20260710.md` | ABC123 MCAC 独立复现与协议审计报告 |
+| `result/logs/abc123_mcac_reproduction_summary_20260710.json` | ABC123 复现机器可读汇总 |
+| `result/logs/abc123_mcac_test_full2115_official{,_legacyresize}_20260710.json.gz` | ABC123 两种 resize 口径逐图结果 |
 | `result/logs/mcac_full2115_leaveoneout_summary.json` | 本报告机器可读汇总 |
 | `result/logs/mcac_full2115_m{1..6}_12p67.json.gz` | cache-compatible M1-M6 逐图原始结果（Git 压缩归档） |
 | `result/logs/mcac_strict_nogt_full2115_m{5,6}_12p67.json.gz` | strict no-GT 逐图结果（Git 压缩归档） |

@@ -57,7 +57,7 @@
 
 | 方法 | 协议 | 数字来源 | 状态 |
 |---|---|---|---|
-| ABC123 | prompt-free，density 监督，匿名 per-class 密度图 | 论文公开（arXiv:2309.04820v2 MCAC test 表） | ✅ 9.52 / 17.64（已对照本地表核实） |
+| ABC123 | prompt-free，density 监督，匿名 per-class 密度图 | published + 官方 checkpoint 本地全量复现 | ✅ published 9.52 / 17.64；local full-2115 9.46 / 17.52 |
 | OCCAM | prompt-free，training-free | 本地 shared-pts32 复现；非论文公开 MCAC 数字 | ✅ 22.74 / 38.89 |
 | UniCounting (ours) | prompt-free，count-supervision-free；MCAC 仅匿名分组 | 本地 strict no-GT | ✅ 32.11 / 53.79 |
 | OmniCount†（可选） | 输入 GT 类表的 prompted 参考行 | 本地跑或删行 | ⬜ 可选 |
@@ -65,7 +65,7 @@
 ### 2.3 数据与环境
 
 - MCAC 已解压到 `/home/czp/ljs/dataset/MCAC`，本地压缩包为 `/home/czp/ljs/dataset/MCAC.zip`；数据不提交 Git 仓库。
-- ABC123 官方 checkpoint 此前已复现（`docs/abc123_reproduction_report_20260708.md`），如需 sanity check 可在 MCAC 上复核 9.52/17.64。
+- ABC123 官方 checkpoint 已在 MCAC full 2,115 上复现为 9.46/17.52；官方 `drop_last=True` 的 2,114 张口径为 9.45/17.51。详见 `docs/abc123_mcac_reproduction_report_20260710.md`。
 - OCCAM 本地复现入口参考 `result/logs/occam_dot_recall.json` 对应的评估脚本。
 
 ### 2.4 评测协议（关键，写论文前先定）
@@ -83,7 +83,8 @@
 4. ✅ 重训 M3，并完成 FSC147 full + MCAC。
 5. ✅ OCCAM shared-pts32 复现跑 MCAC；原生 OCCAM AMG 仍为可选补充。
 6. ⬜ OmniCount prompted 参考行未跑，不填主表。
-7. ✅ 原始结果与机器可读汇总输出到 `result/logs/`。
+7. ✅ ABC123 官方 checkpoint full-2115 复现，published 指标得到验证。
+8. ✅ 原始结果与机器可读汇总输出到 `result/logs/`。
 
 ### 2.6 优先级
 

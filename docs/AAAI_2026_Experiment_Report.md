@@ -229,16 +229,19 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 
 ### 3.5 MCAC Full-2115 多类别评测
 
-2026-07-10 已补齐 MCAC test 2,115 张，并完成 M1-M6、严格 no-GT sanity 和 OCCAM-M 本地共享候选对比。完整报告见 `docs/mcac_full2115_leaveoneout_report_20260710.md`。
+2026-07-10 已补齐 MCAC test 2,115 张，并完成 M1-M6、严格 no-GT sanity、OCCAM-M 本地共享候选对比及 ABC123 官方 checkpoint 全量复现。完整记录见 `docs/mcac_full2115_leaveoneout_report_20260710.md` 和 `docs/abc123_mcac_reproduction_report_20260710.md`。
 
 | 方法 | 监督/协议 | Per-class MAE | Per-class RMSE | Total MAE/RMSE |
 |---|---|---:|---:|---:|
 | ABC123 published | prompt-free，density-map supervised | **9.52** | **17.64** | - |
+| ABC123 local official ckpt，full 2,115 | 同上，官方数据与 matching 协议 | **9.46** | **17.52** | 58.70 / 90.20\* |
 | OCCAM-M local shared pts32 | training-free，strict candidate inference | 22.74 | 38.89 | 49.93 / 66.13 |
 | OV-CUD M6 strict no-GT | no count/density supervision | 32.11 | 53.79 | **36.85 / 50.34** |
 | OV-CUD M6 cache-compatible | GT-derived candidate validity，诊断项 | 34.94 | 57.90 | 29.65 / 50.61 |
 
-MCAC 的核心结论是负结果而非 SOTA：严格 OV-CUD 落后于 OCCAM 和 ABC123；主要误差来自 51+ 高密度类别的系统性欠计数。MCAC 类别匿名，因此该实验不能证明类别名正确性，semantic-name claim 仍由 OmniCount-191 承担。
+\* ABC123 total 为全部 5 个 heads 的总和；其 published per-class matching 忽略未匹配 heads，不能直接横向解读。
+
+ABC123 published 结果已复现：原版 torchvision resize 语义下 full-2115 为 9.46/17.52，官方 `drop_last=True` 的 2,114 张为 9.45/17.51。MCAC 的核心结论仍是负结果而非 SOTA：严格 OV-CUD 落后于 OCCAM 和 ABC123；主要误差来自 51+ 高密度类别的系统性欠计数。MCAC 类别匿名，因此该实验不能证明类别名正确性，semantic-name claim 仍由 OmniCount-191 承担。
 
 ---
 
