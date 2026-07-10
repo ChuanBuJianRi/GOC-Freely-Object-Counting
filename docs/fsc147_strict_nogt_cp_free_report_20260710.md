@@ -54,6 +54,8 @@ Validation/test inference cache 只允许：
 
 Candidate filter 只在 train 阶段把“候选覆盖至少一个 train dot”作为监督；validation/test 只使用预测概率。这属于 FSC point supervision，不是 density-map supervision，但不能表述为完全无 point/count information。
 
+Category head 使用 official-train 的 image-level 类别标签；relation head 的 instance 分支使用“两个候选被分配到同一个 train dot”作为 same-instance proxy。FSC dots 不提供真实 part-whole 标签，strict 推理中的 `A_part` 固定为零，因此本配置不能声称学习了 part-whole relation。
+
 原型由 `build_fsc147_train_vocabulary.py` 直接读取 official-train cache 中的类 ID/类名后编码；脚本不读取 `ImageClasses_FSC147.txt`、validation/test image list 对应的类别，也不加载旧 147 类原型。训练器显式完成 global ID 到 89 类 local ID 的映射，并把原型及 metadata 哈希写入 checkpoint。
 
 Relation label 审计发现仓库当前若干 FSC 预处理源码曾把 `matched_instance_id` 写成候选序号，与现存训练 cache 的真实语义不一致。现已统一修正为：未覆盖 dot 的候选记为 `-1`，有效候选记为其覆盖的第一个 train dot ID。strict relation 训练启动前全量验证 `valid <=> id>=0`、`id < gt_count` 和 shared-dot 正样本数，审计统计写入 checkpoint；缺少该 manifest 的权重会被 evaluator 拒绝。

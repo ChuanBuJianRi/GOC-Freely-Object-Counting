@@ -444,7 +444,12 @@ def run_validation(args: argparse.Namespace) -> None:
         "protocol": {
             "prediction_gt_fields": [],
             "inference_cache_schema": "fsc147-inference-v1",
-            "training_labels": "official-train FSC dots only",
+            "training_supervision": (
+                "official-train image-level classes for category head; official-train "
+                "dots for candidate filter and shared-dot instance relation"
+            ),
+            "relation_outputs_used": "instance branch only; part-whole matrix is fixed zero",
+            "text_vocabulary": "89 official-train classes; no val/test class names",
             "relation_initialization": "scratch; COCO pretraining forbidden",
             "selection_split": "official val 1286",
             "selection_target_shard": str(args.val_targets),
