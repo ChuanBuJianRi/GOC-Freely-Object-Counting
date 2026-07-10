@@ -126,6 +126,10 @@ def main() -> None:
     parser.add_argument("--split-file", type=Path)
     parser.add_argument("--split-key", choices=("val", "test"))
     parser.add_argument("--images-file", type=Path, help="JSON list produced by an image-only router")
+    parser.add_argument(
+        "--images-key", default="tile_names",
+        help="key to read when --images-file contains a JSON object",
+    )
     parser.add_argument("--img-dir", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--tiles", type=int, default=2)
@@ -141,7 +145,7 @@ def main() -> None:
 
     if args.images_file:
         payload = json.loads(args.images_file.read_text())
-        names = list(payload["tile_names"] if isinstance(payload, dict) else payload)
+        names = list(payload[args.images_key] if isinstance(payload, dict) else payload)
         split_label = "routed"
     elif args.split_file and args.split_key:
         names = list(json.loads(args.split_file.read_text())[args.split_key])
