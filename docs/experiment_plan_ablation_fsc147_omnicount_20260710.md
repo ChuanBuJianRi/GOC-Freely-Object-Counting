@@ -10,7 +10,7 @@
 
 ## 1. 目标与范围
 
-本轮最初仿照 `experiment_plan_ablation_mcac_20260709(1).md` 的 leave-one-out 设计，但后续审计确认原 M3 不满足严格定义；其余推理开关行保留为 legacy checkpoint 下的组件诊断，并另补 CP 严格配对实验。测试集只包括：
+本轮最初仿照 `experiment_plan_ablation_mcac_20260709(1).md` 的 leave-one-out 设计，但后续审计确认原 M3 不满足严格定义；其余推理开关行保留为 12.67 主 checkpoint 下的组件诊断，并另补 CP 严格配对实验。测试集只包括：
 
 1. **FSC-147 test full 1,190**：验证单类别总计数和高密度前端组件。
 2. **OmniCount-191 test full 1,957**：验证 prompt-free 多类别分组、per-class 指标和跨域组件行为。
@@ -110,7 +110,7 @@ OmniCount pts16 cache：
 - OmniCount M5/M6 逐图相同；FSC147 M5/M6 只允许 T4 触发图变化。
 - 所有结果包含配置、逐图预测、总指标、切片、bootstrap 和 paired delta。
 - 论文不声称 M1-M5 在两个数据集上都必然退化；OmniCount 的零变化必须如实报告。
-- 原 M3 不进入因果消融结论。CP 结论使用下述严格配对实验；若要把它与 M1/M2/M4/M5 放进同一主表，必须以新的 clean M6 checkpoint 重跑其余组件行。
+- 原 M3 不进入因果消融结论。FSC147 主结果维持 12.67；CP 从主组件表删除，严格配对实验放入补充材料。当前 12.67 checkpoint 仍含 COCO 初始化，真正的 CP-free 主 checkpoint 需要按同一主协议另行重训复评。
 
 ## 8. CP 严格配对补充实验
 

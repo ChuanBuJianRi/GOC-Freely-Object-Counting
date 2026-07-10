@@ -118,10 +118,10 @@ official-val 高密度缓存严格覆盖预期的 386/386 张，缺失和额外�
 2. **不能说 CP 有害**：旧 M3 的 `12.595 < 12.668` 来自 partial/leaky 配置；严格结果没有复现稳定负作用。
 3. **CP 有训练端效果，但未转化为 test MAE**：relation model-val loss/precision 更好，official-val MAE 平均改善 0.0469；test 上收益消失。
 4. CP 的 MAE seed std 略小（0.093 vs 0.121），但只有三个 seed，不把它写成显著稳定性 claim。
-5. 论文组件表不应再把 CP 写成 accuracy-critical module。若保留 COCO 初始化，只能描述为训练初始化/关系校准选择，并明确“最终 MAE 无显著收益”；若追求最简方法，当前证据支持删除 CP。
+5. 论文组件表不应再把 CP 写成 accuracy-critical module。当前决定是从核心贡献和必要组件中删除 CP；12.67 主结果仍按原 checkpoint 报告，不能在完成同主协议无 CP 重跑前把该 checkpoint 写成 CP-free。
 6. 不把单个最佳 seed 当作主结果，也不因为 test 上某个 tau 更好而回调阈值。
 
-绝对指标方面，严格 train-only 模型约为 13.97，而旧 12.67 权重的训练 cache 含 official-test 图。两者不能用于估计 CP 增益；投稿主结果应最终改为无泄漏、无 GT-derived `valid` 的统一重跑结果，不能继续把 12.67 当成 reviewer-ready headline。
+绝对指标方面，严格 train-only 模型约为 13.97，而 12.67 使用不同 category heads、训练划分和主 checkpoint。两者不能直接替换：本报告维持 12.67 为 FSC-147 主结果，13.97 只用于严格 CP/scratch 配对判断。训练 split 与 GT-derived `valid` 风险继续作为主结果限制记录。
 
 ## 6. 仍然存在的协议限制
 

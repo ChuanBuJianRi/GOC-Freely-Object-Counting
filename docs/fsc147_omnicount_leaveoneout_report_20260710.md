@@ -2,7 +2,7 @@
 
 **日期**：2026-07-10
 
-**FSC147 legacy engineering anchor**：MAE=12.67 / RMSE=113.71（旧训练 split 含 official-test 图）
+**FSC147 主方法**：MAE=12.67 / RMSE=113.71（协议限制单独披露）
 
 **测试集**：FSC-147 test full 1,190 + OmniCount-191 test full 1,957
 
@@ -185,6 +185,7 @@ OmniCount 有 93 类，大量 image-class 条目为 GT=0：
 2. ADF 和 HR 是两个数据集上最稳定、最明确的组件；HR 的 OmniCount paired CI 不跨 0。
 3. T4 是保守的极端失败 rescue：FSC147 只触发一张并显著改善该图，OmniCount 无触发时无副作用。
 4. 同一 FSC147 学习权重可在 OmniCount 输出 prompt-free semantic groups；M6 精确复现 4.68/8.46。
+5. FSC147 主结果维持 12.67/113.71；CP 严格审计作为补充实验，不用 13.97 替换主结果。
 
 ### 不能写
 
@@ -192,6 +193,7 @@ OmniCount 有 93 类，大量 image-class 条目为 GT=0：
 2. 不能声称 RH 在 OmniCount 上有可测收益；M1/M6 逐图一致。
 3. 不能用 OmniCount mRMSE 单独判断组件优劣。
 4. FSC147 表仍是 GT-derived `valid` 的 cache-compatible 口径，strict no-GT full 重跑仍待补。
+5. 当前 12.67 checkpoint 仍含 COCO 初始化；在完成同主协议无 CP 重跑前，不能把它称为 CP-free checkpoint。
 
 ## 8. 复现实验产物
 

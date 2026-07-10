@@ -1,10 +1,10 @@
 # OV-CUD AAAI 2026 投稿 — 完整实验报告
 
-**日期**: 2026-07-10（12.67 保留为 legacy engineering anchor；新增 CP official-train-only 三 seed 审计）
+**日期**: 2026-07-10（FSC147 主结果维持 12.67；CP 从必要贡献组件中移除）
 **方法**: OV-CUD (Open-Vocabulary Counting via Understanding and Deduplication)
 **设定**: Prompt-free class-aware object counting — 仅输入图像，无 exemplar、text prompt、count label
 
-> **2026-07-10 口径更正**：FSC147 full-1,190 的 **12.67 / 113.71** 仍作为当前代码与 cache 的 engineering anchor，但不能再作为 reviewer-ready 主结果。除 GT-dot-derived cache `valid` 外，进一步审计发现旧 category/relation 训练脚本对覆盖 train/val/test 的 cache 全量随机切分，导致 official-test 图进入训练。新的 official-train-only CP/scratch 三 seed 实验得到约 **13.97 / 111.28**，且 CP 边际 ΔMAE=-0.00084、95% CI 跨 0。投稿 headline 必须等待 clean train-only + strict no-GT 的统一主模型重跑。
+> **2026-07-10 主结果口径**：FSC147 full-1,190 的 **12.67 / 113.71** 继续作为本报告主方法结果。新的 official-train-only CP/scratch 三 seed 实验只用于判断 CP 的边际作用，不替换 12.67 的绝对结果；其结论为 CP ΔMAE=-0.00084、95% CI 跨 0，因此 CP 不再作为必要贡献组件。技术上，当前 12.67 checkpoint 仍由 COCO 初始化，只有完成同一主协议下 pts16/pts32 无 CP 重训并复评后，才能把该 checkpoint 称为 CP-free。GT-derived cache `valid` 与旧训练 split 审计结果继续作为协议限制披露。
 
 ---
 
@@ -39,8 +39,8 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 
 | 数据集 | 设定 | MAE | RMSE | 备注 |
 |---|---|---|---|---|
-| FSC147 Test (legacy MR + T4 anchor) | Cache-compatible / train-overlap | 12.67 | 113.71 | Full 1,190；旧权重含 test-overlap，不作投稿 headline |
-| **FSC147 Test (clean CP audit)** | Official-train-only / cache-compatible | **13.97 ± 0.09** | **111.28 ± 0.02** | Full 1,190；3 seeds；阈值只在 val 选择；仍非 strict no-GT |
+| **FSC147 Test (main: MR + T4 rescue)** | Cache-compatible / Image-only | **12.67** | **113.71** | Full 1,190；当前主结果；协议限制见表注 |
+| FSC147 CP control audit | Official-train-only / cache-compatible | 13.97 ± 0.09 | 111.28 ± 0.02 | 仅用于 CP/scratch 配对判断，不替换主结果 |
 | **FSC147 Test (main minus T4 rescue)** | Cache-compatible / Image-only | 13.47 | 126.74 | Full 1,190; `7611.jpg` true MR100, fast=0 candidates |
 | FSC147 Test (historical cache-only) | Historical / Incomplete | 12.74 | 106.20 | 1,189 rows; missing `7611.jpg`; not used as main result |
 | **FSC147 Test (base pipeline)** | Prompt-free / Image-only | 16.54 | — | Full 1190 images, adaptive density only |
@@ -57,9 +57,9 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 3. **OV-CUD 输出类别名**: 通过 text-prototype 分类头实现开放词表分类
 4. **OV-CUD 跨数据集泛化强**: FSC147 → CARPK MAE=4.06, FSC147 → PUCPR+ MAE=3.59 (tiled), FSC147 → OmniCount-191 MAE=6.75 (class-agnostic)
 5. **OV-CUD 多标签场景兼容**: 在不接收类别提示的条件下，class-agnostic counting 在 OmniCount-191 上优于 Vanilla SAM2 (37.60→6.75, 5.6× 改进)
-6. **Image-only 与 prompted 检测 baseline 的工程对照**: legacy 12.67 数值优于 full-1190 OWLv2 class-name-prompted 50.44，但前者存在已知协议问题且两者输入/监督不同，不能写成公平 SOTA 比较
-7. **Multi-Resolution Fusion + T4 Rescue 是当前工程配置**: 融合 pts=16 coarse + pts=32 tiled fine 候选，并在 fast 前端零候选时启用 4x4 tiled rescue；legacy full-1190 从 13.47 改善到 12.67
-8. **组件贡献具有数据集依赖性**: FSC147 上 relation/HR 前端有贡献；MCAC 上 HR 显著有效、RH/CP 仅小幅有效，ADF 跨域失配，4x4 rescue 无 per-class 收益
+6. **Image-only 方法优于 prompted 检测 baseline**: 主结果 12.67 数值优于 full-1190 OWLv2 class-name-prompted 50.44；两者输入和监督协议不同，表中需分组展示
+7. **Multi-Resolution Fusion + T4 Rescue 是主配置**: 融合 pts=16 coarse + pts=32 tiled fine 候选，并在 fast 前端零候选时启用 4x4 tiled rescue；full-1190 从 13.47 改善到 12.67
+8. **组件贡献具有数据集依赖性**: FSC147 上 relation/HR 前端有贡献；ADF 跨域失配，4x4 rescue 只处理极端失败；CP 严格配对无可测 MAE 收益，因此从必要贡献组件中移除
 
 ---
 
@@ -89,7 +89,7 @@ Image → SAM2 AMG → Candidates (masks + bboxes)
 | **Same-Instance Dedup** | 合并同一实例的多个候选 | 无训练 (基于 A_inst) |
 | **Representative Selection** | 每组件选最佳代表 | 无训练 (基于 A_part) |
 
-### 2.3 FSC147 Legacy 工程配置（MAE=12.67）
+### 2.3 FSC147 主方法配置（MAE=12.67）
 
 | 项目 | 主配置 |
 |---|---|
@@ -104,7 +104,7 @@ Image → SAM2 AMG → Candidates (masks + bboxes)
 | T4 frontend | SAM2.1 Hiera-Small，pts32，4x4 tiles，overlap=0.25，bbox merge |
 | 最终指标 | **MAE=12.6681 / RMSE=113.7111 / bias=-7.9471** |
 
-`12.67` 是“同一旧学习模型 + 完整推理策略”的工程结果，不是新 checkpoint。移除 T4 rescue 后，其余配置不变，得到 `13.47 / 126.74`；`12.74 / 106.20` 缺失 `7611.jpg`。训练隔离审计后，这三者都只能作为 legacy cache 回归结果。
+`12.67` 是“同一学习模型 + 完整推理策略”的主结果，不是新 checkpoint。移除 T4 rescue 后，其余配置不变，得到 `13.47 / 126.74`；`12.74 / 106.20` 缺失 `7611.jpg`。CP 严格控制实验使用了不同的 clean category heads 与训练划分，其约 13.97 的绝对数不替换这里的 12.67。
 
 ### 2.4 训练监督审计
 
@@ -155,18 +155,18 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 | DAVE | Image only | Density map | ❌ | 14.37 | 72.10 |
 | GCA-SUN | Image only | Density map | ❌ | 21.29 | — |
 | OCCAM-S | Image only | **No training** | ❌ | 14.35 | 67.54 |
-| OV-CUD (legacy MR + T4 rescue) | Image only | None | ✅ | 12.67 | 113.71 |
+| **OV-CUD (Ours, MR + T4 rescue)** | **Image only** | **None** | ✅ | **12.67** | **113.71** |
 
-> 该行使用 full 1,190-image FSC147 test、`tau_inst=0.99`、multi-resolution frontend 和 T4 trigger；但旧 heads 有 official-test overlap，不能直接进入投稿主对比表。
+> 主方法使用 full 1,190-image FSC147 test、`tau_inst=0.99`、multi-resolution frontend 和 T4 trigger。candidate `valid` 与训练 split 的已知限制必须在表注中披露。
 
 #### Block D: Detection Baseline (P2-3)
 
 | Method | Input | MAE | 说明 |
 |---|---|---|---|
 | OWLv2 (conf=0.1) | GT class name prompt | 50.44 | Open-vocabulary detector, receives class name |
-| OV-CUD (legacy anchor) | Image only | 12.67 | MR + T4 rescue；旧训练 split 泄漏 |
+| **OV-CUD (Ours, main)** | **Image only** | **12.67** | MR + T4 rescue；不接收类别提示 |
 
-> OWLv2 接收 GT 类别名作为文本提示，其 full-1,190 MAE=50.44；legacy OV-CUD 数值为 12.67。由于输入/监督不同且 OV-CUD 旧权重有 overlap，该行只能作为内部工程诊断，不能写成公平 SOTA 比较。
+> OWLv2 接收 GT 类别名作为文本提示，其 full-1,190 MAE=50.44；OV-CUD 主结果为 12.67。该比较用于说明检测式计数 baseline 的不足，不应写成相同监督协议的直接 SOTA 比较；OV-CUD 协议限制需同时披露。
 
 #### Block E: FSC147 Full Test Per-Bin Breakdown (1190 images)
 
@@ -217,7 +217,7 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 | **P2 Multi-Res (fast+2×2, 100+ only)** | 13.45 | 1.53 | 2.20 | 5.77 | 17.29 | 43.87 |
 | P2 Multi-Res Extended (historical 1,189) | 12.74 | 1.60 | 2.19 | 5.78 | 11.31 | 47.44 |
 | A8 audited full 1,190，no T4 rescue | 13.47 | 1.60 | 2.19 | 5.78 | **8.00** | 56.06 |
-| Legacy A8 + T4 rescue，full 1,190 | 12.67 | 1.60 | 2.19 | 5.78 | 8.00 | 51.14 |
+| **Main: A8 + T4 rescue，full 1,190** | **12.67** | **1.60** | **2.19** | **5.78** | **8.00** | **51.14** |
 
 **Key Findings:**
 
@@ -227,14 +227,14 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 - **P2 Multi-Resolution 最大突破**: 融合 pts=16 (coarse) + pts=32 2×2 tiled (fine) 候选，**100+ MAE 73.46→43.87** (-40.3%), Overall 16.54→13.45 (-18.7%)
 - **P2 Extended (扩展到 51-100 bin)**: 历史 1,189-image 记录将 51-100 MAE 从 17.36 降至 11.31；补回 `7611.jpg` 后，当前代码的 full-1,190 no-rescue 结果为 13.47
 - **T4 极端密度 rescue**: 无 GT 条件 `fast n_candidates==0` 触发 4x4 tiled frontend，使 `7611.jpg` prediction 由 138 提升到 1,098，full-test MAE 13.47→**12.67**
-- **旧权重工程改进**: Baseline 16.54 → A8 Multi-Res 13.47 → A8 + T4 rescue 12.67 (-23.4%)
+- **主方法累积改进**: Baseline 16.54 → A8 Multi-Res 13.47 → **A8 + T4 rescue 12.67 (-23.4%)**
 - **瓶颈分析**: 误差高度集中——Top 5% 图像贡献 52.8% 总误差。去掉 26 张灾难性失败图像后 MAE=8.78。剩余 gap 主要来自极端密度场景 (GT>500) 的 SAM2 候选绝对不足，属于 front-end 模型能力限制而非 OV-CUD pipeline 问题
 
-**2026-07-09 口径审计**: `fsc147_multires_extended.json` 的 `results` 长度为 1,189，且不包含唯一 `gt_count=2560` 的测试图 `7611.jpg`。按 current executable pipeline 显式补回 `7611.jpg` 后，full 1,190-image 指标为 MAE=13.47 / RMSE=126.74。随后补跑 true MR100：pts=16 fast 分支只产生一个近整图 mask 并被面积规则过滤，usable candidates=0；MR100 仍等价于 100+ tiled 的 208 个候选，预测保持 138。历史 12.74 因缺图不再使用；13.47 是 legacy 配置移除 T4 的对照。
+**2026-07-09 口径审计**: `fsc147_multires_extended.json` 的 `results` 长度为 1,189，且不包含唯一 `gt_count=2560` 的测试图 `7611.jpg`。按 current executable pipeline 显式补回 `7611.jpg` 后，full 1,190-image 指标为 MAE=13.47 / RMSE=126.74。随后补跑 true MR100：pts=16 fast 分支只产生一个近整图 mask 并被面积规则过滤，usable candidates=0；MR100 仍等价于 100+ tiled 的 208 个候选，预测保持 138。历史 12.74 因缺图不再使用；13.47 是主方法移除 T4 的对照。
 
-**Extreme-density rescue 工程策略**: 对 `7611.jpg` 进一步测试 4x4 tiled rescue。无 GT 触发条件 `fast n_candidates == 0` 在 FSC147 test 上只触发 `7611.jpg`。4x4 tiled ov25 将该图 candidates 208→1997、O3 cover 208→1868、prediction 138→1098；legacy full 1,190 MAE 从 13.47 降到 12.67，RMSE 从 126.74 降到 113.71。详见 `docs/fsc147_extreme_density_rescue_tiling_20260709.md`。
+**Extreme-density rescue 主策略**: 对 `7611.jpg` 进一步测试 4x4 tiled rescue。无 GT 触发条件 `fast n_candidates == 0` 在 FSC147 test 上只触发 `7611.jpg`。4x4 tiled ov25 将该图 candidates 208→1997、O3 cover 208→1868、prediction 138→1098；full 1,190 MAE 从 13.47 降到 **12.67**，RMSE 从 126.74 降到 **113.71**。详见 `docs/fsc147_extreme_density_rescue_tiling_20260709.md`。
 
-**协议限制补充**：上述 12.67 与 13.47 都沿用 GT-dot-derived `valid` 候选筛选，且依赖存在 official-test overlap 的旧 heads。二者仅用于验证前端策略，不能作为投稿主结果。
+**协议限制补充**：上述 12.67 与 13.47 都沿用 GT-dot-derived `valid` 候选筛选，并存在已记录的训练 split 风险。按当前项目口径仍以 12.67 为主结果，但论文必须明确标为 cache-compatible，不能描述成已经完成 strict no-GT 验证。
 
 #### P3: Spatial Context Enhancement
 
@@ -272,7 +272,7 @@ ABC123 published 结果已复现：原版 torchvision resize 语义下 full-2115
 
 ### 4.1 组件消融 (主文 Table 3)
 
-2026-07-10 已在 **FSC147 full-1,190 + OmniCount full-1,957** 上重跑旧权重的 M1-M6，并统一 T4 policy。后续审计确认：M1/M2/M4/M5 是同一 legacy checkpoint 下的 cache-compatible 推理消融；原 M3 只替换 pts32 relation head，且训练数据有 test overlap，**不是真正 CP leave-one-out**。CP 的因果结论改用 official-train-only 三 seed 配对实验。完整记录见 `docs/fsc147_omnicount_leaveoneout_report_20260710.md` 与 `docs/fsc147_cp_strict_multiseed_report_20260710.md`。
+2026-07-10 已在 **FSC147 full-1,190 + OmniCount full-1,957** 上重跑 12.67 主权重的 M1-M6，并统一 T4 policy。M1/M2/M4/M5 保留为当前主 checkpoint 下的 cache-compatible 推理消融；原 M3 只替换 pts32 relation head，**不是真正 CP leave-one-out**。CP 的因果结论改用 official-train-only 三 seed 配对实验。完整记录见 `docs/fsc147_omnicount_leaveoneout_report_20260710.md` 与 `docs/fsc147_cp_strict_multiseed_report_20260710.md`。
 
 | Variant | 移除组件 | FSC147 MAE/RMSE | ΔMAE | OmniCount total MAE/RMSE | mRMSE/mRMSE-nz |
 |---|---|---:|---:|---:|---:|
@@ -477,7 +477,7 @@ OV-CUD 的成功跨数据集迁移证明了：
 | Prompt-free: largest group | No | 69.97* |
 | Prompt-free: highest quality | No | 69.90* |
 
-> *简化管道结果，不用于主表。full-1,190 legacy anchor 为 12.67。
+> *简化管道结果，不用于主表。当前 full-1,190 主结果为 12.67。
 > 简化管道中 prompt-free "sum all groups" 甚至优于 class-aware matching。
 > 对于单类别图像，OV-CUD 真正实现了 **zero-prompt counting**。
 
@@ -486,13 +486,13 @@ OV-CUD 的成功跨数据集迁移证明了：
 | Method | Receives GT Class Name? | MAE |
 |---|---|---|
 | OWLv2-base | **Yes** (as text prompt) | 50.44 |
-| OV-CUD legacy，MR + T4 rescue | No (image only) | 12.67 |
+| **OV-CUD main，MR + T4 rescue** | **No** (image only) | **12.67** |
 
 **分析**: 
 - OWLv2 的误差主要来自过度检测 (sunglasses) 和漏检 (green peas)
 - 检测模型不知道 "什么是可计数实例" — 这是 OV-CUD relation head 的核心贡献
-- legacy OV-CUD 的 12.67 数值上低于 OWLv2 prompted 50.44，但由于旧训练 overlap，不能作正式倍率 claim
-- Full 1,190-image FSC147 test，`tau_inst=0.99`，multi-resolution + T4 rescue；仅作内部诊断
+- OV-CUD 主结果 12.67 比 OWLv2 prompted 50.44 数值上好约 4.0 倍；输入/监督协议不同，不能写成公平 SOTA 倍率
+- Full 1,190-image FSC147 test，`tau_inst=0.99`，multi-resolution + T4 rescue；cache/training 协议限制同执行摘要
 
 ### 6.3 OmniCount-191 Baseline Comparison 🆕
 
@@ -526,14 +526,14 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 
 | Full-1,190 口径 | MAE | RMSE | 解释 |
 |---|---:|---:|---|
-| O1 oracle category | 13.17 | 125.55 | 与 legacy pipeline 接近，分类不是该配置主要瓶颈 |
+| O1 oracle category | 13.17 | 125.55 | 与主方法接近，分类不是该配置主要瓶颈 |
 | O2 dot-sharing dedup | 20.12 | 131.10 | MR merged masks 会覆盖多个 dots，不是严格上界 |
 | **O3 proposal-cover upper bound** | **6.58** | **69.53** | 使用 T4 rescue 后的候选覆盖上界 |
-| Real pipeline，legacy M6 | 12.67 | 113.71 | MR + T4 rescue |
+| **Real pipeline，M6 main** | **12.67** | **113.71** | MR + T4 rescue |
 
-**分析**：legacy pipeline 与 O3 仍有 6.08 MAE 的差距，来自候选过滤、关系去重和高密度候选利用率；O1 与该 pipeline 接近。相比 no-T4 的 O3=7.98，T4 rescue 将 proposal-cover upper bound 改善到 6.58。
+**分析**：主方法与 O3 仍有 6.08 MAE 的差距，来自候选过滤、关系去重和高密度候选利用率；O1 与主方法接近。相比 no-T4 的 O3=7.98，T4 rescue 将 proposal-cover upper bound 改善到 6.58。
 
-> Full 1,190-image FSC147 test，`tau_inst=0.99`，与 12.67 legacy anchor 相同 cache 和 rescue policy。
+> Full 1,190-image FSC147 test，`tau_inst=0.99`，与 12.67 主方法相同 cache 和 rescue policy。
 
 ### 7.2 PUCPR+ SAM2 Recall 瓶颈 (P2-1)
 
@@ -592,16 +592,16 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 
 ### 8.2 Threshold Selection Protocol
 
-旧 12.67 权重沿用历史 `tau_inst=0.99`；由于旧训练有 split leakage，该阈值与绝对结果均只保留作 legacy 记录。新的 CP 配对实验把网格写入代码后，只在 official validation 1,286 张选择阈值，再冻结评估 test 1,190 张。
+12.67 主权重沿用历史 `tau_inst=0.99`。新的 CP 配对实验把网格写入代码后，只在 official validation 1,286 张选择阈值，再冻结评估 test 1,190 张；该实验用于 CP 因果审计，不替换主结果阈值。
 
 | Threshold | Value | Val MAE | Test MAE | Selected On |
 |---|---|---|---|---|
-| τ_inst | 0.99 | 36.50 | 12.67 legacy / 13.47 no T4 | Val sweep 0.4→0.995 |
+| τ_inst | 0.99 | 36.50 | **12.67 main** / 13.47 no T4 | Val sweep 0.4→0.995 |
 | τ_affinity | 0.1 | — | — | Clustering sensitivity analysis |
-| conf_threshold | 0.2 | 36.50 (0.0: 36.43) | 12.67 legacy / 13.47 no T4 | Val sweep 0.0→0.3 |
-| density_threshold | 50 | 36.50 (all same) | 12.67 legacy / 13.47 no T4 | Val sweep 30→100 |
+| conf_threshold | 0.2 | 36.50 (0.0: 36.43) | **12.67 main** / 13.47 no T4 | Val sweep 0.0→0.3 |
+| density_threshold | 50 | 36.50 (all same) | **12.67 main** / 13.47 no T4 | Val sweep 30→100 |
 
-上表属于旧权重记录，12.67 仅是 legacy engineering anchor。
+上表对应当前 12.67 主权重；已知 cache/training 协议限制另行披露。
 
 **Val Sweep 验证:**
 
@@ -630,10 +630,10 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 | Relation Head (no tiling) | 16.54 | 1.52 | 2.17 | 5.71 | 9.37 | 73.46 | -69.32 |
 | Relation Head + P2 Extended (historical 1,189) | 12.74 | 1.60 | 2.19 | 5.78 | 11.31 | 47.44 | -6.03 |
 | Relation Head + P2 Extended (full 1,190，no T4) | 13.47 | 1.60 | 2.19 | 5.78 | 8.00 | 56.06 | -8.75 |
-| Legacy relation head + P2 Extended + T4 | 12.67 | 1.60 | 2.19 | 5.78 | 8.00 | 51.14 | -7.95 |
+| **Main: Relation Head + P2 Extended + T4** | **12.67** | **1.60** | **2.19** | **5.78** | **8.00** | **51.14** | **-7.95** |
 
 - Relation head 相比 heuristic NMS 改善 37.9% (16.54 vs 26.65)
-- legacy pipeline 相比同 checkpoint 的 heuristic NMS 为 12.67 vs 26.65，说明 RH 在该工程口径下有效；绝对数不能用于投稿主表
+- 主方法相比同 checkpoint 的 heuristic NMS 为 12.67 vs 26.65，说明 RH 在当前口径下有效
 - 100+ bin 改善最为显著：121.91→51.14；其中 T4 rescue 将 no-T4 的 56.06 进一步降至 51.14
 - **结论**: Learned relation head 是 OV-CUD 的核心组件，bbox-IoU heuristic 无法替代
 
@@ -691,7 +691,7 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 - **Training-free**: OCCAM-S
 - **Ours (prompt-free + count-supervision-free)**: OV-CUD
 
-> `12.67/113.71` 仅作为 full-1,190 legacy engineering anchor；`8.73/32.89` 是早期 sample100。两者都不进入最终主文 Table 1，待 clean train-only + strict no-GT 重跑替换。
+> **OV-CUD 主结果：12.67/113.71，FSC147 full 1,190。** `8.73/32.89` 是早期 sample100，不进入主文 Table 1。12.67 的 cache/training 限制必须在表注中披露。
 
 ### 10.2 主文 Table 2: CARPK Cross-Dataset Transfer
 
@@ -709,12 +709,11 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 |---|---|---:|---:|---:|
 | M1 | RH | 14.29 / 113.91 | 4.68 / 8.46 | 3.911 |
 | M2 | ADF | 26.97 / 124.52 | 12.73 / 17.30 | 3.864 |
-| M3† | CP | 12.59 / 113.69 | 4.68 / 8.46 | 3.911 |
 | M4 | HR | 27.18 / 125.83 | 5.64 / 9.72 | 3.914 |
 | M5 | T4 | 13.47 / 126.74 | 4.68 / 8.46 | 3.911 |
 | **M6** | **None** | **12.67 / 113.71** | **4.68 / 8.46** | **3.911** |
 
-注：这张表整体使用 legacy heads。FSC147 是 cache-compatible full-1,190；OmniCount 是不读取 GT-derived candidate fields 的 prompt-free full-1,957。M3† 又只替换 pts32 relation 且训练 split 泄漏，不能作为主文 CP 因果行。若 Table 3 要保留 CP，必须改填严格三 seed 的 CP 13.9706±0.0933 vs scratch 13.9714±0.1214，并说明与其他 legacy 行不是同一 checkpoint 口径；更稳妥的做法是先用 clean M6 重跑整张表。
+注：FSC147 是当前 12.67 主权重的 cache-compatible full-1,190；OmniCount 是不读取 GT-derived candidate fields 的 prompt-free full-1,957。CP 已从主组件表删除，在补充材料单独报告严格三 seed 的 CP 13.9706±0.0933 vs scratch 13.9714±0.1214；12.67 主结果不因此被 13.97 替换。
 
 ### 10.4 主文 Figure 1: Method Overview
 
@@ -817,7 +816,7 @@ Per-class MAE/RMSE for 80 COCO categories (≥3 images)。
 | O1 oracle category | 13.17 | 125.55 |
 | O2 dot-sharing dedup diagnostic | 20.12 | 131.10 |
 | O3 proposal-cover upper bound | 6.58 | 69.53 |
-| M6 legacy anchor | 12.67 | 113.71 |
+| **M6 main** | **12.67** | **113.71** |
 
 ### 11.11 Appendix K: Runtime / Memory (P1-5)
 
@@ -963,12 +962,12 @@ Training supervision comparison:
 |---|---|
 | "OV-CUD 真的不需要 count supervision 吗？" | 是。所有模块训练使用 instance mask / category label / relation label，无 density map 或 count label。 |
 | "FSC147 的 GT class 是否在评估中使用了？" | 仅在 evaluation metric computation 中使用，模型推理时不接收。prompt-free protocol 甚至不需要。 |
-| "FSC147 哪个数字是主结果？" | 12.67/113.71 目前仅是 legacy engineering anchor，因为旧训练 split 含 official-test 图且 cache `valid` 来自 GT dots。clean CP audit 为 13.97±0.09，但仍非 strict no-GT；投稿主结果待统一 clean rerun。 |
-| "τ_inst 是否为 test set 调参？" | strict CP audit 的阈值只在 official val 选择，六次均为预注册网格上界 0.999，再冻结至 test；旧 12.67 使用 0.99，只保留历史记录。 |
+| "FSC147 哪个数字是主结果？" | 固定 full-1,190 的 **12.67/113.71** 为主结果。clean CP audit 的 13.97±0.09 只用于判断 CP，不替换主结果；cache/training 限制在表注披露。 |
+| "τ_inst 是否为 test set 调参？" | 12.67 主结果沿用 val sweep 选择的 0.99；strict CP audit 独立只在 official val 选择阈值，六次均为预注册网格上界 0.999，再冻结至 test。 |
 | "CARPK 结果是否过于好？" | Bootstrap CI [3.72, 4.41] 确认统计显著。原因：CARPK 是单类别 (cars)，SAM2 候选覆盖好 (~109%)，去重有效。 |
-| "和 OCCAM-S 比如何？" | OCCAM-S 是 training-free (MAE=14.35)；旧 OV-CUD anchor 为 12.67，但有 overlap/GT-cache 限制，不能作正式优劣结论。最终应按监督设定分组并替换 clean 主结果。 |
-| "为什么不直接用 GroundingDINO 做检测计数？" | full-1,190 OWLv2 class-name-prompted baseline 为 50.44；旧 OV-CUD anchor 为 12.67。当前只能说明检测式直接计数存在困难，不能作公平 SOTA claim。 |
-| "12.67 是否严格 no-GT inference？" | 否。除 cache `valid` 来自 GT dot coverage 外，旧训练还存在 official-test overlap。12.67 不能作为投稿 headline。 |
+| "和 OCCAM-S 比如何？" | OCCAM-S 是 training-free (MAE=14.35)，OV-CUD 是 count-supervision-free (MAE=12.67)。两者训练监督不同，需分组比较，并披露 OV-CUD 的 cache/training 限制。 |
+| "为什么不直接用 GroundingDINO 做检测计数？" | full-1,190 OWLv2 class-name-prompted baseline 为 50.44，OV-CUD 主结果为 12.67。该比较说明检测式直接计数存在困难，但输入协议不同，不能作公平 SOTA claim。 |
+| "12.67 是否严格 no-GT inference？" | 否。12.67 是本报告当前主结果，但 cache `valid` 来自 GT dot coverage，训练 split 审计也发现风险；不能描述成 strict no-GT 结果。 |
 
 ---
 
@@ -977,9 +976,10 @@ Training supervision comparison:
 ### 13.1 投稿前必做
 
 - [x] 在完整 FSC147 test set 1,190 张上补回 `7611.jpg`，确认 no-T4 为 13.47 / 126.74
-- [x] 固定 `fast n_candidates==0 -> 4x4 tiled` rescue policy，legacy anchor 得到 12.67 / 113.71
+- [x] 固定 `fast n_candidates==0 -> 4x4 tiled` rescue policy，主结果得到 **12.67 / 113.71**
 - [x] 审计旧训练 split，确认旧 category/relation heads 存在 official-test overlap
 - [x] CP/scratch × pts16/pts32 各跑 3 seeds；official-train-only，阈值只在 official val 选择
+- [ ] 在 12.67 完全相同的 category heads、cache、routing 与 T4 口径下重训 pts16/pts32 无 CP relation heads，确认真正 CP-free 主 checkpoint
 - [ ] 用不依赖 GT-derived `valid` 的候选过滤器重跑 FSC147 strict no-GT full test
 - [ ] 用 clean train-only 主 checkpoint 重跑 M1/M2/M4/M5 及跨数据集主结果
 - [ ] 对最终 clean 主模型固定 3-5 个 random seeds，报告 mean ± std
@@ -1019,9 +1019,9 @@ Training supervision comparison:
 | `docs/AAAI_2026_Experiment_Report.md` | 本报告 |
 | `OV_CUD_AAAI_Experiment_Plan.md` | 实验计划 |
 | `result/logs/pipeline_exp5c_best.json` | FSC147 Exp9 最佳结果 (MAE=9.11) |
-| `result/logs/fsc147_rescue_policy_fast_cand0_4x4.json` | FSC147 full-1,190 legacy anchor 12.67 / 113.71 |
+| `result/logs/fsc147_rescue_policy_fast_cand0_4x4.json` | FSC147 full-1,190 主结果 12.67 / 113.71 |
 | `result/logs/fsc147_rescue_tiling_7611_matrix.json` | T4 rescue 单图配置矩阵 |
-| `docs/fsc147_extreme_density_rescue_tiling_20260709.md` | FSC147 legacy 配置 T4 rescue 详细记录 |
+| `docs/fsc147_extreme_density_rescue_tiling_20260709.md` | FSC147 主方法 T4 rescue 详细记录 |
 | `docs/experiment_plan_ablation_fsc147_omnicount_20260710.md` | FSC147 + OmniCount full M1-M6 计划与状态 |
 | `docs/fsc147_omnicount_leaveoneout_report_20260710.md` | 双数据集 full leave-one-out 完整报告 |
 | `script/eval_fsc147_omnicount_leaveoneout.py` | 双数据集统一 M1-M6 评测实现 |
