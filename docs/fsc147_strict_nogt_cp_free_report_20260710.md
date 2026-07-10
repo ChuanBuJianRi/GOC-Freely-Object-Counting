@@ -100,4 +100,4 @@ Validation count shard 由 `export_fsc147_count_targets.py` 逐个打开 officia
 - `script/preprocess_fsc147_tiled_nogt.py`：不加载 annotation 的 tiled candidate 生成。
 - `script/select_fsc147_train_rescue.py`：仅用 train fast-zero failure cases 冻结 rescue recipe。
 - `script/eval_fsc147_strict_nogt.py`：validation freeze 与 test 两阶段入口。
-- `result/configs/fsc147_nogt_fast_zero_images.json`：由 raw fast candidate count 导出的 T4 预计算集合。
+- `result/configs/fsc147_train_fast_zero_images.json`：train-only rescue 选择样本；test fast-zero 名单由冻结后的 `plan-test` 动态输出。
