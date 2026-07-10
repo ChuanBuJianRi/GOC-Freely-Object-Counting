@@ -91,7 +91,27 @@ pts16/pts32 frontend 参数先分别按三个 relation seeds 的 validation mean
 
 Validation count shard 由 `export_fsc147_count_targets.py` 逐个打开 official-val cache 导出，manifest 记录 `nonselected_images_loaded=0`；validation 进程不会解析包含 test GT 的 44 MB 合并 annotation 文件。
 
-> 待 validation safe tiled cache 完成后填入冻结配置与 validation 指标。
+冻结输出：`result/logs/fsc147_strict_nogt_val_selection.json`，SHA-256 `8c4f0c61cdf74221470cd41fcc58837be7f39ba37b5f08b50d303b9b3ab5ee16`；文件内 `frozen=true`、`test_read=false`，并绑定 12 个模型资产与 12 个预测/候选生成代码文件的 SHA-256。
+
+| 项目 | validation-only 选择 |
+|---|---|
+| fast config | filter=0.05，category=0，`tau_inst=0.99` |
+| tiled config | filter=0.3，category=0.4，`tau_inst=0.99` |
+| route | **always tiled** |
+| primary seed | **73**（validation MAE 最低；test 不参与） |
+| raw candidates | fast 40.23/image；tiled 142.36/image；两者 zero images 均为 0 |
+
+| Route | Val MAE mean | Val RMSE mean | 每 seed routed tiled |
+|---|---:|---:|---:|
+| always fast | 36.71 | 121.06 | 0 |
+| predicted count >=10 | 31.33 | 105.84 | 1,124-1,127 |
+| **always tiled** | **30.31** | **102.37** | **1,286** |
+
+| Relation seed | Val MAE | Val RMSE | bias |
+|---:|---:|---:|---:|
+| 17 | 30.61 | 102.37 | -13.19 |
+| 42 | 30.31 | **102.19** | -13.72 |
+| **73（primary）** | **30.00** | 102.53 | -15.24 |
 
 ## 5. Full Test 1,190
 
