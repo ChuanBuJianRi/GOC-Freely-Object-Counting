@@ -115,7 +115,12 @@ Validation count shard 由 `export_fsc147_count_targets.py` 逐个打开 officia
 
 ## 5. Full Test 1,190
 
-> 待冻结配置提交后执行。主表将报告三个 scratch relation seeds 的 MAE/RMSE mean±std、逐 seed bootstrap 95% CI、GT count 分桶与 `7611.jpg` 预测。
+Validation 配置提交后运行 image-only `plan-test`，输出 `result/configs/fsc147_strict_nogt_test_tile_plan.json`，SHA-256 `10b4a4990da95e9c591dceffb4aa0c5c2a5c09bc834f1e17dfb90df0106a6d8d`。记录中 `test_annotations_read=false`、`prediction_gt_fields=[]`：
+
+- always-tiled 路由：1,189 张；三个 relation seeds 的集合完全一致。
+- raw-fast-zero：`7611.jpg`；按 train-only 选择的 4x4 recipe 单独 rescue。
+
+> 待 image-only test cache 完成后执行一次 full test。主表将报告三个 scratch relation seeds 的 MAE/RMSE mean±std、逐 seed bootstrap 95% CI、GT count 分桶与 `7611.jpg` 预测。
 
 ## 6. 复现入口
 
