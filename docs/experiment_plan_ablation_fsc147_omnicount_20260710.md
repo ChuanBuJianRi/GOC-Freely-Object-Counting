@@ -4,13 +4,13 @@
 
 **对应论文位置**：`AnonymousSubmission2027.tex` 的组件消融主表与 OmniCount 多类别实验表
 
-> **执行状态**：M1-M6 已在 FSC-147 test full 1,190 和 OmniCount-191 test full 1,957 上完成。MCAC 不进入本轮组件消融。完整结果见 `docs/fsc147_omnicount_leaveoneout_report_20260710.md`。
+> **执行状态**：原 M1-M6 已在 FSC-147 test full 1,190 和 OmniCount-191 test full 1,957 上完成；2026-07-10 另补 CP/scratch × pts16/pts32 × 3 seeds 的无泄漏配对实验。原 M3 只替换 pts32 且旧训练 cache 含 test 图，现降级为 legacy diagnostic。完整结果见 `docs/fsc147_omnicount_leaveoneout_report_20260710.md` 与 `docs/fsc147_cp_strict_multiseed_report_20260710.md`。
 
 ---
 
 ## 1. 目标与范围
 
-本轮仿照 `experiment_plan_ablation_mcac_20260709(1).md` 的严格 leave-one-out 设计，但只使用以下两个测试集：
+本轮最初仿照 `experiment_plan_ablation_mcac_20260709(1).md` 的 leave-one-out 设计，但后续审计确认原 M3 不满足严格定义；其余推理开关行保留为 legacy checkpoint 下的组件诊断，并另补 CP 严格配对实验。测试集只包括：
 
 1. **FSC-147 test full 1,190**：验证单类别总计数和高密度前端组件。
 2. **OmniCount-191 test full 1,957**：验证 prompt-free 多类别分组、per-class 指标和跨域组件行为。
@@ -23,7 +23,7 @@
 |---|---|---|---|
 | M1 | RH：学习关系头去重 | same-instance / part-whole relation dedup | 保留类别 grouping，组内改为 box-IoU NMS@0.5 |
 | M2 | ADF：自适应密度与置信度过滤 | FSC 使用 dense routing + conf=0.2；OmniCount 使用既有 conf=0.1 adapter | 固定基础候选池，confidence threshold=0；其他组件不变 |
-| M3 | CP：COCO relation pretraining | COCO 预训练后 FSC dot-supervised 微调 | pts32 关系头替换为仅 FSC dot-supervised checkpoint |
+| M3† | CP：COCO relation pretraining | COCO 预训练后 FSC dot-supervised 微调 | 原实现只替换 pts32 关系头；不是完整 leave-one-out，已由严格配对实验取代 |
 | M4 | HR：高分辨率候选/训练池 | pts32 candidate pool + pts32 heads | pts16 candidate pool + pts16 category/Exp5-C relation heads |
 | M5 | T4：4x4 极端密度 rescue | fast 前端零候选时启用 4x4 tiled proposal | 关闭 T4，保留原 multi-resolution frontend |
 | M6 | 完整模型 | RH + ADF + CP + HR + T4 | 无移除 |
@@ -39,6 +39,7 @@
 - T4 trigger：`fsc147_test_fast/<image>.pt` 的 `n_candidates==0`，不读取 GT；只触发 `7611.jpg`。
 - M1-M4 均保留 T4；只有 M5 关闭 T4。该定义修复旧表把 pre-rescue M1-M5 与 post-rescue M6 混算的问题。
 - 协议限制：当前 FSC cache 的 `valid` 来自 GT dot coverage，因此是 cache-compatible 消融，不是 strict no-GT inference。
+- 训练隔离审计：旧 fast/pts32 category seed42 分别有 1,002/1,018 张 official-test 图进入 train；旧 relation seed42 分别有 1,066/1,075 张 official-test 图进入 train。因此旧 M3/M6 只保留为工程回归结果，不再支持 CP 因果结论。
 
 ### 3.2 OmniCount-191 Full
 
@@ -57,7 +58,7 @@
 |---|---:|---:|---:|---|
 | M1 - RH | 14.29 / 113.91 | 4.68 / 8.46 | 0.457 / 3.911 | ✅ full |
 | M2 - ADF | 26.97 / 124.52 | 12.73 / 17.30 | 0.842 / 3.864 | ✅ full |
-| M3 - CP | 12.59 / 113.69 | 4.68 / 8.46 | 0.457 / 3.911 | ✅ full |
+| M3† - CP | 12.59 / 113.69 | 4.68 / 8.46 | 0.457 / 3.911 | ⚠️ legacy partial/leaky |
 | M4 - HR | 27.18 / 125.83 | 5.64 / 9.72 | 0.424 / 3.914 | ✅ full |
 | M5 - T4 | 13.47 / 126.74 | 4.68 / 8.46 | 0.457 / 3.911 | ✅ full |
 | **M6 full** | **12.67 / 113.71** | **4.68 / 8.46** | **0.457 / 3.911** | ✅ full |
@@ -73,6 +74,7 @@
 7. ✅ 1,000 次 image bootstrap 和 paired MAE delta CI。
 8. ✅ 逐图唯一 ID、图像数、M5=M6 与指标复算检查。
 9. ✅ 中文报告、主报告更新及 Git 归档。
+10. ✅ CP/scratch 在 official-train-only 数据上各跑 3 seeds，同时训练 pts16/pts32；`tau_inst` 只由 official val 选择，再冻结到 full test。
 
 ## 6. 主命令
 
@@ -107,4 +109,26 @@ OmniCount pts16 cache：
 - OmniCount pts16/pts32 cache 文件名集合完全一致。
 - OmniCount M5/M6 逐图相同；FSC147 M5/M6 只允许 T4 触发图变化。
 - 所有结果包含配置、逐图预测、总指标、切片、bootstrap 和 paired delta。
-- 论文不声称 M1-M5 在两个数据集上都必然退化；M3 和 OmniCount 的零变化必须如实报告。
+- 论文不声称 M1-M5 在两个数据集上都必然退化；OmniCount 的零变化必须如实报告。
+- 原 M3 不进入因果消融结论。CP 结论使用下述严格配对实验；若要把它与 M1/M2/M4/M5 放进同一主表，必须以新的 clean M6 checkpoint 重跑其余组件行。
+
+## 8. CP 严格配对补充实验
+
+### 8.1 配置
+
+- official train 内固定数据划分 seed `20260710`，official test 进入训练的图像数为 0。
+- 模型 seeds：`17 / 42 / 73`。
+- CP 与 scratch 每个 seed 都同时训练 pts16、pts32 关系头；固定相同 train-only category heads、文件顺序、pair sampling 与训练超参。
+- 每个完整 pts16+pts32 模型在 official val 1,286 张上独立选择一个共同 `tau_inst`，再冻结评估 official test 1,190 张。
+- 六次均选择预注册网格上界 `0.999`；不能把该值称为内部最优点。
+
+### 8.2 结果
+
+| Condition | FSC-147 test MAE mean±std | RMSE mean±std | MAE w/o 7611 |
+|---|---:|---:|---:|
+| CP | **13.9706 ± 0.0933** | **111.2808 ± 0.0174** | **12.9840 ± 0.0934** |
+| Scratch | 13.9714 ± 0.1214 | 111.2902 ± 0.0112 | 12.9843 ± 0.1223 |
+
+`CP - Scratch` paired ΔMAE = **-0.00084 ± 0.03288**；逐图 bootstrap 95% CI **[-0.04398, +0.04314]**。三个 seed 的差值为 `+0.0151/+0.0210/-0.0387`，方向不一致。结论是 CP 对最终 counting MAE **无可测边际收益，也无有害证据**。训练端 loss/precision 改善不能替代该 test 结论。
+
+严格实验仍沿用 GT-dot-derived cache `valid` 和 GT-count-derived 高密度 cache membership，因此解决的是 CP 的 train/test overlap 与完整移除问题，不等价于 strict no-GT inference。详细协议、切片与逐图产物见 `docs/fsc147_cp_strict_multiseed_report_20260710.md`。

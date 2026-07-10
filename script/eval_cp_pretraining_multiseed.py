@@ -308,6 +308,29 @@ def aggregate_seed_results(results: dict[str, dict[str, Any]], seeds: list[int],
     return aggregate
 
 
+def compact_output(output: dict[str, Any]) -> dict[str, Any]:
+    runs = {}
+    for key, run in output["runs"].items():
+        runs[key] = {
+            "condition": run["condition"],
+            "seed": run["seed"],
+            "selected_tau": run["selected_tau"],
+            "validation_selected": run["validation_sweep"][str(run["selected_tau"])],
+            "test_metrics": run["test_metrics"],
+            "test_metrics_without_7611": run["test_metrics_without_7611"],
+            "test_per_gt_bin": run["test_per_gt_bin"],
+            "validation_routing": run["validation_routing"],
+            "test_routing": run["test_routing"],
+        }
+    return {
+        "date": output["date"],
+        "protocol": output["protocol"],
+        "runs": runs,
+        "aggregate": output["aggregate"],
+        "elapsed_seconds": output["elapsed_seconds"],
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkpoint-dir", type=Path, default=DEFAULT_CKPT_DIR)
@@ -479,7 +502,16 @@ def main() -> None:
             json.dump(output, handle, ensure_ascii=False, indent=2)
     else:
         args.out.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n")
+    if args.out.name.endswith(".json.gz"):
+        summary_name = args.out.name.removesuffix(".json.gz") + "_summary.json"
+    else:
+        summary_name = args.out.stem + "_summary.json"
+    summary_path = args.out.with_name(summary_name)
+    summary_path.write_text(
+        json.dumps(compact_output(output), ensure_ascii=False, indent=2) + "\n"
+    )
     print(f"[save] {args.out}")
+    print(f"[save] {summary_path}")
     print(json.dumps(aggregate, ensure_ascii=False, indent=2))
 
 
