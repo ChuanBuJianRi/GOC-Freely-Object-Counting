@@ -79,7 +79,8 @@ class CosineCategoryHead(nn.Module):
 # 数据集
 # --------------------------------------------------------------------------- #
 class CachedDataset(Dataset):
-    def __init__(self, data_dir: str, files: Optional[list] = None, min_purity: float = 0.0):
+    def __init__(self, data_dir: str, files: Optional[list] = None, min_purity: float = 0.0,
+                 class_id_map: Optional[dict[int, int]] = None):
         if files is not None:
             self.files = list(files)
         else:
@@ -94,7 +95,15 @@ class CachedDataset(Dataset):
             purity = d.get("purity", torch.ones(n))
             for i in range(n):
                 if float(purity[i]) >= min_purity:
-                    self._index.append((fi, i))
+                    global_class_id = int(d["matched_class"][i])
+                    if class_id_map is not None and global_class_id not in class_id_map:
+                        raise RuntimeError(
+                            f"class {global_class_id} in {f} is absent from prototype label map"
+                        )
+                    local_class_id = (
+                        global_class_id if class_id_map is None else class_id_map[global_class_id]
+                    )
+                    self._index.append((fi, i, local_class_id))
 
     @staticmethod
     def split_by_class(data_dir: str, val_ratio: float = 0.15, seed: int = 42):
@@ -123,11 +132,11 @@ class CachedDataset(Dataset):
         return len(self._index)
 
     def __getitem__(self, idx):
-        fi, i = self._index[idx]
+        fi, i, local_class_id = self._index[idx]
         d = self._load(fi)
         return {
             "z": d["z"][i].float(),
-            "matched_class": int(d["matched_class"][i]),
+            "matched_class": local_class_id,
             "purity": float(d["purity"][i]),
             "valid": float(d["valid"][i]),
         }
@@ -156,6 +165,14 @@ def filter_split_files(all_files, split_file: str | None, split_key: str):
 def file_id_sha256(files) -> str:
     payload = "\n".join(sorted(path.stem for path in files)).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def collate(batch):
@@ -225,6 +242,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data_dir", required=True, help="缓存目录（384 或 1152 维）")
     ap.add_argument("--text_prototypes", required=True, help="文本原型 .pt")
+    ap.add_argument(
+        "--prototype_label_map", default=None,
+        help="optional JSON whose global_class_ids map cache labels to prototype rows",
+    )
     ap.add_argument("--out_ckpt", default="result/checkpoints/category_cosine_v2.pt")
     ap.add_argument("--proj_dim", type=int, default=512)
     ap.add_argument("--dropout", type=float, default=0.3)
@@ -260,7 +281,31 @@ def main():
         torch.use_deterministic_algorithms(True)
     device = args.device
 
-    # 数据：按图划分（让模型见所有类，与原始训练一致）
+    # 原型与可选 global->local 标签映射。
+    tp_path = Path(args.text_prototypes)
+    tp = torch.load(tp_path, map_location="cpu", weights_only=False)
+    tp = F.normalize(tp.float(), dim=-1).to(device)
+    prototype_vocabulary = None
+    class_id_map = None
+    if args.prototype_label_map:
+        map_path = Path(args.prototype_label_map)
+        prototype_vocabulary = json.loads(map_path.read_text())
+        global_class_ids = [int(value) for value in prototype_vocabulary["global_class_ids"]]
+        if len(global_class_ids) != len(set(global_class_ids)) or len(global_class_ids) != len(tp):
+            raise RuntimeError("prototype label map must contain one unique global ID per row")
+        class_id_map = {global_id: local_id for local_id, global_id in enumerate(global_class_ids)}
+        if (
+            prototype_vocabulary.get("official_split") != "train"
+            or prototype_vocabulary.get("test_images_loaded") != 0
+            or prototype_vocabulary.get("validation_images_loaded") != 0
+            or prototype_vocabulary.get("nontrain_class_rows_retained") != 0
+        ):
+            raise RuntimeError("prototype label map is not strict official-train-only")
+        expected_sha = prototype_vocabulary.get("out_prototypes_sha256")
+        if expected_sha != file_sha256(tp_path):
+            raise RuntimeError("prototype tensor hash differs from label-map metadata")
+
+    # 数据：official train 内再按图划分 model train/validation。
     import torch as _torch
     all_files = sorted(Path(args.data_dir).glob("*.pt"))
     all_files, official_split = filter_split_files(
@@ -272,8 +317,14 @@ def main():
     n_val = max(1, int(len(all_files) * args.val_ratio))
     val_files = [all_files[i] for i in perm[:n_val]]
     train_files = [all_files[i] for i in perm[n_val:]]
-    train_ds = CachedDataset(args.data_dir, files=train_files, min_purity=args.min_purity)
-    val_ds = CachedDataset(args.data_dir, files=val_files, min_purity=args.min_purity)
+    train_ds = CachedDataset(
+        args.data_dir, files=train_files, min_purity=args.min_purity,
+        class_id_map=class_id_map,
+    )
+    val_ds = CachedDataset(
+        args.data_dir, files=val_files, min_purity=args.min_purity,
+        class_id_map=class_id_map,
+    )
     heldout = []
     print(f"[data] train: {len(train_ds)} candidates from {len(train_files)} images")
     print(f"[data] val:   {len(val_ds)} candidates from {len(val_files)} images")
@@ -289,9 +340,6 @@ def main():
                             collate_fn=collate, num_workers=args.num_workers,
                             pin_memory=(device != "cpu"))
 
-    # 文本原型
-    tp = torch.load(args.text_prototypes, map_location="cpu", weights_only=False)
-    tp = F.normalize(tp.float(), dim=-1).to(device)
     num_classes = tp.shape[0]
     print(f"[model] num_classes={num_classes}, proj_dim={args.proj_dim}")
 
@@ -377,6 +425,20 @@ def main():
                     "train_sha256": file_id_sha256(train_files),
                     "model_val_count": len(val_files),
                     "model_val_sha256": file_id_sha256(val_files),
+                    "prototype_vocabulary": None if prototype_vocabulary is None else {
+                        "metadata_path": str(Path(args.prototype_label_map)),
+                        "metadata_sha256": file_sha256(Path(args.prototype_label_map)),
+                        "prototype_path": str(tp_path),
+                        "prototype_sha256": file_sha256(tp_path),
+                        "official_split": prototype_vocabulary["official_split"],
+                        "global_class_ids": prototype_vocabulary["global_class_ids"],
+                        "retained_class_count": prototype_vocabulary["retained_class_count"],
+                        "test_images_loaded": prototype_vocabulary["test_images_loaded"],
+                        "validation_images_loaded": prototype_vocabulary["validation_images_loaded"],
+                        "nontrain_class_rows_retained": prototype_vocabulary[
+                            "nontrain_class_rows_retained"
+                        ],
+                    },
                 },
             }
             msg += " *"

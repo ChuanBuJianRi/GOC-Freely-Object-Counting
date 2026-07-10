@@ -100,31 +100,66 @@ def load_filter(path: Path, device: str) -> CandidateFilter:
 
 def load_models(checkpoint_dir: Path, device: str) -> dict[str, Any]:
     paths = {
-        "category_fast": checkpoint_dir / "category_pts16_trainonly.pt",
-        "category_tiled": checkpoint_dir / "category_pts32_trainonly.pt",
+        "category_fast": checkpoint_dir / "category_pts16_trainvocab.pt",
+        "category_tiled": checkpoint_dir / "category_pts32_trainvocab.pt",
         "filter_fast": REPO / "result/checkpoints/fsc147_candidate_filter_pts16_trainonly.pt",
         "filter_tiled": REPO / "result/checkpoints/fsc147_candidate_filter_pts32_trainonly.pt",
-        "prototypes": REPO / "result/checkpoints/text_prototypes_fsc147.pt",
+        "prototypes": REPO / "result/checkpoints/text_prototypes_fsc147_train89.pt",
+        "prototype_metadata": REPO / "result/checkpoints/text_prototypes_fsc147_train89.json",
     }
     for seed in SEEDS:
-        paths[f"relation_fast_{seed}"] = checkpoint_dir / f"relation_pts16_scratch_seed{seed}.pt"
-        paths[f"relation_tiled_{seed}"] = checkpoint_dir / f"relation_pts32_scratch_seed{seed}.pt"
+        paths[f"relation_fast_{seed}"] = (
+            checkpoint_dir / f"relation_pts16_trainvocab_scratch_seed{seed}.pt"
+        )
+        paths[f"relation_tiled_{seed}"] = (
+            checkpoint_dir / f"relation_pts32_trainvocab_scratch_seed{seed}.pt"
+        )
     for path in paths.values():
         if not path.exists():
             raise FileNotFoundError(path)
 
+    prototype_metadata = json.loads(paths["prototype_metadata"].read_text())
+    if (
+        prototype_metadata.get("schema") != "fsc147-train-vocabulary-v1"
+        or prototype_metadata.get("official_split") != "train"
+        or prototype_metadata.get("test_images_loaded") != 0
+        or prototype_metadata.get("validation_images_loaded") != 0
+        or prototype_metadata.get("nontrain_class_rows_retained") != 0
+        or prototype_metadata.get("out_prototypes_sha256") != sha256(paths["prototypes"])
+    ):
+        raise RuntimeError("text prototype metadata is not strict official-train-only")
     for name in ("category_fast", "category_tiled"):
         checkpoint = torch.load(paths[name], map_location="cpu", weights_only=False)
         if checkpoint.get("data_manifest", {}).get("official_split", {}).get("split_key") != "train":
             raise RuntimeError(f"category head is not official-train-only: {paths[name]}")
+        vocabulary = checkpoint.get("data_manifest", {}).get("prototype_vocabulary", {})
+        if (
+            vocabulary.get("official_split") != "train"
+            or vocabulary.get("test_images_loaded") != 0
+            or vocabulary.get("validation_images_loaded") != 0
+            or vocabulary.get("nontrain_class_rows_retained") != 0
+            or vocabulary.get("prototype_sha256") != sha256(paths["prototypes"])
+            or vocabulary.get("metadata_sha256") != sha256(paths["prototype_metadata"])
+            or vocabulary.get("global_class_ids") != prototype_metadata.get("global_class_ids")
+        ):
+            raise RuntimeError(f"category vocabulary is not strict train-only: {paths[name]}")
     for seed in SEEDS:
         for resolution in ("fast", "tiled"):
             path = paths[f"relation_{resolution}_{seed}"]
             checkpoint = torch.load(path, map_location="cpu", weights_only=False)
-            if checkpoint.get("pretrained_from"):
+            if checkpoint.get("pretrained_from", "missing") is not None:
                 raise RuntimeError(f"COCO-pretrained relation checkpoint is forbidden: {path}")
+            if checkpoint.get("train_config", {}).get("require_train_only_vocabulary") is not True:
+                raise RuntimeError(f"relation strict-vocabulary guard was not enabled: {path}")
             if checkpoint.get("data_manifest", {}).get("official_split", {}).get("split_key") != "train":
                 raise RuntimeError(f"relation head is not official-train-only: {path}")
+            assets = checkpoint.get("data_manifest", {}).get("training_assets", {})
+            if (
+                assets.get("category_checkpoint_sha256")
+                != sha256(paths[f"category_{resolution}"])
+                or assets.get("text_prototypes_sha256") != sha256(paths["prototypes"])
+            ):
+                raise RuntimeError(f"relation training assets differ from strict assets: {path}")
 
     models: dict[str, Any] = {
         "category_fast": load_category_head(str(paths["category_fast"]), device),
@@ -353,6 +388,15 @@ def run_validation(args: argparse.Namespace) -> None:
         fast_predictions[fast_key], tiled_predictions[tiled_key], targets
     )
     selected_route_key = json.dumps(route, sort_keys=True, separators=(",", ":"))
+    selected_seed_metrics = route_sweep[selected_route_key]["seed_metrics"]
+    primary_seed = min(
+        (str(seed) for seed in SEEDS),
+        key=lambda seed: (
+            selected_seed_metrics[seed]["MAE"],
+            selected_seed_metrics[seed]["RMSE"],
+            int(seed),
+        ),
+    )
     output = {
         "date": "2026-07-10",
         "frozen": True,
@@ -372,7 +416,9 @@ def run_validation(args: argparse.Namespace) -> None:
             "fast_config": json.loads(fast_key),
             "tiled_config": json.loads(tiled_key),
             "route": route,
-            "validation_metrics": route_sweep[selected_route_key]["seed_metrics"],
+            "primary_seed": int(primary_seed),
+            "primary_seed_selection": "minimum validation MAE, then RMSE; never test",
+            "validation_metrics": selected_seed_metrics,
             "validation_MAE_mean": route_sweep[selected_route_key]["MAE_mean"],
             "validation_RMSE_mean": route_sweep[selected_route_key]["RMSE_mean"],
             "validation_routed_tiled": route_sweep[selected_route_key]["seed_routed_tiled"],
@@ -433,12 +479,23 @@ def run_test(args: argparse.Namespace) -> None:
     if args.tile_plan is None:
         raise RuntimeError("test phase requires --tile-plan")
     tile_plan = json.loads(args.tile_plan.read_text())
-    if tile_plan.get("frozen_config_sha256") != sha256(args.frozen_config):
+    if (
+        tile_plan.get("frozen_config_sha256") != sha256(args.frozen_config)
+        or tile_plan.get("test_annotations_read") is not False
+        or tile_plan.get("prediction_gt_fields") != []
+    ):
         raise RuntimeError("tile plan was not generated from the supplied frozen config")
     tile_names = list(tile_plan["tile_names"])
-    if not set(tile_names).issubset(names):
+    fast_zero_plan = list(tile_plan["fast_zero_names"])
+    if (
+        len(tile_names) != len(set(tile_names))
+        or len(fast_zero_plan) != len(set(fast_zero_plan))
+        or not set(tile_names).issubset(names)
+        or not set(fast_zero_plan).issubset(names)
+    ):
         raise RuntimeError("tile plan contains names outside the official test split")
     assert_exact_cache(args.test_tiled_cache, tile_names)
+    assert_exact_cache(args.test_rescue_cache, fast_zero_plan)
     tile_stems = {Path(name).stem for name in tile_names}
     models = load_models(args.checkpoint_dir, args.device)
     if models["sha256"] != frozen["assets"]["sha256"]:
@@ -448,6 +505,7 @@ def run_test(args: argparse.Namespace) -> None:
     route = frozen["selected"]["route"]
 
     prediction_rows = {str(seed): [] for seed in SEEDS}
+    observed_fast_zero = []
     started = time.time()
     for index, name in enumerate(names):
         stem = Path(name).stem
@@ -461,6 +519,7 @@ def run_test(args: argparse.Namespace) -> None:
             )
         rescue = None
         if fast["n"] == 0:
+            observed_fast_zero.append(name)
             rescue_path = args.test_rescue_cache / f"{stem}.pt"
             if not rescue_path.exists():
                 raise FileNotFoundError(f"zero-fast image lacks image-only T4 cache: {rescue_path}")
@@ -485,10 +544,14 @@ def run_test(args: argparse.Namespace) -> None:
                 prediction = fast_prediction
             prediction_rows[str(seed)].append({
                 "file_name": name, "pred_count": prediction, "source": source,
-                "raw_fast_candidates": fast["n"], "raw_tiled_candidates": tiled["n"],
+                "raw_fast_candidates": fast["n"],
+                "raw_tiled_candidates": None if tiled is None else tiled["n"],
             })
         if (index + 1) % 250 == 0:
             print(f"[test prediction] {index+1}/{len(names)} elapsed={(time.time()-started)/60:.1f}m", flush=True)
+
+    if sorted(observed_fast_zero) != sorted(fast_zero_plan):
+        raise RuntimeError("fast-zero observations differ from the frozen image-only tile plan")
 
     # Test annotations enter only after predictions for all 1,190 images exist.
     targets = load_targets(names, args.annotation)
@@ -520,6 +583,12 @@ def run_test(args: argparse.Namespace) -> None:
             "MAE_std": float(maes.std(ddof=1)),
             "RMSE_mean": float(rmses.mean()),
             "RMSE_std": float(rmses.std(ddof=1)),
+        },
+        "primary_seed": frozen["selected"]["primary_seed"],
+        "primary": {
+            key: value
+            for key, value in runs[str(frozen["selected"]["primary_seed"])].items()
+            if key != "rows"
         },
         "runs": runs,
         "assets": frozen["assets"],

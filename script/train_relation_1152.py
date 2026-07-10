@@ -69,6 +69,14 @@ def file_id_sha256(files) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 # ---------------------------------------------------------------------------
 # Category head wrapper
 # ---------------------------------------------------------------------------
@@ -200,6 +208,10 @@ def main():
     ap.add_argument("--text_prototypes", required=True)
     ap.add_argument("--save_ckpt", default="result/checkpoints/fsc147_relation_1152.pt")
     ap.add_argument("--pretrained", default=None, help="预训练权重路径（如 COCO pretrained）")
+    ap.add_argument(
+        "--require_train_only_vocabulary", action="store_true",
+        help="reject pretrained initialization and non-train-only category vocabularies",
+    )
     ap.add_argument("--hidden_dim", type=int, default=512)
     ap.add_argument("--num_layers", type=int, default=3)
     ap.add_argument("--dropout", type=float, default=0.1)
@@ -260,12 +272,29 @@ def main():
 
     # Category head
     from script.train_category_v2 import CosineCategoryHead
-    ck = torch.load(args.category_ckpt, map_location=device)
+    category_path = Path(args.category_ckpt)
+    prototype_path = Path(args.text_prototypes)
+    ck = torch.load(category_path, map_location=device, weights_only=False)
+    vocabulary = ck.get("data_manifest", {}).get("prototype_vocabulary")
+    if args.require_train_only_vocabulary:
+        if args.pretrained:
+            raise RuntimeError("strict train-only relation training forbids --pretrained")
+        if not vocabulary or (
+            vocabulary.get("official_split") != "train"
+            or vocabulary.get("test_images_loaded") != 0
+            or vocabulary.get("validation_images_loaded") != 0
+            or vocabulary.get("nontrain_class_rows_retained") != 0
+        ):
+            raise RuntimeError("category checkpoint does not use a strict train-only vocabulary")
+        if vocabulary.get("prototype_sha256") != file_sha256(prototype_path):
+            raise RuntimeError("relation prototype differs from the category training prototype")
     cat_head = CosineCategoryHead(in_dim=ck["in_dim"], proj_dim=ck["proj_dim"], dropout=0.3, num_layers=2)
     cat_head.load_state_dict(ck["head"]); cat_head.to(device).eval()
     for p in cat_head.parameters(): p.requires_grad_(False)
 
-    tp = F.normalize(torch.load(args.text_prototypes, map_location=device).float(), dim=-1)
+    tp = F.normalize(
+        torch.load(prototype_path, map_location=device, weights_only=False).float(), dim=-1
+    )
 
     # Relation head
     z_dim = torch.load(train_ds.files[0], map_location="cpu")["z"].shape[1]
@@ -316,6 +345,13 @@ def main():
                     "train_sha256": file_id_sha256(train_ds.files),
                     "model_val_count": len(val_ds.files),
                     "model_val_sha256": file_id_sha256(val_ds.files),
+                    "training_assets": {
+                        "category_checkpoint": str(category_path),
+                        "category_checkpoint_sha256": file_sha256(category_path),
+                        "text_prototypes": str(prototype_path),
+                        "text_prototypes_sha256": file_sha256(prototype_path),
+                        "prototype_vocabulary": vocabulary,
+                    },
                 },
             }, args.save_ckpt)
             print(f"  -> saved {args.save_ckpt}")
