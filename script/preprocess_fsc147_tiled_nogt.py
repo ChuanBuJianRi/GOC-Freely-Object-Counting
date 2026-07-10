@@ -25,7 +25,7 @@ from script.preprocess_fsc147_tiled import (
 )
 
 
-def empty_sample(name: str, height: int, width: int) -> dict:
+def empty_sample(name: str, height: int, width: int, source_cache: str) -> dict:
     return {
         "schema": "fsc147-inference-v1",
         "img_id": Path(name).stem,
@@ -34,13 +34,14 @@ def empty_sample(name: str, height: int, width: int) -> dict:
         "bbox": torch.empty((0, 4), dtype=torch.float32),
         "height": int(height),
         "width": int(width),
-        "source_cache": "tiled-nogt-empty",
+        "source_cache": source_cache,
     }
 
 
 def process_image(image: np.ndarray, name: str, amg, encoder: DINOv2RegionEncoder,
                   tiles: int, overlap: float, merge_mode: str) -> dict:
     height, width = image.shape[:2]
+    source_cache = f"tiled-nogt-{tiles}x{tiles}-overlap{overlap}-{merge_mode}"
     masks: list[np.ndarray] = []
     bboxes: list[list[float]] = []
     for y1, x1, y2, x2 in compute_tiles(height, width, tiles, overlap):
@@ -67,7 +68,7 @@ def process_image(image: np.ndarray, name: str, amg, encoder: DINOv2RegionEncode
                 float(local_x2 - local_x1), float(local_y2 - local_y1),
             ])
     if not masks:
-        return empty_sample(name, height, width)
+        return empty_sample(name, height, width, source_cache)
 
     if merge_mode == "bbox":
         keep = merge_masks_by_bbox(bboxes, iou_thresh=0.7)
@@ -97,7 +98,7 @@ def process_image(image: np.ndarray, name: str, amg, encoder: DINOv2RegionEncode
     masks = [masks[index] for index in keep]
     bboxes = [bboxes[index] for index in keep]
     if not masks:
-        return empty_sample(name, height, width)
+        return empty_sample(name, height, width, source_cache)
 
     masked_crops, box_crops, context_crops = [], [], []
     for mask, bbox in zip(masks, bboxes):
@@ -117,7 +118,7 @@ def process_image(image: np.ndarray, name: str, amg, encoder: DINOv2RegionEncode
         "bbox": torch.tensor(bboxes, dtype=torch.float32),
         "height": int(height),
         "width": int(width),
-        "source_cache": f"tiled-nogt-{tiles}x{tiles}-overlap{overlap}-{merge_mode}",
+        "source_cache": source_cache,
     }
 
 
