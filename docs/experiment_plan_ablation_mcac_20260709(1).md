@@ -5,6 +5,8 @@
 
 > **2026-07-10 执行状态**：MCAC full 2,115、M1-M6、OCCAM shared-proposal baseline 和 strict no-GT M5/M6 已完成。审计发现旧主评测使用 GT-dot-derived `valid` 筛选候选；cache-compatible 消融只作诊断，论文 MCAC 对比采用 strict no-GT 行。完整记录见 `docs/mcac_full2115_leaveoneout_report_20260710.md`。
 
+> **主消融范围更新**：论文组件 leave-one-out 主表现只使用 FSC-147 full + OmniCount-191 full；MCAC 留作独立跨域诊断。新计划与结果见 `docs/experiment_plan_ablation_fsc147_omnicount_20260710.md`。
+
 ---
 
 ## 实验一：组件 Leave-One-Out 消融（M1–M6）

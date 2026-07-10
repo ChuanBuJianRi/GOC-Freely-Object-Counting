@@ -269,34 +269,25 @@ ABC123 published 结果已复现：原版 torchvision resize 语义下 full-2115
 
 ### 4.1 组件消融 (主文 Table 3)
 
-2026-07-09 已补 FSC147 full-test multi-resolution 组件级消融。完整记录见
-`docs/fsc147_multires_component_ablation_report_20260709.md`。
+2026-07-10 已按严格 leave-one-out 定义在 **FSC147 full-1,190 + OmniCount full-1,957** 上重跑 M1-M6。M1-M4 均保留 12.67 主方法的 T4 policy，只有 M5 关闭 T4，修复旧表把 pre-rescue M1-M5 与 post-rescue M6 混算的问题。完整记录见 `docs/fsc147_omnicount_leaveoneout_report_20260710.md`。
 
-**重要口径说明**: 2026-07-09 审计发现 FSC147 test split 为 1,190 张，
-但历史 `fsc147_multires_extended.json` 和早期组件 rerun 都只包含 1,189 张；
-缺失图像为 `7611.jpg`。当前组件消融已补回该图并重跑，主表采用
-full 1,190-image 口径。旧 1,189 current-code A8 为 MAE=11.45，补回
-`7611.jpg` 后为 MAE=13.47。补跑 true MR100 后指标不变；`7611.jpg`
-的 fast 分支为 0 候选，MR100 分支实际仍只有 tiled 208 个候选。主方法
-进一步增加 T4 rescue，完整结果为 12.67；因此 13.47 是“移除 T4”的直接对照。
+| Variant | 移除组件 | FSC147 MAE/RMSE | ΔMAE | OmniCount total MAE/RMSE | mRMSE/mRMSE-nz |
+|---|---|---:|---:|---:|---:|
+| M1 | RH | 14.29 / 113.91 | +1.63 | 4.68 / 8.46 | 0.457 / 3.911 |
+| M2 | ADF | 26.97 / 124.52 | +14.30 | 12.73 / 17.30 | 0.842 / 3.864 |
+| M3 | CP | **12.59 / 113.69** | -0.07 | 4.68 / 8.46 | 0.457 / 3.911 |
+| M4 | HR | 27.18 / 125.83 | +14.52 | 5.64 / 9.72 | **0.424** / 3.914 |
+| M5 | T4 | 13.47 / 126.74 | +0.81 | 4.68 / 8.46 | 0.457 / 3.911 |
+| **M6** | **完整模型** | **12.67 / 113.71** | **0.00** | **4.68 / 8.46** | 0.457 / **3.911** |
 
-| Variant | 组件变化 | MAE | RMSE | Δ vs Main |
-|---|---|---:|---:|---:|
-| A1 filter only | category confidence filter, no dedup | 15.40 | 126.93 | +2.73 |
-| A2 IoU NMS@0.5 | class-bucket heuristic NMS, no relation head | 15.10 | 126.91 | +2.43 |
-| A3 global relation | relation dedup, no semantic grouping | 13.34 | 126.77 | +0.67 |
-| A4 group no spatial | semantic grouping, no spatial refinement | 13.43 | 126.75 | +0.76 |
-| A5 no adaptive dedup | full grouping, fixed relation dedup | 14.39 | 126.81 | +1.72 |
-| A8 main minus T4 | full pipeline，关闭 4x4 rescue | 13.47 | 126.74 | +0.81 |
-| **M6 main** | **A8 + T4 extreme-density rescue** | **12.67** | **113.71** | **0.00** |
+**关键发现**：
+1. RH 对 FSC147 有稳定贡献：M1 paired ΔMAE=+1.63，95% CI [1.28, 2.00]；但 OmniCount M1/M6 逐图一致。
+2. ADF 与 HR 是最强组件。FSC 分别退化 +14.30/+14.52 MAE；OmniCount 分别退化 +8.06/+0.96 MAE。
+3. CP 不提升最终 counting MAE：M3 在 FSC 上略好 0.07，paired CI 跨 0；OmniCount 与 M6 逐图一致。正文不能再用旧 sample100 数字声称 CP 提升 MAE。
+4. T4 只在 FSC `7611.jpg` 触发；OmniCount 0/1,957 触发，因此 M5/M6 相同。T4 应定位为极端前端失败 rescue，而非普遍增益模块。
+5. OmniCount mRMSE 会受大量 GT=0 类影响：M4 mRMSE 更低但 total MAE 更差，主表必须同时报告 total MAE/RMSE 与 mRMSE-nz。
 
-**关键发现**:
-1. Learned relation dedup 明显优于 IoU NMS：A2 15.10 → A3 13.34。
-2. Adaptive dedup 有贡献：固定去重 A5 14.39 → A8 no-rescue 13.47。
-3. T4 rescue 对主方法贡献 0.81 MAE：A8 13.47 → M6 12.67；收益集中在 fast 前端完全失败的极端密度图。
-4. FSC147 是单类别标注，semantic/spatial grouping 不呈现单调收益；multi-category claim 仍应主要由 OmniCount 支撑。
-
-**MCAC leave-one-out 补充**：在 full 2,115 cache-compatible 诊断口径下，M1/M2/M3/M4/M5/M6 的 per-class MAE 分别为 35.26/31.02/35.01/39.99/34.94/34.94。HR 明显有益；RH/CP 仅小幅有益；关闭 ADF 反而改善 3.93 MAE；T4 rescue 无 per-class 收益。该表使用 GT-derived `valid`，不进入严格 prompt-free 主表。
+协议说明：FSC147 仍沿用 GT-dot-derived `valid` 的 cache-compatible 口径；OmniCount predicted branches 不读取 `valid/matched_class`。OmniCount `conf=0.1` 沿用 2026-07-08 已建立的 full 协议，不是本轮看 test 后调参。
 
 ### 4.2 分类头消融 (P1-2)
 
@@ -687,14 +678,16 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 
 ### 10.3 主文 Table 3: Component Ablation
 
-| Variant | Relation Head | Adaptive Dedup | T4 Rescue | MAE | Δ vs Main |
-|---|---|---|---|---:|---:|
-| A2: box-IoU heuristic | ❌ | ❌ | ✅ | 15.10 | +2.43 |
-| A5: fixed relation dedup | ✅ | ❌ | ✅ | 14.39 | +1.72 |
-| A8: main minus T4 | ✅ | ✅ | ❌ | 13.47 | +0.81 |
-| **M6: full main** | ✅ | ✅ | ✅ | **12.67** | **0.00** |
+| Variant | Removed | FSC147 MAE/RMSE | OmniCount MAE/RMSE | OmniCount mRMSE-nz |
+|---|---|---:|---:|---:|
+| M1 | RH | 14.29 / 113.91 | 4.68 / 8.46 | 3.911 |
+| M2 | ADF | 26.97 / 124.52 | 12.73 / 17.30 | 3.864 |
+| M3 | CP | 12.59 / 113.69 | 4.68 / 8.46 | 3.911 |
+| M4 | HR | 27.18 / 125.83 | 5.64 / 9.72 | 3.914 |
+| M5 | T4 | 13.47 / 126.74 | 4.68 / 8.46 | 3.911 |
+| **M6** | **None** | **12.67 / 113.71** | **4.68 / 8.46** | **3.911** |
 
-注：主表只放最直接的 full-1,190 组件对照；完整 A1-A8、训练变体和 MCAC leave-one-out 放附录。所有 FSC147 行沿用相同 cache-validity 口径。
+注：FSC147 是 cache-compatible full-1,190；OmniCount 是不读取 GT-derived candidate fields 的 prompt-free full-1,957。CP 的结果不支持正向 MAE claim，正文必须如实说明。
 
 ### 10.4 主文 Figure 1: Method Overview
 
@@ -999,6 +992,10 @@ Training supervision comparison:
 | `result/logs/fsc147_rescue_policy_fast_cand0_4x4.json` | FSC147 full-1,190 主结果 12.67 / 113.71 |
 | `result/logs/fsc147_rescue_tiling_7611_matrix.json` | T4 rescue 单图配置矩阵 |
 | `docs/fsc147_extreme_density_rescue_tiling_20260709.md` | FSC147 主方法 T4 rescue 详细记录 |
+| `docs/experiment_plan_ablation_fsc147_omnicount_20260710.md` | FSC147 + OmniCount full M1-M6 计划与状态 |
+| `docs/fsc147_omnicount_leaveoneout_report_20260710.md` | 双数据集 full leave-one-out 完整报告 |
+| `script/eval_fsc147_omnicount_leaveoneout.py` | 双数据集统一 M1-M6 评测实现 |
+| `result/logs/fsc147_omnicount_leaveoneout_full_summary.json` | 双数据集机器可读汇总 |
 | `result/logs/p1_ablations_carpk.json` | CARPK 消融结果 |
 | `result/logs/p1_classification_ablation.json` | P1-2 分类头消融 |
 | `result/logs/p2_pucpr_full.json` | P2-1 PUCPR+ 默认参数 |

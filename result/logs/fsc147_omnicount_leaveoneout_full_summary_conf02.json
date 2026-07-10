@@ -1,0 +1,317 @@
+{
+  "date": "2026-07-10",
+  "variant_definitions": {
+    "m1": "M6 minus RH: learned relation dedup is replaced by class-aware box-IoU NMS@0.5.",
+    "m2": "M6 minus ADF: fixed base candidate density and confidence threshold 0; T4 trigger retained.",
+    "m3": "M6 minus CP: pts32 relation head is FSC-dot-supervised only; all other weights/config fixed.",
+    "m4": "M6 minus HR: pts16 candidate pool and pts16 category/relation heads; T4 trigger retained.",
+    "m5": "M6 minus T4: disable the 4x4 zero-candidate rescue and keep the original multires frontend.",
+    "m6": "Full learned model and inference policy, including the no-GT fast-zero -> 4x4 T4 rescue."
+  },
+  "checkpoint_sha256": {
+    "category_fast": "52b607054b6a5931b59c25d159181dcb520729d318d7f20881ecee0a2b3564ee",
+    "category_pts32": "43509c6e4ff55498084187adbaa4cf630124d6e287562448d311437b2a3082b4",
+    "relation_fast": "abf4ad60d0929cd0736b4908fe17354fb96cee47dbc638fb3139437b1ede8bc7",
+    "relation_pts32": "1bb7a1cfd950fde8dc2aed878793289339c3e0500ab813b8c3ea49887fca354b",
+    "relation_dotonly": "e56151db7b5fe461ddf5a96668bfd12504b9a80e45d7bf19844aa24203f8b8a5",
+    "relation_exp5c": "b4b32a36b7f90400253a284d63ac792472728e5afa6b7725880de0e502d4143c",
+    "proto_fsc": "6415f6836f7e6f502dd7752ea15e2d491f1c552f38df9da1ba6d9f9d9823bb82",
+    "proto_omni": "26cd89b7f596a2307950636bed457a3abd4f131127dd0e7f6578fabd2cf8d577"
+  },
+  "datasets": {
+    "fsc147": {
+      "config": {
+        "dataset": "FSC147 test full",
+        "num_images": 1190,
+        "protocol": "cache-compatible; cache valid is GT-dot-derived",
+        "tau_inst": 0.99,
+        "tau_affinity": 0.1,
+        "conf_threshold": 0.2,
+        "t4_trigger": "fast n_candidates == 0",
+        "t4_rescue_cache": "/home/czp/ws_yiyang/ovcud_cache/fsc147_rescue_7611_4x4_ov25_bbox"
+      },
+      "variants": {
+        "m1": {
+          "metrics": {
+            "n": 1190,
+            "MAE": 14.29327731092437,
+            "RMSE": 113.91113667602272,
+            "bias": -5.585714285714285,
+            "mean_gt": 66.24873949579832,
+            "mean_pred": 60.66302521008404
+          },
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 1.6252100840336134,
+            "delta_MAE_95CI": [
+              1.2797689075630252,
+              1.9975840336134454
+            ]
+          }
+        },
+        "m2": {
+          "metrics": {
+            "n": 1190,
+            "MAE": 26.965546218487393,
+            "RMSE": 124.5226549533805,
+            "bias": -25.654621848739495,
+            "mean_gt": 66.24873949579832,
+            "mean_pred": 40.59411764705882
+          },
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 14.29747899159664,
+            "delta_MAE_95CI": [
+              11.557584033613445,
+              17.245462184873947
+            ]
+          }
+        },
+        "m3": {
+          "metrics": {
+            "n": 1190,
+            "MAE": 12.594957983193277,
+            "RMSE": 113.6860412116921,
+            "bias": -8.146218487394957,
+            "mean_gt": 66.24873949579832,
+            "mean_pred": 58.102521008403365
+          },
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": -0.073109243697479,
+            "delta_MAE_95CI": [
+              -0.22018907563025208,
+              0.0706302521008403
+            ]
+          }
+        },
+        "m4": {
+          "metrics": {
+            "n": 1190,
+            "MAE": 27.18403361344538,
+            "RMSE": 125.82544598427957,
+            "bias": -25.910084033613444,
+            "mean_gt": 66.24873949579832,
+            "mean_pred": 40.338655462184875
+          },
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 14.515966386554622,
+            "delta_MAE_95CI": [
+              11.863235294117647,
+              17.39920168067227
+            ]
+          }
+        },
+        "m5": {
+          "metrics": {
+            "n": 1190,
+            "MAE": 13.474789915966387,
+            "RMSE": 126.74198298946108,
+            "bias": -8.753781512605043,
+            "mean_gt": 66.24873949579832,
+            "mean_pred": 57.494957983193274
+          },
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 0.8067226890756303,
+            "delta_MAE_95CI": [
+              0.0,
+              2.4201680672268906
+            ]
+          }
+        },
+        "m6": {
+          "metrics": {
+            "n": 1190,
+            "MAE": 12.668067226890756,
+            "RMSE": 113.71112226924458,
+            "bias": -7.947058823529412,
+            "mean_gt": 66.24873949579832,
+            "mean_pred": 58.30168067226891
+          },
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 0.0,
+            "delta_MAE_95CI": [
+              0.0,
+              0.0
+            ]
+          }
+        }
+      }
+    },
+    "omnicount": {
+      "config": {
+        "dataset": "OmniCount-191 test full",
+        "num_images": 1957,
+        "num_classes": 93,
+        "protocol": "prompt-free predicted semantic groups; cached valid/matched_class unused",
+        "cache_pts32": "/home/czp/ws_yiyang/ovcud_cache/omnicount_test",
+        "cache_pts16": "/home/czp/ws_yiyang/ovcud_cache/omnicount_test_pts16",
+        "conf_threshold": 0.2,
+        "tau_inst": 0.99,
+        "tau_affinity": 0.1,
+        "t4_triggered_images": 0
+      },
+      "variants": {
+        "m1": {
+          "total": {
+            "n_images": 1957,
+            "MAE": 5.984159427695452,
+            "RMSE": 10.151610045207816,
+            "bias": -5.984159427695452,
+            "mean_GT": 6.03270311701584,
+            "mean_Pred": 0.04854368932038835
+          },
+          "present_class": {
+            "n": 3754,
+            "MAE": 3.1438465636654236,
+            "RMSE": 6.961343907876507,
+            "bias": -3.1438465636654236,
+            "mean_gt": 3.144912093766649,
+            "mean_pred": 0.0010655301012253596
+          },
+          "mRMSE": 0.40655755755714906,
+          "mRMSE_nz": 3.9188154895217995,
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 0.0,
+            "delta_MAE_95CI": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "m2": {
+          "total": {
+            "n_images": 1957,
+            "MAE": 12.734287174246296,
+            "RMSE": 17.301424647671052,
+            "bias": 12.34593765968319,
+            "mean_GT": 6.03270311701584,
+            "mean_Pred": 18.37864077669903
+          },
+          "present_class": {
+            "n": 3754,
+            "MAE": 3.0945657964837507,
+            "RMSE": 6.9570376551759034,
+            "bias": -2.933137986148109,
+            "mean_gt": 3.144912093766649,
+            "mean_pred": 0.21177410761854024
+          },
+          "mRMSE": 0.8416705975704835,
+          "mRMSE_nz": 3.863737514836046,
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 6.750127746550843,
+            "delta_MAE_95CI": [
+              6.2339294839039345,
+              7.285730710270823
+            ]
+          }
+        },
+        "m3": {
+          "total": {
+            "n_images": 1957,
+            "MAE": 5.984159427695452,
+            "RMSE": 10.151610045207816,
+            "bias": -5.984159427695452,
+            "mean_GT": 6.03270311701584,
+            "mean_Pred": 0.04854368932038835
+          },
+          "present_class": {
+            "n": 3754,
+            "MAE": 3.1438465636654236,
+            "RMSE": 6.961343907876507,
+            "bias": -3.1438465636654236,
+            "mean_gt": 3.144912093766649,
+            "mean_pred": 0.0010655301012253596
+          },
+          "mRMSE": 0.40655755755714906,
+          "mRMSE_nz": 3.9188154895217995,
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 0.0,
+            "delta_MAE_95CI": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "m4": {
+          "total": {
+            "n_images": 1957,
+            "MAE": 6.018906489524783,
+            "RMSE": 10.182920765643145,
+            "bias": -6.018906489524783,
+            "mean_GT": 6.03270311701584,
+            "mean_Pred": 0.013796627491057742
+          },
+          "present_class": {
+            "n": 3754,
+            "MAE": 3.1446457112413424,
+            "RMSE": 6.961401306583702,
+            "bias": -3.1446457112413424,
+            "mean_gt": 3.144912093766649,
+            "mean_pred": 0.0002663825253063399
+          },
+          "mRMSE": 0.4053553294040615,
+          "mRMSE_nz": 3.918511169228647,
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 0.03474706182933061,
+            "delta_MAE_95CI": [
+              0.02350536535513541,
+              0.045477772100153295
+            ]
+          }
+        },
+        "m5": {
+          "total": {
+            "n_images": 1957,
+            "MAE": 5.984159427695452,
+            "RMSE": 10.151610045207816,
+            "bias": -5.984159427695452,
+            "mean_GT": 6.03270311701584,
+            "mean_Pred": 0.04854368932038835
+          },
+          "present_class": {
+            "n": 3754,
+            "MAE": 3.1438465636654236,
+            "RMSE": 6.961343907876507,
+            "bias": -3.1438465636654236,
+            "mean_gt": 3.144912093766649,
+            "mean_pred": 0.0010655301012253596
+          },
+          "mRMSE": 0.40655755755714906,
+          "mRMSE_nz": 3.9188154895217995,
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 0.0,
+            "delta_MAE_95CI": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "m6": {
+          "total": {
+            "n_images": 1957,
+            "MAE": 5.984159427695452,
+            "RMSE": 10.151610045207816,
+            "bias": -5.984159427695452,
+            "mean_GT": 6.03270311701584,
+            "mean_Pred": 0.04854368932038835
+          },
+          "present_class": {
+            "n": 3754,
+            "MAE": 3.1438465636654236,
+            "RMSE": 6.961343907876507,
+            "bias": -3.1438465636654236,
+            "mean_gt": 3.144912093766649,
+            "mean_pred": 0.0010655301012253596
+          },
+          "mRMSE": 0.40655755755714906,
+          "mRMSE_nz": 3.9188154895217995,
+          "paired_vs_m6": {
+            "delta_MAE_vs_M6": 0.0,
+            "delta_MAE_95CI": [
+              0.0,
+              0.0
+            ]
+          }
+        }
+      }
+    }
+  }
+}

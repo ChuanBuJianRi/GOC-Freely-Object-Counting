@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import argparse, json, os, sys, time
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 import torch
@@ -180,6 +180,31 @@ def dot_based_matching(
     }
 
 
+def empty_result(entry: dict, h: int, w: int, feature_dim: int) -> dict:
+    """Build a valid zero-candidate cache entry instead of dropping an image."""
+    return {
+        "img_id": os.path.splitext(entry["file_name"])[0],
+        "file_name": entry["file_name"],
+        "category": entry["category"],
+        "class_counts": entry["class_counts"],
+        "unique_classes": entry["unique_classes"],
+        "gt_count": entry["total_count"],
+        "z": torch.zeros((0, feature_dim), dtype=torch.float32),
+        "bbox": torch.zeros((0, 4), dtype=torch.float32),
+        "matched_class": torch.zeros(0, dtype=torch.long),
+        "matched_instance_id": torch.zeros(0, dtype=torch.long),
+        "iou": torch.zeros(0),
+        "purity": torch.zeros(0),
+        "coverage": torch.zeros(0),
+        "valid": torch.zeros(0),
+        "is_part": torch.zeros(0),
+        "is_countable": torch.zeros(0),
+        "masks_rle": [],
+        "height": int(h),
+        "width": int(w),
+    }
+
+
 # ---------------------------------------------------------------------------
 # Single image processing
 # ---------------------------------------------------------------------------
@@ -188,7 +213,7 @@ def process_image(
     entry: dict,
     amg,
     encoder: DINOv2RegionEncoder,
-) -> Optional[dict]:
+) -> dict:
     h, w = image.shape[:2]
 
     # SAM2 candidate generation
@@ -215,7 +240,7 @@ def process_image(
 
     n_cand = len(masks)
     if n_cand == 0:
-        return None
+        return empty_result(entry, h, w, feature_dim=3 * encoder.dim)
 
     # Dot-based matching (class-agnostic: all dots belong to class 0)
     all_points = [(a["cx"], a["cy"]) for a in entry["annotations"]]
@@ -245,7 +270,7 @@ def process_image(
     n_cand = len(masks)
 
     if n_cand == 0:
-        return None
+        return empty_result(entry, h, w, feature_dim=3 * encoder.dim)
 
     # DINOv2 3-view encoding
     masked_crops, box_crops, ctx_crops = [], [], []
@@ -347,10 +372,15 @@ def main():
 
         t_img = time.time()
         result = process_image(image, entry, amg, encoder)
-        if result is None:
-            n_error += 1
-            print(f"  [warn] No candidates for {file_name}")
-            continue
+        result["preprocess"] = {
+            "sam2_model": "sam2.1_hiera_small",
+            "points_per_side": int(args.pts_per_side),
+            "pred_iou_thresh": 0.7,
+            "stability_score_thresh": 0.8,
+            "crop_n_layers": 0,
+        }
+        if result["z"].shape[0] == 0:
+            print(f"  [warn] Zero candidates retained for {file_name}; saved placeholder")
 
         torch.save(result, out_path)
         n_ok += 1

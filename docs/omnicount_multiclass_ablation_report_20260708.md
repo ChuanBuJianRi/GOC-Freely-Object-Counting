@@ -2,7 +2,9 @@
 
 **日期**: 2026-07-08
 **分支**: `ljs`
-**目标**: 使用 FSC147 主结果 MAE=12.74 的同一组 OV-CUD 学习模型，在 OmniCount-191 上验证 prompt-free 多类别计数能力，并补充 published prompted methods 与本地 OWLv2 class-aware baseline。
+**目标**: 使用当前 FSC147 主结果 MAE=12.67 的同一组 OV-CUD 学习模型，在 OmniCount-191 上验证 prompt-free 多类别计数能力，并补充 published prompted methods 与本地 OWLv2 class-aware baseline。
+
+> **2026-07-10 更新**：12.67 与原 12.74 使用同一组学习权重，差别是 FSC147 完整 1,190 张加入 T4 rescue。OmniCount M1-M6 full leave-one-out 见 `docs/fsc147_omnicount_leaveoneout_report_20260710.md`。
 
 ---
 
@@ -23,9 +25,9 @@
 
 ## 2. 模型一致性审计
 
-OmniCount 多类别实验使用的学习模型与 FSC147 headline result (MAE=12.74) 属于同一组模型：
+OmniCount 多类别实验使用的学习模型与 FSC147 当前主结果 (MAE=12.67) 属于同一组模型：
 
-| 模块 | FSC147 12.74 设置 | OmniCount 多类别设置 | 是否一致 |
+| 模块 | FSC147 12.67 设置 | OmniCount 多类别设置 | 是否一致 |
 |---|---|---|---|
 | Category head | `result/checkpoints/category_cosine_pts32.pt` | `result/checkpoints/category_cosine_pts32.pt` | 是 |
 | Relation head | `result/checkpoints/fsc147_relation_pts32_best.pt` / `fsc147_relation_pts32_exp5c.pt` | `result/checkpoints/fsc147_relation_pts32_best.pt` | 是 |
@@ -48,7 +50,7 @@ Checkpoint 审计：
 
 - 这里的“同一模型”指 **同一个 category projection head + 同一个 relation head 权重**。
 - OmniCount 必须替换文本原型矩阵，因为它是开放词表评估；这不是重新训练模型。
-- FSC147 MAE=12.74 使用了 FSC147 专用 multi-resolution candidate cache；OmniCount 当前使用 pts=32 cache。因此候选生成策略不是完全相同，但学习模型相同。
+- FSC147 MAE=12.67 使用 FSC147 专用 multi-resolution + T4 rescue；OmniCount 当前使用 pts32 cache，且 T4 trigger 命中 0/1,957。因此候选生成策略不是完全相同，但学习模型相同。
 
 ---
 
