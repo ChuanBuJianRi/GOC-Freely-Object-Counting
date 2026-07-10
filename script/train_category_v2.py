@@ -19,9 +19,11 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
+import random
 import time
 from pathlib import Path
 from typing import Optional
@@ -131,6 +133,31 @@ class CachedDataset(Dataset):
         }
 
 
+def filter_split_files(all_files, split_file: str | None, split_key: str):
+    if not split_file:
+        return all_files, None
+    split_path = Path(split_file)
+    split = json.loads(split_path.read_text())
+    if split_key not in split:
+        raise KeyError(f"split key {split_key!r} not found in {split_path}")
+    allowed = {Path(name).stem for name in split[split_key]}
+    selected = [path for path in all_files if path.stem in allowed]
+    if not selected:
+        raise RuntimeError(f"no cache files matched {split_key!r} in {split_path}")
+    return selected, {
+        "split_file": str(split_path),
+        "split_key": split_key,
+        "declared_images": len(allowed),
+        "matched_cache_files": len(selected),
+        "missing_cache_files": sorted(allowed - {path.stem for path in selected}),
+    }
+
+
+def file_id_sha256(files) -> str:
+    payload = "\n".join(sorted(path.stem for path in files)).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def collate(batch):
     return {
         "z": torch.stack([b["z"] for b in batch]),
@@ -215,16 +242,32 @@ def main():
     ap.add_argument("--patience", type=int, default=10)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument(
+        "--split_seed", type=int, default=None,
+        help="data split seed; defaults to --seed for backward compatibility",
+    )
+    ap.add_argument("--split_file", default=None, help="optional official split JSON")
+    ap.add_argument("--split_key", default="train", help="key selected from --split_file")
+    ap.add_argument("--deterministic", action="store_true")
     ap.add_argument("--num_workers", type=int, default=4)
     args = ap.parse_args()
 
+    random.seed(args.seed)
     torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
+    if args.deterministic:
+        torch.use_deterministic_algorithms(True)
     device = args.device
 
     # 数据：按图划分（让模型见所有类，与原始训练一致）
     import torch as _torch
     all_files = sorted(Path(args.data_dir).glob("*.pt"))
-    g = _torch.Generator().manual_seed(args.seed)
+    all_files, official_split = filter_split_files(
+        all_files, args.split_file, args.split_key
+    )
+    split_seed = args.seed if args.split_seed is None else args.split_seed
+    g = _torch.Generator().manual_seed(split_seed)
     perm = _torch.randperm(len(all_files), generator=g).tolist()
     n_val = max(1, int(len(all_files) * args.val_ratio))
     val_files = [all_files[i] for i in perm[:n_val]]
@@ -234,10 +277,14 @@ def main():
     heldout = []
     print(f"[data] train: {len(train_ds)} candidates from {len(train_files)} images")
     print(f"[data] val:   {len(val_ds)} candidates from {len(val_files)} images")
+    print(f"[data] model_seed={args.seed} split_seed={split_seed}")
+    if official_split:
+        print(f"[data] official split: {official_split}")
 
+    loader_gen = _torch.Generator().manual_seed(args.seed)
     train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True,
                               collate_fn=collate, num_workers=args.num_workers,
-                              pin_memory=(device != "cpu"))
+                              pin_memory=(device != "cpu"), generator=loader_gen)
     val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False,
                             collate_fn=collate, num_workers=args.num_workers,
                             pin_memory=(device != "cpu"))
@@ -321,6 +368,16 @@ def main():
                 "in_dim": in_dim, "proj_dim": args.proj_dim, "num_classes": num_classes,
                 "val_top1": best_top1, "val_top3": val_metrics["top3"],
                 "epoch": epoch + 1, "config": vars(args),
+                "data_manifest": {
+                    "official_split": official_split,
+                    "split_seed": split_seed,
+                    "selected_count": len(all_files),
+                    "selected_sha256": file_id_sha256(all_files),
+                    "train_count": len(train_files),
+                    "train_sha256": file_id_sha256(train_files),
+                    "model_val_count": len(val_files),
+                    "model_val_sha256": file_id_sha256(val_files),
+                },
             }
             msg += " *"
         else:

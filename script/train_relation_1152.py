@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-import argparse, json, math, os, sys, time
+import argparse, hashlib, json, math, os, random, sys, time
 from pathlib import Path
 from typing import Optional
 
@@ -25,7 +25,7 @@ from code.matrix.pairwise_features import build_pairwise_features, pairwise_feat
 # ---------------------------------------------------------------------------
 class RelationDataset(Dataset):
     def __init__(self, data_dir: str, files: Optional[list] = None, min_cand: int = 2):
-        all_files = list(files) if files else sorted(Path(data_dir).glob("*.pt"))
+        all_files = list(files) if files is not None else sorted(Path(data_dir).glob("*.pt"))
         self.files = [f for f in all_files if torch.load(f, map_location="cpu")["z"].shape[0] >= min_cand]
         if not self.files: raise RuntimeError("no image with >= min_cand candidates")
 
@@ -42,6 +42,31 @@ class RelationDataset(Dataset):
 
 
 def collate_single(batch): return batch[0]
+
+
+def filter_split_files(all_files, split_file: str | None, split_key: str):
+    if not split_file:
+        return all_files, None
+    split_path = Path(split_file)
+    split = json.loads(split_path.read_text())
+    if split_key not in split:
+        raise KeyError(f"split key {split_key!r} not found in {split_path}")
+    allowed = {Path(name).stem for name in split[split_key]}
+    selected = [path for path in all_files if path.stem in allowed]
+    if not selected:
+        raise RuntimeError(f"no cache files matched {split_key!r} in {split_path}")
+    return selected, {
+        "split_file": str(split_path),
+        "split_key": split_key,
+        "declared_images": len(allowed),
+        "matched_cache_files": len(selected),
+        "missing_cache_files": sorted(allowed - {path.stem for path in selected}),
+    }
+
+
+def file_id_sha256(files) -> str:
+    payload = "\n".join(sorted(path.stem for path in files)).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 # ---------------------------------------------------------------------------
@@ -188,25 +213,50 @@ def main():
     ap.add_argument("--lr", type=float, default=5e-4)
     ap.add_argument("--val_frac", type=float, default=0.1)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument(
+        "--split_seed", type=int, default=None,
+        help="data split seed; defaults to --seed for backward compatibility",
+    )
+    ap.add_argument("--split_file", default=None, help="optional official split JSON")
+    ap.add_argument("--split_key", default="train", help="key selected from --split_file")
+    ap.add_argument("--deterministic", action="store_true")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
 
+    random.seed(args.seed)
     torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
+    if args.deterministic:
+        torch.use_deterministic_algorithms(True)
     gen = torch.Generator(device=args.device).manual_seed(args.seed)
     device = args.device
 
     # Data split (by file)
     all_files = sorted(Path(args.data_dir).glob("*.pt"))
-    g = torch.Generator().manual_seed(args.seed)
+    all_files, official_split = filter_split_files(
+        all_files, args.split_file, args.split_key
+    )
+    split_seed = args.seed if args.split_seed is None else args.split_seed
+    g = torch.Generator().manual_seed(split_seed)
     perm = torch.randperm(len(all_files), generator=g).tolist()
     n_val = max(1, int(len(all_files) * args.val_frac))
     val_files = [all_files[i] for i in perm[:n_val]]
     train_files = [all_files[i] for i in perm[n_val:]]
     train_ds = RelationDataset(args.data_dir, files=train_files)
     val_ds = RelationDataset(args.data_dir, files=val_files)
-    train_loader = DataLoader(train_ds, batch_size=1, shuffle=True, collate_fn=collate_single)
+    loader_gen = torch.Generator().manual_seed(args.seed)
+    train_loader = DataLoader(
+        train_ds, batch_size=1, shuffle=True, collate_fn=collate_single,
+        generator=loader_gen,
+    )
     val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, collate_fn=collate_single)
-    print(f"[data] train={len(train_ds)} val={len(val_ds)}")
+    print(
+        f"[data] selected={len(all_files)} train={len(train_ds)} val={len(val_ds)} "
+        f"model_seed={args.seed} split_seed={split_seed}"
+    )
+    if official_split:
+        print(f"[data] official split: {official_split}")
 
     # Category head
     from script.train_category_v2 import CosineCategoryHead
@@ -253,6 +303,20 @@ def main():
                 "feat_dim": feat_dim, "z_dim": z_dim, "hidden_dim": args.hidden_dim,
                 "num_layers": args.num_layers, "category_ckpt": args.category_ckpt,
                 "epoch": epoch + 1, "val_metrics": ev,
+                "pretrained_from": args.pretrained,
+                "train_config": vars(args),
+                "data_manifest": {
+                    "official_split": official_split,
+                    "split_seed": split_seed,
+                    "selected_count": len(all_files),
+                    "selected_sha256": file_id_sha256(all_files),
+                    "partition_train_count": len(train_files),
+                    "partition_model_val_count": len(val_files),
+                    "train_count": len(train_ds.files),
+                    "train_sha256": file_id_sha256(train_ds.files),
+                    "model_val_count": len(val_ds.files),
+                    "model_val_sha256": file_id_sha256(val_ds.files),
+                },
             }, args.save_ckpt)
             print(f"  -> saved {args.save_ckpt}")
 
