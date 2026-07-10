@@ -116,7 +116,7 @@ def dot_based_matching(
     coverage = np.zeros(n_cand, dtype=np.float32)
     iou_arr = np.zeros(n_cand, dtype=np.float32)
     matched_class = np.full(n_cand, class_idx, dtype=np.int64)
-    matched_instance_id = np.arange(n_cand, dtype=np.int64)  # 每个候选唯一 ID
+    matched_instance_id = np.full(n_cand, -1, dtype=np.int64)
     valid = np.zeros(n_cand, dtype=np.float32)
 
     for i, m in enumerate(masks):
@@ -124,10 +124,11 @@ def dot_based_matching(
         if area == 0:
             continue
 
-        dots_covered = 0
-        for xi, yi in pts_int:
+        covered_dots = []
+        for dot_index, (xi, yi) in enumerate(pts_int):
             if m[yi, xi]:
-                dots_covered += 1
+                covered_dots.append(dot_index)
+        dots_covered = len(covered_dots)
 
         # purity: 候选内部 dot 密度
         purity[i] = dots_covered / max(area, 1.0)
@@ -140,6 +141,7 @@ def dot_based_matching(
         area_ratio = area / (h * w)
         if dots_covered >= 1 and 1e-4 < area_ratio < 0.95:
             valid[i] = 1.0
+            matched_instance_id[i] = covered_dots[0]
 
     return {
         "purity": purity,

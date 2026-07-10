@@ -59,17 +59,21 @@ def dot_matching(masks, points, class_idx, h, w) -> dict:
     n_dots = len(pts_int); n_cand = len(masks)
     purity = np.zeros(n_cand, dtype=np.float32); coverage = np.zeros(n_cand, dtype=np.float32)
     valid = np.zeros(n_cand, dtype=np.float32)
+    matched_instance_id = np.full(n_cand, -1, dtype=np.int64)
     for i, m in enumerate(masks):
         area = float(m.sum())
         if area == 0: continue
-        dc = sum(1 for xi, yi in pts_int if m[yi, xi])
+        covered_dots = [di for di, (xi, yi) in enumerate(pts_int) if m[yi, xi]]
+        dc = len(covered_dots)
         purity[i] = dc / max(area, 1.0)
         coverage[i] = dc / max(n_dots, 1)
         ar = area / (h * w)
-        if dc >= 1 and 1e-4 < ar < 0.95: valid[i] = 1.0
+        if dc >= 1 and 1e-4 < ar < 0.95:
+            valid[i] = 1.0
+            matched_instance_id[i] = covered_dots[0]
     return {"purity": purity, "coverage": coverage, "valid": valid,
             "matched_class": np.full(n_cand, class_idx, dtype=np.int64),
-            "matched_instance_id": np.arange(n_cand, dtype=np.int64)}
+            "matched_instance_id": matched_instance_id}
 
 
 def process_image(image, file_name, ann_entry, class_idx, class_name, amg, encoder):

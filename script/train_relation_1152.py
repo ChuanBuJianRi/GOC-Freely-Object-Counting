@@ -77,6 +77,45 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def audit_dot_instance_labels(files: list[Path]) -> dict[str, int | str]:
+    stats: dict[str, int | str] = {
+        "images": 0,
+        "valid_candidates": 0,
+        "valid_with_negative_id": 0,
+        "invalid_with_nonnegative_id": 0,
+        "id_outside_gt_count": 0,
+        "images_with_same_dot_pairs": 0,
+        "same_dot_pairs": 0,
+    }
+    for path in files:
+        sample = torch.load(path, map_location="cpu", weights_only=False)
+        valid = sample["valid"].view(-1) > 0.5
+        instance_id = sample["matched_instance_id"].long().view(-1)
+        gt_count = int(sample["gt_count"])
+        if len(valid) != len(instance_id):
+            raise RuntimeError(f"candidate/instance label length mismatch: {path}")
+        stats["images"] += 1
+        stats["valid_candidates"] += int(valid.sum())
+        stats["valid_with_negative_id"] += int((valid & (instance_id < 0)).sum())
+        stats["invalid_with_nonnegative_id"] += int((~valid & (instance_id >= 0)).sum())
+        stats["id_outside_gt_count"] += int((instance_id >= gt_count).sum())
+        valid_ids = instance_id[valid]
+        if len(valid_ids):
+            _, counts = valid_ids.unique(return_counts=True)
+            pairs = int(((counts * (counts - 1)) // 2).sum())
+            stats["same_dot_pairs"] += pairs
+            stats["images_with_same_dot_pairs"] += int(pairs > 0)
+    invalid = int(stats["valid_with_negative_id"]) + int(
+        stats["invalid_with_nonnegative_id"]
+    ) + int(stats["id_outside_gt_count"])
+    if invalid or int(stats["same_dot_pairs"]) == 0:
+        raise RuntimeError(f"invalid FSC dot-instance labels: {stats}")
+    stats["label_semantics"] = (
+        "shared nonnegative ID denotes candidates assigned to one FSC train dot"
+    )
+    return stats
+
+
 # ---------------------------------------------------------------------------
 # Category head wrapper
 # ---------------------------------------------------------------------------
@@ -249,6 +288,10 @@ def main():
     all_files, official_split = filter_split_files(
         all_files, args.split_file, args.split_key
     )
+    dot_instance_label_audit = None
+    if args.require_train_only_vocabulary:
+        dot_instance_label_audit = audit_dot_instance_labels(all_files)
+        print(f"[data] dot-instance audit: {dot_instance_label_audit}")
     split_seed = args.seed if args.split_seed is None else args.split_seed
     g = torch.Generator().manual_seed(split_seed)
     perm = torch.randperm(len(all_files), generator=g).tolist()
@@ -352,6 +395,7 @@ def main():
                         "text_prototypes_sha256": file_sha256(prototype_path),
                         "prototype_vocabulary": vocabulary,
                     },
+                    "dot_instance_label_audit": dot_instance_label_audit,
                 },
             }, args.save_ckpt)
             print(f"  -> saved {args.save_ckpt}")

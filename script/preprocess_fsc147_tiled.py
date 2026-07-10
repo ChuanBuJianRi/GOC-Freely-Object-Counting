@@ -171,25 +171,28 @@ def dot_based_matching(
     purity = np.zeros(n_cand, dtype=np.float32)
     coverage = np.zeros(n_cand, dtype=np.float32)
     valid = np.zeros(n_cand, dtype=np.float32)
+    matched_instance_id = np.full(n_cand, -1, dtype=np.int64)
 
     for i, m in enumerate(masks):
         area = float(m.sum())
         if area == 0:
             continue
-        dots_covered = 0
-        for xi, yi in pts_int:
+        covered_dots = []
+        for dot_index, (xi, yi) in enumerate(pts_int):
             if m[yi, xi]:
-                dots_covered += 1
+                covered_dots.append(dot_index)
+        dots_covered = len(covered_dots)
         purity[i] = dots_covered / max(area, 1.0)
         coverage[i] = dots_covered / max(n_dots_valid, 1)
         area_ratio = area / (h * w)
         if dots_covered >= 1 and 1e-4 < area_ratio < 0.95:
             valid[i] = 1.0
+            matched_instance_id[i] = covered_dots[0]
     return {
         "purity": purity, "coverage": coverage,
         "valid": valid,
         "matched_class": np.full(n_cand, class_idx, dtype=np.int64),
-        "matched_instance_id": np.arange(n_cand, dtype=np.int64),
+        "matched_instance_id": matched_instance_id,
     }
 
 

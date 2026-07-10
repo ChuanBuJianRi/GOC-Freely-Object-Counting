@@ -46,20 +46,22 @@ def dot_based_matching(
     coverage = np.zeros(n_cand, dtype=np.float32)
     iou_arr = np.zeros(n_cand, dtype=np.float32)
     matched_class = np.full(n_cand, class_idx, dtype=np.int64)
-    matched_instance_id = np.arange(n_cand, dtype=np.int64)
+    matched_instance_id = np.full(n_cand, -1, dtype=np.int64)
     valid = np.zeros(n_cand, dtype=np.float32)
 
     for i, m in enumerate(masks):
         area = float(m.sum())
         if area == 0:
             continue
-        dots_covered = sum(1 for xi, yi in pts_int if m[yi, xi])
+        covered_dots = [di for di, (xi, yi) in enumerate(pts_int) if m[yi, xi]]
+        dots_covered = len(covered_dots)
         purity[i] = dots_covered / max(area, 1.0)  # dot density
         coverage[i] = dots_covered / max(n_dots, 1)
         iou_arr[i] = min(coverage[i], 1.0)
         area_ratio = area / (h * w)
         if dots_covered >= 1 and 1e-4 < area_ratio < 0.95 and purity[i] >= tau_purity:
             valid[i] = 1.0
+            matched_instance_id[i] = covered_dots[0]
 
     return {
         "purity": purity,

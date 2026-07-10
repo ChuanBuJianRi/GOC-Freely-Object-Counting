@@ -155,6 +155,14 @@ def load_models(checkpoint_dir: Path, device: str) -> dict[str, Any]:
                 raise RuntimeError(f"relation strict-vocabulary guard was not enabled: {path}")
             if checkpoint.get("data_manifest", {}).get("official_split", {}).get("split_key") != "train":
                 raise RuntimeError(f"relation head is not official-train-only: {path}")
+            dot_audit = checkpoint.get("data_manifest", {}).get("dot_instance_label_audit", {})
+            if (
+                dot_audit.get("same_dot_pairs", 0) <= 0
+                or dot_audit.get("valid_with_negative_id") != 0
+                or dot_audit.get("invalid_with_nonnegative_id") != 0
+                or dot_audit.get("id_outside_gt_count") != 0
+            ):
+                raise RuntimeError(f"relation checkpoint lacks valid FSC dot-label audit: {path}")
             assets = checkpoint.get("data_manifest", {}).get("training_assets", {})
             if (
                 assets.get("category_checkpoint_sha256")
