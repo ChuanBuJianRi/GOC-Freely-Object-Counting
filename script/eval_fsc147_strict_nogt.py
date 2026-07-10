@@ -51,11 +51,15 @@ GT_BINS = (("0-10", 0, 10), ("11-20", 11, 20), ("21-50", 21, 50),
 CODE_ASSETS = (
     Path(__file__).resolve(),
     REPO / "script/ablation_fsc147_multires_components.py",
+    REPO / "script/preprocess_fsc147_tiled.py",
+    REPO / "script/preprocess_fsc147_tiled_nogt.py",
     REPO / "script/train_candidate_filter.py",
     REPO / "script/train_category_v2.py",
+    REPO / "code/candidates/crops.py",
     REPO / "code/clustering/first_neighbor.py",
     REPO / "code/counting/deduplicate.py",
     REPO / "code/counting/representative.py",
+    REPO / "code/encoders/dinov2_encoder.py",
     REPO / "code/matrix/pairwise_features.py",
 )
 
