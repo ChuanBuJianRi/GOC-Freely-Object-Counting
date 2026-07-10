@@ -60,6 +60,25 @@ Category head 使用 official-train 的 image-level 类别标签；relation head
 
 Relation label 审计发现仓库当前若干 FSC 预处理源码曾把 `matched_instance_id` 写成候选序号，与现存训练 cache 的真实语义不一致。现已统一修正为：未覆盖 dot 的候选记为 `-1`，有效候选记为其覆盖的第一个 train dot ID。strict relation 训练启动前全量验证 `valid <=> id>=0`、`id < gt_count` 和 shared-dot 正样本数，审计统计写入 checkpoint；缺少该 manifest 的权重会被 evaluator 拒绝。
 
+#### 资产哈希与 relation 训练结果
+
+| 资产 | SHA-256 |
+|---|---|
+| category pts16 | `9ffa9864ba1c7d0750ecbdcb9e8a932b92d1c3ad7cfe2f147338248e7419fc94` |
+| category pts32 | `5726d7ffd2e0eafd772a65b3963ba975afc21af81910483569812769df330998` |
+| candidate filter pts16 | `766ba5dc5e5a37840556bfee5d32067eaf86436b02aa6eaddf90469281f6754c` |
+| candidate filter pts32 | `55d530c3c942ecb873fbbb7433b74ab24c23a2f544f9ff206f79832daec2de11` |
+| train-89 prototypes | `125a529726a568a19a0b4886d1c8a6661adbd35abb26e94de09bef339a125106` |
+
+| Frontend | Seed | Best epoch | 内部 val loss | instance P/R | Checkpoint SHA-256 |
+|---|---:|---:|---:|---:|---|
+| pts16 | 17 | 34 | 0.0787 | 38.5% / 80.4% | `63fbade6b664ae8f986155e1e9e4a610fead9d6c3bc0beb51cb9ee057dcb2bad` |
+| pts16 | 42 | 38 | 0.0831 | 42.6% / 77.5% | `55e047377ae92ef9e0e57125764a2cd961fae9b0f35271a14e83ec25d8e607b5` |
+| pts16 | 73 | 21 | 0.1271 | 31.0% / 60.8% | `e3a70cd40a41fc62b6a32c9ce2045daa7ea47ee3d54de0c102f9f93d35495d2f` |
+| pts32 | 17 | 36 | 0.1043 | 59.2% / 91.6% | `16dfe4bf1e1d0cd9e47bdedf42b70f59eefc9710228b1e1f8398f899f6165b90` |
+| pts32 | 42 | 36 | 0.1042 | 60.2% / 90.4% | `4c88c73f2dfefe727f698072660f248bfc2028d7e37c12df674615fc824b3c7f` |
+| pts32 | 73 | 27 | **0.0996** | 38.7% / 97.5% | `ecf09d2967fc10cb901a6fd2858e551a78ca8e84367d8fadafff75af3d142e48` |
+
 ### 3.3 前端与路由
 
 - fast：所有图统一生成 pts16 full-image safe cache。
@@ -67,6 +86,8 @@ Relation label 审计发现仓库当前若干 FSC 预处理源码曾把 `matched
 - 路由输入只使用 fast 的预测 count；阈值在 official val 上选择后冻结。
 - raw fast candidate count为 0 的触发条件本身不读取 `valid` 或 GT count；但历史 4x4 配方是在查看 test `7611.jpg` 后形成，当前不能直接计入 strict 主结果。
 - 不通过 cache 文件是否存在判断密度；val/test fast 与 tiled cache 必须分别精确覆盖完整 split。
+
+Validation safe cache 全量审计：fast 共 51,731 candidates（40.23/image），tiled 共 183,070（142.36/image；median 116、P90 269、max 1,175）；两者均精确覆盖 1,286 张、zero=0、无禁止字段或非有限 tensor。
 
 Official-train 缺失 fast cache 的 3 张图中，`2737.jpg` 与 `2979.jpg` 是本地 0-byte 损坏文件，不能作为模型 failure；可解码的真实 fast-zero case 只有 `7454.jpg`（GT 197）。T4 recipe 仅在该图上于 2x2/3x3/4x4 间选择，固定使用 pts32 candidate filter 的 `p>=0.5` 预测候选数，按 train count MAE、RMSE、较低 tile 数依次排序；预测完成后才加载隔离的 1-image train target shard。该选择不接触 test GT，但单样本 calibration 的局限必须披露。
 
