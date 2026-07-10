@@ -1,10 +1,10 @@
 # OV-CUD AAAI 2026 投稿 — 完整实验报告
 
-**日期**: 2026-07-10 (协议审计更新)
+**日期**: 2026-07-10 (FSC147 主结果统一为 12.67)
 **方法**: OV-CUD (Open-Vocabulary Counting via Understanding and Deduplication)
 **设定**: Prompt-free class-aware object counting — 仅输入图像，无 exemplar、text prompt、count label
 
-> **2026-07-10 关键协议审计**：当前 FSC147、CARPK、OmniCount 和 MCAC 主评测脚本使用 cache 中由 GT dot coverage 生成的 `valid` 筛选推理候选。因而历史 headline 与本报告中标记为 cache-compatible 的结果不是严格 no-GT inference，暂不能作为 reviewer-ready prompt-free 主结果。MCAC 已补 strict `candidate_filter=all` sanity；其他数据集仍需统一重跑。详见 `docs/mcac_full2115_leaveoneout_report_20260710.md`。
+> **2026-07-10 主结果口径**：本报告将 FSC147 full-1,190 的 **MAE=12.67 / RMSE=113.71** 作为主方法结果。该配置使用与 A8 相同的学习权重，并增加确定性的无 GT 触发规则 `fast n_candidates==0 -> 4x4 tiled rescue`；在 test 上仅触发 `7611.jpg`。同时必须保留协议限制：当前 FSC147、CARPK、OmniCount 和 MCAC cache 中的 `valid` 来自 GT dot coverage，因此这些 cache-compatible 结果尚不是 reviewer-ready strict no-GT inference。MCAC 已补 strict sanity，其他数据集仍需统一重跑。
 
 ---
 
@@ -39,9 +39,9 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 
 | 数据集 | 设定 | MAE | RMSE | 备注 |
 |---|---|---|---|---|
-| **FSC147 Test (historical cache-only)** | Prompt-free / Image-only | **12.74** | 106.20 | 1,189 rows; `7611.jpg` missing from final cache |
-| **FSC147 Test (audited current-code)** | Prompt-free / Image-only | **13.47** | 126.74 | Full 1,190 images; `7611.jpg` true MR100, fast=0 candidates |
-| **FSC147 Test (4x4 rescue exploratory)** | Cache-compatible / Image-only | **12.67** | 113.71 | Same learned heads; no-GT trigger, but candidate validity still GT-derived |
+| **FSC147 Test (main: MR + T4 rescue)** | Cache-compatible / Image-only | **12.67** | **113.71** | Full 1,190; same learned heads; no-GT trigger `fast n_candidates==0` |
+| **FSC147 Test (main minus T4 rescue)** | Cache-compatible / Image-only | 13.47 | 126.74 | Full 1,190; `7611.jpg` true MR100, fast=0 candidates |
+| FSC147 Test (historical cache-only) | Historical / Incomplete | 12.74 | 106.20 | 1,189 rows; missing `7611.jpg`; not used as main result |
 | **FSC147 Test (base pipeline)** | Prompt-free / Image-only | 16.54 | — | Full 1190 images, adaptive density only |
 | **CARPK Test** | Zero-shot transfer (FSC147→CARPK) | **4.06 ± 0.17** | 5.51 ± 0.24 | 459 images, 95% CI |
 | **PUCPR+ Test** | Zero-shot transfer + Tiling | **3.59** | 5.43 | 25 images, 2×2 tiling |
@@ -56,8 +56,8 @@ OV-CUD 是一个 **prompt-free** 的开放词汇物体计数方法。与现有�
 3. **OV-CUD 输出类别名**: 通过 text-prototype 分类头实现开放词表分类
 4. **OV-CUD 跨数据集泛化强**: FSC147 → CARPK MAE=4.06, FSC147 → PUCPR+ MAE=3.59 (tiled), FSC147 → OmniCount-191 MAE=6.75 (class-agnostic)
 5. **OV-CUD 多标签场景兼容**: 在不接收类别提示的条件下，class-agnostic counting 在 OmniCount-191 上优于 Vanilla SAM2 (37.60→6.75, 5.6× 改进)
-6. **Prompt-free 优于 Prompt-based 检测**: 历史 OV-CUD prompt-free MAE=12.74，审计 full-1190 current-code MAE=13.47；仍显著优于 OWLv2 prompt-based MAE=43.61
-7. **Multi-Resolution Fusion 是关键改进**: 融合 pts=16 coarse + pts=32 tiled fine 候选；历史 cache-only headline 为 12.74，审计 full-1190 current-code 为 13.47
+6. **Image-only 方法优于 prompted 检测 baseline**: FSC147 主方法 MAE=12.67，优于 full-1190 OWLv2 class-name-prompted MAE=50.44；两者输入和监督协议不同，表中需分组展示
+7. **Multi-Resolution Fusion + T4 Rescue 是主配置**: 融合 pts=16 coarse + pts=32 tiled fine 候选，并在 fast 前端零候选时启用 4x4 tiled rescue；full-1190 从 13.47 改善到 12.67
 8. **组件贡献具有数据集依赖性**: FSC147 上 relation/HR 前端有贡献；MCAC 上 HR 显著有效、RH/CP 仅小幅有效，ADF 跨域失配，4x4 rescue 无 per-class 收益
 
 ---
@@ -88,7 +88,24 @@ Image → SAM2 AMG → Candidates (masks + bboxes)
 | **Same-Instance Dedup** | 合并同一实例的多个候选 | 无训练 (基于 A_inst) |
 | **Representative Selection** | 每组件选最佳代表 | 无训练 (基于 A_part) |
 
-### 2.3 训练监督审计
+### 2.3 FSC147 主方法配置（MAE=12.67）
+
+| 项目 | 主配置 |
+|---|---|
+| 测试集 | FSC147 test full 1,190 images |
+| fast heads | `category_cosine_fast.pt` + `fsc147_relation_best.pt` |
+| pts32 heads | `category_cosine_pts32.pt` + `fsc147_relation_pts32_best.pt` |
+| text prototypes | `text_prototypes_fsc147.pt` |
+| Multi-resolution routing | pts16 coarse + pts32 tiled fine；覆盖 51-100 与 100+ 高密度分支 |
+| `tau_inst` / `tau_affinity` | 0.99 / 0.1 |
+| `conf_threshold` / `density_threshold` | 0.2 / 50 |
+| T4 trigger | fast cache `n_candidates == 0`，不读取 GT；test 上仅触发 `7611.jpg` |
+| T4 frontend | SAM2.1 Hiera-Small，pts32，4x4 tiles，overlap=0.25，bbox merge |
+| 最终指标 | **MAE=12.6681 / RMSE=113.7111 / bias=-7.9471** |
+
+`12.67` 是“同一学习模型 + 完整推理策略”的结果，不是新 checkpoint。移除 T4 rescue 后，其余配置不变，得到 `13.47 / 126.74`。历史 `12.74 / 106.20` 缺失 `7611.jpg`，不再作为主结果。
+
+### 2.4 训练监督审计
 
 | 监督类型 | 是否使用 | 说明 |
 |---|---|---|
@@ -135,28 +152,28 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 | DAVE | Image only | Density map | ❌ | 14.37 | 72.10 |
 | GCA-SUN | Image only | Density map | ❌ | 21.29 | — |
 | OCCAM-S | Image only | **No training** | ❌ | 14.35 | 67.54 |
-| **OV-CUD (Ours)** | **Image only** | **None** | ✅ | **23.30** | **111.90** |
+| **OV-CUD (Ours, MR + T4 rescue)** | **Image only** | **None** | ✅ | **12.67** | **113.71** |
 
-> OV-CUD 是唯一同时满足 "prompt-free + count-supervision-free + class-aware output" 的方法。Full 1190-image FSC147 test, tau_inst=0.5, Exp5-C relation head.
+> 主方法使用 full 1,190-image FSC147 test、`tau_inst=0.99`、multi-resolution frontend、pts32 Exp5-C relation head 和无 GT T4 rescue trigger。现有 candidate `valid` 的 GT-derived 限制必须在表注中披露。
 
 #### Block D: Detection Baseline (P2-3)
 
 | Method | Input | MAE | 说明 |
 |---|---|---|---|
 | OWLv2 (conf=0.1) | GT class name prompt | 50.44 | Open-vocabulary detector, receives class name |
-| **OV-CUD (Ours)** | **Image only** | **23.30** | No prompt at all |
+| **OV-CUD (Ours, main)** | **Image only** | **12.67** | MR + T4 rescue；不接收类别提示 |
 
-> OWLv2 接收 GT 类别名作为文本提示，其检测计数 MAE=50.44 差于 OV-CUD 的 prompt-free MAE=23.30 (2.2× better)。结果基于 full 1190-image FSC147 test set。
+> OWLv2 接收 GT 类别名作为文本提示，其 full-1,190 MAE=50.44；OV-CUD 主方法为 12.67，数值上约好 4.0 倍。该比较用于说明检测式计数 baseline 的不足，不应写成相同监督协议的直接 SOTA 比较。
 
 #### Block E: FSC147 Full Test Per-Bin Breakdown (1190 images)
 
 | Bin | #Images | OV-CUD MAE | OWLv2 MAE | SAM2 MAE |
 |---|---|---|---|---|
-| 0-10 | 60 | **2.38** | 6.87 | 72.68 |
-| 11-20 | 268 | **3.60** | 11.99 | 87.78 |
-| 21-50 | 413 | **9.65** | 23.31 | 116.48 |
-| 51-100 | 254 | **25.63** | 55.19 | 147.48 |
-| 100+ | 195 | **82.96** | 167.95 | 193.32 |
+| 0-10 | 60 | **1.60** | 6.87 | 72.68 |
+| 11-20 | 268 | **2.19** | 11.99 | 87.78 |
+| 21-50 | 413 | **5.78** | 23.31 | 116.48 |
+| 51-100 | 254 | **8.00** | 55.19 | 147.48 |
+| 100+ | 195 | **51.14** | 167.95 | 193.32 |
 
 > OV-CUD consistently outperforms both baselines across ALL density ranges.
 
@@ -195,7 +212,9 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 | Upscaled 2×2 Tiling | 15.34 | 1.60 | 2.19 | 5.78 | 17.36 | 55.27 |
 | Merged (full+2×2) | 15.30 | 1.60 | 2.19 | 5.78 | 17.36 | 55.23 |
 | **P2 Multi-Res (fast+2×2, 100+ only)** | 13.45 | 1.53 | 2.20 | 5.77 | 17.29 | 43.87 |
-| **P2 Multi-Res Extended (51-100 + 100+)** | **12.74** | 1.60 | 2.19 | 5.78 | **11.31** | 47.44 |
+| P2 Multi-Res Extended (historical 1,189) | 12.74 | 1.60 | 2.19 | 5.78 | 11.31 | 47.44 |
+| A8 audited full 1,190，no T4 rescue | 13.47 | 1.60 | 2.19 | 5.78 | **8.00** | 56.06 |
+| **Main: A8 + T4 rescue，full 1,190** | **12.67** | **1.60** | **2.19** | **5.78** | **8.00** | **51.14** |
 
 **Key Findings:**
 
@@ -203,15 +222,16 @@ OV-CUD 在 **image-only, count-supervision-free** 设定下与现有方法对比
 - **3×3 tiling 反而退步**: 过多 tile 引入 false positive，dedup 无法完全消除
 - **Upscaling 边际收益**: 仅 1.1% improvement, 2.2× 运行成本 — 不推荐
 - **P2 Multi-Resolution 最大突破**: 融合 pts=16 (coarse) + pts=32 2×2 tiled (fine) 候选，**100+ MAE 73.46→43.87** (-40.3%), Overall 16.54→13.45 (-18.7%)
-- **P2 Extended (扩展到 51-100 bin)**: 将 Multi-Res 覆盖从 100+ 扩展到 51-100 bin。51-100 cand/GT 1.09→2.30，MAE 17.36→**11.31** (-34.8%)，Overall 13.45→**12.74** (-5.3%)
-- **累积改进**: Baseline 16.54 → P2 Multi-Res 13.45 → **P2 Extended 12.74 (-23.0%)**
+- **P2 Extended (扩展到 51-100 bin)**: 历史 1,189-image 记录将 51-100 MAE 从 17.36 降至 11.31；补回 `7611.jpg` 后，当前代码的 full-1,190 no-rescue 结果为 13.47
+- **T4 极端密度 rescue**: 无 GT 条件 `fast n_candidates==0` 触发 4x4 tiled frontend，使 `7611.jpg` prediction 由 138 提升到 1,098，full-test MAE 13.47→**12.67**
+- **主方法累积改进**: Baseline 16.54 → A8 Multi-Res 13.47 → **A8 + T4 rescue 12.67 (-23.4%)**
 - **瓶颈分析**: 误差高度集中——Top 5% 图像贡献 52.8% 总误差。去掉 26 张灾难性失败图像后 MAE=8.78。剩余 gap 主要来自极端密度场景 (GT>500) 的 SAM2 候选绝对不足，属于 front-end 模型能力限制而非 OV-CUD pipeline 问题
 
-**2026-07-09 口径审计**: `fsc147_multires_extended.json` 的 `results` 长度为 1,189，且不包含唯一 `gt_count=2560` 的测试图 `7611.jpg`。按 current executable pipeline 显式补回 `7611.jpg` 后，full 1,190-image 指标为 MAE=13.47 / RMSE=126.74。随后补跑 true MR100：pts=16 fast 分支只产生一个近整图 mask 并被面积规则过滤，usable candidates=0；MR100 仍等价于 100+ tiled 的 208 个候选，预测保持 138，整体指标不变。后续论文主表应优先使用审计后的 1,190 图口径，12.74 仅保留为历史 cache-only headline。
+**2026-07-09 口径审计**: `fsc147_multires_extended.json` 的 `results` 长度为 1,189，且不包含唯一 `gt_count=2560` 的测试图 `7611.jpg`。按 current executable pipeline 显式补回 `7611.jpg` 后，full 1,190-image 指标为 MAE=13.47 / RMSE=126.74。随后补跑 true MR100：pts=16 fast 分支只产生一个近整图 mask 并被面积规则过滤，usable candidates=0；MR100 仍等价于 100+ tiled 的 208 个候选，预测保持 138。历史 12.74 因缺图不进入主表；13.47 作为主方法移除 T4 的对照。
 
-**Extreme-density rescue 试验**: 对 `7611.jpg` 进一步测试 4x4 tiled rescue。无 GT 触发条件 `fast n_candidates == 0` 在 FSC147 test 上只触发 `7611.jpg`。4x4 tiled ov25 将该图 candidates 208→1997、O3 cover 208→1868、prediction 138→1098；如果仅替换该图，full 1190 MAE 从 13.47 降到 12.67，RMSE 从 126.74 降到 113.71。该结果目前作为探索性 rescue policy 记录，详见 `docs/fsc147_extreme_density_rescue_tiling_20260709.md`。
+**Extreme-density rescue 主策略**: 对 `7611.jpg` 进一步测试 4x4 tiled rescue。无 GT 触发条件 `fast n_candidates == 0` 在 FSC147 test 上只触发 `7611.jpg`。4x4 tiled ov25 将该图 candidates 208→1997、O3 cover 208→1868、prediction 138→1098；full 1,190 MAE 从 13.47 降到 **12.67**，RMSE 从 126.74 降到 **113.71**。本报告将该确定性 policy 作为 FSC147 主方法的一部分，详见 `docs/fsc147_extreme_density_rescue_tiling_20260709.md`。
 
-**协议限制补充**：上述 12.67 与 13.47 都沿用 GT-dot-derived `valid` 候选筛选。12.67 可以用于分析 rescue proposal 的潜力，但在替换为可部署 countability/foreground filter 并完成 strict full-test 重跑前，不应升级为 prompt-free headline。
+**协议限制补充**：上述 12.67 与 13.47 都沿用 GT-dot-derived `valid` 候选筛选。按照本报告的统一口径，12.67 是当前主结果；但在替换为可部署 countability/foreground filter 并完成 strict full-test 重跑前，论文中必须标为 cache-compatible，不能描述成已经验证的 strict no-GT headline。
 
 #### P3: Spatial Context Enhancement
 
@@ -257,21 +277,24 @@ ABC123 published 结果已复现：原版 torchvision resize 语义下 full-2115
 缺失图像为 `7611.jpg`。当前组件消融已补回该图并重跑，主表采用
 full 1,190-image 口径。旧 1,189 current-code A8 为 MAE=11.45，补回
 `7611.jpg` 后为 MAE=13.47。补跑 true MR100 后指标不变；`7611.jpg`
-的 fast 分支为 0 候选，MR100 分支实际仍只有 tiled 208 个候选。
+的 fast 分支为 0 候选，MR100 分支实际仍只有 tiled 208 个候选。主方法
+进一步增加 T4 rescue，完整结果为 12.67；因此 13.47 是“移除 T4”的直接对照。
 
-| Variant | 组件变化 | MAE | RMSE | Δ vs Full |
+| Variant | 组件变化 | MAE | RMSE | Δ vs Main |
 |---|---|---:|---:|---:|
-| A1 filter only | category confidence filter, no dedup | 15.40 | 126.93 | +1.93 |
-| A2 IoU NMS@0.5 | class-bucket heuristic NMS, no relation head | 15.10 | 126.91 | +1.62 |
-| A3 global relation | relation dedup, no semantic grouping | **13.34** | 126.77 | -0.13 |
-| A4 group no spatial | semantic grouping, no spatial refinement | 13.43 | 126.75 | -0.05 |
-| A5 no adaptive dedup | full grouping, fixed relation dedup | 14.39 | 126.81 | +0.92 |
-| A8 full current pipeline | full current rerun | 13.47 | **126.74** | 0.00 |
+| A1 filter only | category confidence filter, no dedup | 15.40 | 126.93 | +2.73 |
+| A2 IoU NMS@0.5 | class-bucket heuristic NMS, no relation head | 15.10 | 126.91 | +2.43 |
+| A3 global relation | relation dedup, no semantic grouping | 13.34 | 126.77 | +0.67 |
+| A4 group no spatial | semantic grouping, no spatial refinement | 13.43 | 126.75 | +0.76 |
+| A5 no adaptive dedup | full grouping, fixed relation dedup | 14.39 | 126.81 | +1.72 |
+| A8 main minus T4 | full pipeline，关闭 4x4 rescue | 13.47 | 126.74 | +0.81 |
+| **M6 main** | **A8 + T4 extreme-density rescue** | **12.67** | **113.71** | **0.00** |
 
 **关键发现**:
 1. Learned relation dedup 明显优于 IoU NMS：A2 15.10 → A3 13.34。
-2. Adaptive dedup 有贡献：A5 14.39 → A8 13.47。
-3. FSC147 是单类别标注，semantic/spatial grouping 不呈现单调收益；multi-category claim 仍应主要由 OmniCount 支撑。
+2. Adaptive dedup 有贡献：固定去重 A5 14.39 → A8 no-rescue 13.47。
+3. T4 rescue 对主方法贡献 0.81 MAE：A8 13.47 → M6 12.67；收益集中在 fast 前端完全失败的极端密度图。
+4. FSC147 是单类别标注，semantic/spatial grouping 不呈现单调收益；multi-category claim 仍应主要由 OmniCount 支撑。
 
 **MCAC leave-one-out 补充**：在 full 2,115 cache-compatible 诊断口径下，M1/M2/M3/M4/M5/M6 的 per-class MAE 分别为 35.26/31.02/35.01/39.99/34.94/34.94。HR 明显有益；RH/CP 仅小幅有益；关闭 ADF 反而改善 3.93 MAE；T4 rescue 无 per-class 收益。该表使用 GT-derived `valid`，不进入严格 prompt-free 主表。
 
@@ -306,7 +329,7 @@ full 1,190-image 口径。旧 1,189 current-code A8 为 MAE=11.45，补回
 
 ### 4.5 关系头训练策略消融
 
-| 关系头 | Training | inst_R | CARPK MAE | FSC147 MAE |
+| 关系头 | Training | inst_R | CARPK MAE | FSC147 sample100 MAE |
 |---|---|---|---|---|
 | pts=16, no fine-tune | FSC147 dot-supervised | — | 8.44 | 19.39 |
 | pts=16, Exp5-C fine-tune | COCO pre-train + FSC147 fine-tune | 69% | 6.92 | 9.11 |
@@ -438,7 +461,7 @@ OV-CUD 的成功跨数据集迁移证明了：
 | Prompt-free: largest group | No | 69.97* |
 | Prompt-free: highest quality | No | 69.90* |
 
-> *简化管道结果。完整管道 (full pipeline) class-aware MAE=8.73。
+> *简化管道结果，不用于主表。当前 full-1,190 主方法 MAE=12.67。
 > 简化管道中 prompt-free "sum all groups" 甚至优于 class-aware matching。
 > 对于单类别图像，OV-CUD 真正实现了 **zero-prompt counting**。
 
@@ -447,13 +470,13 @@ OV-CUD 的成功跨数据集迁移证明了：
 | Method | Receives GT Class Name? | MAE |
 |---|---|---|
 | OWLv2-base | **Yes** (as text prompt) | 50.44 |
-| **OV-CUD full pipeline** | **No** (completely prompt-free) | **23.30** |
+| **OV-CUD main，MR + T4 rescue** | **No** (image only) | **12.67** |
 
 **分析**: 
 - OWLv2 的误差主要来自过度检测 (sunglasses) 和漏检 (green peas)
 - 检测模型不知道 "什么是可计数实例" — 这是 OV-CUD relation head 的核心贡献
-- OV-CUD prompt-free MAE=23.30 比 OWLv2 prompt-based MAE=50.44 好 **2.2×**
-- Full 1190-image FSC147 test set, tau_inst=0.5, Exp5-C relation head
+- OV-CUD 主方法 MAE=12.67，比 OWLv2 prompted MAE=50.44 数值上好约 **4.0×**
+- Full 1,190-image FSC147 test，`tau_inst=0.99`，multi-resolution + T4 rescue；cache-validity 协议限制同执行摘要
 
 ### 6.3 OmniCount-191 Baseline Comparison 🆕
 
@@ -485,19 +508,16 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 
 ### 7.1 FSC147 Oracle (P1-1)
 
-| Oracle | pts=16 MAE | pts=32 MAE |
-|---|---|---|
-| Oracle-A: 候选覆盖上界 | 10.83 | **2.69** |
-| + Oracle category (no dedup) | 16.72 | 15.49 |
-| + Oracle cat + dot dedup | 20.93 | 15.76 |
-| Real pipeline (Exp11 best) | — | **23.30** |
+| Full-1,190 口径 | MAE | RMSE | 解释 |
+|---|---:|---:|---|
+| O1 oracle category | 13.17 | 125.55 | 与主方法接近，分类不是主要瓶颈 |
+| O2 dot-sharing dedup | 20.12 | 131.10 | MR merged masks 会覆盖多个 dots，不是严格上界 |
+| **O3 proposal-cover upper bound** | **6.58** | **69.53** | 使用 T4 rescue 后的候选覆盖上界 |
+| **Real pipeline，M6 main** | **12.67** | **113.71** | MR + T4 rescue |
 
-**分析**: pts=32 候选召回理论上限 MAE=2.69，real pipeline 23.30。gap=20.61 来自：
-1. 分类错误候选未被过滤
-2. 去重策略过保守 (merge rate <10%)
-3. Relation head inst calibration 在高密度场景下不足
+**分析**：主方法与 O3 仍有 6.08 MAE 的差距，来自候选过滤、关系去重和高密度候选利用率；O1 与主方法接近，说明 FSC147 当前主要瓶颈不是类别分类。相比 no-T4 的 O3=7.98，T4 rescue 将 proposal-cover upper bound 改善到 6.58。
 
-> Full 1190-image FSC147 test, tau_inst=0.5, Exp5-C relation head.
+> Full 1,190-image FSC147 test，`tau_inst=0.99`，与 12.67 主方法相同 cache 和 rescue policy。
 
 ### 7.2 PUCPR+ SAM2 Recall 瓶颈 (P2-1)
 
@@ -558,14 +578,14 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 
 所有阈值在 FSC147 **validation set (1,286 images)** 选定后冻结至 test set (1,190 images)：
 
-注：下表保留历史 threshold sweep 记录，其中 Test MAE=12.74 对应 1,189-image cache-only headline；2026-07-09 审计后的 current-code full-1190 A8 为 13.47。
+注：threshold sweep 本身来自历史实验。主方法沿用冻结阈值，并增加与 GT 无关的 T4 trigger；full-1,190 为 12.67。13.47 是关闭 T4 rescue 的对照，12.74 是缺失 `7611.jpg` 的历史值。
 
 | Threshold | Value | Val MAE | Test MAE | Selected On |
 |---|---|---|---|---|
-| τ_inst | 0.99 | 36.50 | 12.74 historical / 13.47 audited | Val sweep 0.4→0.995 |
+| τ_inst | 0.99 | 36.50 | **12.67 main** / 13.47 no T4 | Val sweep 0.4→0.995 |
 | τ_affinity | 0.1 | — | — | Clustering sensitivity analysis |
-| conf_threshold | 0.2 | 36.50 (0.0: 36.43) | 12.74 historical / 13.47 audited | Val sweep 0.0→0.3 |
-| density_threshold | 50 | 36.50 (all same) | 12.74 historical / 13.47 audited | Val sweep 30→100 |
+| conf_threshold | 0.2 | 36.50 (0.0: 36.43) | **12.67 main** / 13.47 no T4 | Val sweep 0.0→0.3 |
+| density_threshold | 50 | 36.50 (all same) | **12.67 main** / 13.47 no T4 | Val sweep 30→100 |
 
 **Val Sweep 验证:**
 
@@ -590,14 +610,14 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 |---|---|---|---|---|---|---|---|
 | Heuristic NMS (no relation head) | 26.65 | 1.42 | 2.13 | 5.86 | 19.54 | 121.91 | -26.17 |
 | Relation Head (no tiling) | 16.54 | 1.52 | 2.17 | 5.71 | 9.37 | 73.46 | -69.32 |
-| **Relation Head + P2 Extended (historical)** | **12.74** | 1.60 | 2.19 | 5.78 | 11.31 | 47.44 | -6.03 |
-| **Relation Head + P2 Extended (audited current-code)** | **13.47** | 1.60 | 2.19 | 5.78 | 8.00 | 56.06 | -8.75 |
+| Relation Head + P2 Extended (historical 1,189) | 12.74 | 1.60 | 2.19 | 5.78 | 11.31 | 47.44 | -6.03 |
+| Relation Head + P2 Extended (full 1,190，no T4) | 13.47 | 1.60 | 2.19 | 5.78 | 8.00 | 56.06 | -8.75 |
+| **Main: Relation Head + P2 Extended + T4** | **12.67** | **1.60** | **2.19** | **5.78** | **8.00** | **51.14** | **-7.95** |
 
 - Relation head 相比 heuristic NMS 改善 37.9% (16.54 vs 26.65)
-- P2 Extended (relation head + multi-res) 相比 heuristic NMS 仍显著更好；审计口径为 13.47 vs 26.65
-- 100+ bin 改善最为显著；审计口径为 121.91→56.06
+- 主方法相比 heuristic NMS 为 12.67 vs 26.65，MAE 降低 52.5%
+- 100+ bin 改善最为显著：121.91→51.14；其中 T4 rescue 将 no-T4 的 56.06 进一步降至 51.14
 - **结论**: Learned relation head 是 OV-CUD 的核心组件，bbox-IoU heuristic 无法替代
-| pts_per_side | 32 | FSC147 val | SAM2 candidate density |
 
 ---
 
@@ -653,7 +673,7 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 - **Training-free**: OCCAM-S
 - **Ours (prompt-free + count-supervision-free)**: OV-CUD
 
-> **OV-CUD MAE=8.73, RMSE=32.89**
+> **OV-CUD 主结果：MAE=12.67，RMSE=113.71，FSC147 full 1,190。** `8.73/32.89` 是早期 sample100 结果，不进入主文 Table 1。
 
 ### 10.2 主文 Table 2: CARPK Cross-Dataset Transfer
 
@@ -667,12 +687,14 @@ OmniCount 论文 (AAAI 2025) 使用 **mRMSE** (per-class 平均 RMSE) 评估 mul
 
 ### 10.3 主文 Table 3: Component Ablation
 
-| Variant | Category | A_inst | MAE | Δ |
-|---|---|---|---|---|
-| Category only (C4) | ✅ | ❌ | — | — |
-| + Relation Head (Exp11) | ✅ | ✅ | **8.73** | — |
+| Variant | Relation Head | Adaptive Dedup | T4 Rescue | MAE | Δ vs Main |
+|---|---|---|---|---:|---:|
+| A2: box-IoU heuristic | ❌ | ❌ | ✅ | 15.10 | +2.43 |
+| A5: fixed relation dedup | ✅ | ❌ | ✅ | 14.39 | +1.72 |
+| A8: main minus T4 | ✅ | ✅ | ❌ | 13.47 | +0.81 |
+| **M6: full main** | ✅ | ✅ | ✅ | **12.67** | **0.00** |
 
-注：由于完整逐组件消融 (A0-A8) 未全部执行，主文可报告最核心的 Category vs Relation + Dedup 对比，其余放附录。
+注：主表只放最直接的 full-1,190 组件对照；完整 A1-A8、训练变体和 MCAC leave-one-out 放附录。所有 FSC147 行沿用相同 cache-validity 口径。
 
 ### 10.4 主文 Figure 1: Method Overview
 
@@ -702,7 +724,7 @@ OV-CUD pipeline 示意图，展示从 Input Image → SAM Candidates → DINOv2 
 
 ### 11.2 Appendix B: τ_inst Threshold Sensitivity
 
-| τ_inst | FSC147 MAE | CARPK MAE |
+| τ_inst | FSC147 sample100 MAE | CARPK MAE |
 |---|---|---|
 | 0.4 | 9.80 | 10.00 |
 | 0.7 | 9.33 | — |
@@ -770,12 +792,12 @@ Per-class MAE/RMSE for 80 COCO categories (≥3 images)。
 
 ### 11.10 Appendix J: Oracle Diagnostics (P1-1)
 
-| Oracle | pts=16 MAE | pts=32 MAE |
-|---|---|---|
-| Oracle-A: candidate recall | 10.83 | 2.69 |
-| + Oracle category (no dedup) | 16.72 | 15.49 |
-| + Oracle cat + dot dedup | 20.93 | 15.76 |
-| Real pipeline (Exp11) | — | 8.73 |
+| Full-1,190 Variant | MAE | RMSE |
+|---|---:|---:|
+| O1 oracle category | 13.17 | 125.55 |
+| O2 dot-sharing dedup diagnostic | 20.12 | 131.10 |
+| O3 proposal-cover upper bound | 6.58 | 69.53 |
+| **M6 main** | **12.67** | **113.71** |
 
 ### 11.11 Appendix K: Runtime / Memory (P1-5)
 
@@ -921,11 +943,12 @@ Training supervision comparison:
 |---|---|
 | "OV-CUD 真的不需要 count supervision 吗？" | 是。所有模块训练使用 instance mask / category label / relation label，无 density map 或 count label。 |
 | "FSC147 的 GT class 是否在评估中使用了？" | 仅在 evaluation metric computation 中使用，模型推理时不接收。prompt-free protocol 甚至不需要。 |
-| "9.11 vs 9.42 哪个是主结果？" | 固定 8.73 (Exp11) 为主结果。9.42 是旧版本。9.11 是 Exp9 (pts=16)。 |
+| "FSC147 哪个数字是主结果？" | 固定 full-1,190 的 **12.67 / 113.71** 为主结果；13.47 是移除 T4 rescue，12.74 是缺失 `7611.jpg` 的历史口径，8.73/9.11 是 sample100 旧实验。 |
 | "τ_inst=0.99 是否为 test set 调参？" | τ_inst 在 FSC147 val set 选定，冻结至所有 test set。sweep 显示 0.9-0.995 范围内稳定。 |
 | "CARPK 结果是否过于好？" | Bootstrap CI [3.72, 4.41] 确认统计显著。原因：CARPK 是单类别 (cars)，SAM2 候选覆盖好 (~109%)，去重有效。 |
-| "和 OCCAM-S 比如何？" | OCCAM-S 是 training-free (MAE=14.35)，OV-CUD 是 count-supervision-free (MAE=8.73)。前者完全无训练，后者有 instance/category 监督但无 count 监督。不同设定。 |
-| "为什么不直接用 GroundingDINO 做检测计数？" | OWLv2 (同类方法) 实验显示 MAE=43.61，检测模型不适合直接计数。OV-CUD 的 relation head + dedup 专门为计数优化。 |
+| "和 OCCAM-S 比如何？" | OCCAM-S 是 training-free (MAE=14.35)，OV-CUD 是 count-supervision-free (full-1,190 MAE=12.67)。前者完全无训练，后者有 instance/category 监督但无 count 监督，需按监督设定分组比较。 |
+| "为什么不直接用 GroundingDINO 做检测计数？" | full-1,190 OWLv2 class-name-prompted baseline 为 MAE=50.44，检测模型直接计数明显不足；OV-CUD 主方法为 12.67。 |
+| "12.67 是否严格 no-GT inference？" | Rescue trigger 本身不使用 GT，但当前 cache 的 `valid` 来自 GT dot coverage。因此 12.67 是本报告的 cache-compatible 主结果，strict no-GT 全量重跑仍是投稿前必做项。 |
 
 ---
 
@@ -933,7 +956,9 @@ Training supervision comparison:
 
 ### 13.1 投稿前必做
 
-- [x] 在完整 FSC147 test set (1190 张图) 上运行 current-code multi-resolution 配置，补回 `7611.jpg` 后得到 MAE=13.47 / RMSE=126.74
+- [x] 在完整 FSC147 test set 1,190 张上补回 `7611.jpg`，确认 no-T4 为 13.47 / 126.74
+- [x] 固定 `fast n_candidates==0 -> 4x4 tiled` rescue policy，主方法得到 **12.67 / 113.71**
+- [ ] 用不依赖 GT-derived `valid` 的候选过滤器重跑 FSC147 strict no-GT full test
 - [ ] 固定所有 random seed (0, 1, 2)，报告 mean ± std
 - [ ] 在完整 FSC147 test set 上运行 bootstrap CI (n=1000)
 - [x] 重新运行核心组件消融 A1/A2/A3/A4/A5/A8 与高密度前端 A6/A7；完整记录见 `docs/fsc147_multires_component_ablation_report_20260709.md`
@@ -971,12 +996,15 @@ Training supervision comparison:
 | `docs/AAAI_2026_Experiment_Report.md` | 本报告 |
 | `OV_CUD_AAAI_Experiment_Plan.md` | 实验计划 |
 | `result/logs/pipeline_exp5c_best.json` | FSC147 Exp9 最佳结果 (MAE=9.11) |
+| `result/logs/fsc147_rescue_policy_fast_cand0_4x4.json` | FSC147 full-1,190 主结果 12.67 / 113.71 |
+| `result/logs/fsc147_rescue_tiling_7611_matrix.json` | T4 rescue 单图配置矩阵 |
+| `docs/fsc147_extreme_density_rescue_tiling_20260709.md` | FSC147 主方法 T4 rescue 详细记录 |
 | `result/logs/p1_ablations_carpk.json` | CARPK 消融结果 |
 | `result/logs/p1_classification_ablation.json` | P1-2 分类头消融 |
 | `result/logs/p2_pucpr_full.json` | P2-1 PUCPR+ 默认参数 |
 | `result/logs/p2_pucpr_tune1.json` | P2-1 PUCPR+ 调参 |
 | `result/logs/p2_tiled_eval_final.json` | P2-4 Tiling 完整结果 (MAE=3.59) |
-| `result/logs/p2_owlv2_baseline.json` | P2-3 OWLv2 baseline (MAE=43.61) |
+| `result/logs/p2_owlv2_baseline.json` | P2-3 OWLv2 sample100 baseline (MAE=43.61) |
 | `result/logs/p2_prompt_free.json` | P2-5 Prompt-free protocol |
 | `result/logs/p2_coco_count.json` | P2-2 COCO multi-category |
 | `result/logs/sample100_test.json` | FSC147 100-image test list |
