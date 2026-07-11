@@ -1,5 +1,7 @@
 # 最佳模型复现文档 (OV-CUD 关系头)
 
+> **2026-07-11 状态更正**：本文记录的是历史 COCO-pretrained / cache-compatible checkpoint，不再是 FSC-147 当前主模型。新的 strict no-GT、official-train-only、CP-free 主配置与 full-1,190 结果见 `docs/fsc147_strict_nogt_cp_free_report_20260710.md` 和 `docs/AAAI_2026_Experiment_Report.md`。
+
 > 记录当前最佳关系头模型的完整训练/评测参数，用于日后复现。
 > 最后更新: 2026-07-01
 

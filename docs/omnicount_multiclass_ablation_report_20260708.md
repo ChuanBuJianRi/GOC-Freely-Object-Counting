@@ -1,5 +1,7 @@
 # OmniCount-191 多类别消融实验记录
 
+> **2026-07-11 状态更正**：本文 OmniCount 数字来自历史 FSC/COCO checkpoint，不再能称为与当前 strict FSC-147 CP-free 主模型相同。实验数值保留，但 same-model claim 需等待新 checkpoint full-1,957 重跑。
+
 **日期**: 2026-07-08
 **分支**: `ljs`
 **目标**: 使用当前 FSC147 主结果 MAE=12.67 的同一组 OV-CUD 学习模型，在 OmniCount-191 上验证 prompt-free 多类别计数能力，并补充 published prompted methods 与本地 OWLv2 class-aware baseline。

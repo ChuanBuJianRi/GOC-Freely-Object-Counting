@@ -1,5 +1,7 @@
 # FSC-147 Full + OmniCount-191 Full 组件 Leave-One-Out 消融报告
 
+> **2026-07-11 状态更正**：本文 FSC 行使用 GT-derived `valid` 和旧 checkpoint，只能作为 historical diagnostic，不能进入 strict 主文消融表；OmniCount 行也不是新 CP-free FSC 主模型的 same-model 结果。当前权威口径见 `docs/AAAI_2026_Experiment_Report.md`。
+
 **日期**：2026-07-10
 
 **FSC147 主方法**：MAE=12.67 / RMSE=113.71（协议限制单独披露）

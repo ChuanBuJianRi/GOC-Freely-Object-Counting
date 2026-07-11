@@ -1,8 +1,10 @@
 # FSC-147 Strict No-GT、CP-Free 全量重跑报告
 
-**日期**：2026-07-10
+**开始日期**：2026-07-10
 
-**状态**：执行中；尚未读取新 strict test 指标
+**完成日期**：2026-07-11
+
+**状态**：已完成 full test 1,190；结果、逐图预测与 bootstrap 已冻结
 
 ## 1. 目的
 
@@ -84,7 +86,7 @@ Relation label 审计发现仓库当前若干 FSC 预处理源码曾把 `matched
 - fast：所有图统一生成 pts16 full-image safe cache。
 - tiled：所有图统一生成 pts32、2x2、overlap=0.25 safe cache；不再只给 GT>50 图生成。
 - 路由输入只使用 fast 的预测 count；阈值在 official val 上选择后冻结。
-- raw fast candidate count为 0 的触发条件本身不读取 `valid` 或 GT count；但历史 4x4 配方是在查看 test `7611.jpg` 后形成，当前不能直接计入 strict 主结果。
+- raw fast candidate count为 0 的触发条件本身不读取 `valid` 或 GT count。4x4 配方最终只用 official-train fast-zero 样本选择，因此满足计算路径 no-GT；但候选 recipe 集合曾受历史 test `7611.jpg` 启发，不能把本次结果描述成研究过程中的 untouched/blind test。
 - 不通过 cache 文件是否存在判断密度；val/test fast 与 tiled cache 必须分别精确覆盖完整 split。
 
 Validation safe cache 全量审计：fast 共 51,731 candidates（40.23/image），tiled 共 183,070（142.36/image；median 116、P90 269、max 1,175）；两者均精确覆盖 1,286 张、zero=0、无禁止字段或非有限 tensor。
@@ -141,9 +143,67 @@ Validation 配置提交后运行 image-only `plan-test`，输出 `result/configs
 - always-tiled 路由：1,189 张；三个 relation seeds 的集合完全一致。
 - raw-fast-zero：`7611.jpg`；按 train-only 选择的 4x4 recipe 单独 rescue。
 
-> 待 image-only test cache 完成后执行一次 full test。主表将报告三个 scratch relation seeds 的 MAE/RMSE mean±std、逐 seed bootstrap 95% CI、GT count 分桶与 `7611.jpg` 预测。
+测试前逐文件安全扫描结果：
 
-## 6. 复现入口
+| Cache | 图像数 | Candidates | Mean / Median / P90 / Max | Zero | 审计 |
+|---|---:|---:|---:|---:|---|
+| pts16 fast | 1,190 | 64,438 | 54.15 / 45 / 103 / 227 | 1 | schema、ID、finite tensor 全通过 |
+| pts32 2x2 tiled | 1,189 | 206,771 | 173.90 / 148 / 301.2 / 908 | 0 | source 全为冻结的 `tiled-nogt-2x2-overlap0.25-bbox` |
+| pts32 4x4 rescue | 1 | 1,997 | 1,997 / 1,997 / 1,997 / 1,997 | 0 | source 为 train-selected 4x4 recipe |
+
+测试只执行一次。所有 1,190 张预测先保存在内存中，之后才首次读取 test annotation 并计算指标。完整输出：`result/logs/fsc147_strict_nogt_cp_free_full1190.json`，SHA-256 `a455706c602a3b386488983b94db394e7ba3dd65ca7536aac535aff2121a184c`。
+
+### 5.1 Full-test 主结果
+
+| Relation seed | MAE | RMSE | Bias | MAE bootstrap 95% CI | RMSE bootstrap 95% CI |
+|---:|---:|---:|---:|---:|---:|
+| 17 | 29.3067 | 129.6714 | +1.0529 | [23.5737, 37.6704] | [37.5825, 207.3796] |
+| 42 | 28.1882 | **129.4034** | -0.1815 | [22.5041, 36.5172] | [36.9775, 209.6080] |
+| **73（validation 预选 primary）** | **26.4992** | 129.6856 | -3.1748 | [20.7099, 35.2550] | [35.9716, 210.5349] |
+| **3-seed mean ± sample std** | **27.9980 ± 1.4134** | **129.5868 ± 0.1590** | - | - | - |
+
+主结果必须使用 validation 预先选择的 seed 73，即 **MAE=26.50 / RMSE=129.69**。三个 seed 的均值只表示 relation 初始化稳定性，不能替代预注册 primary，也不覆盖 category/filter 的训练随机性。
+
+### 5.2 Primary seed 分桶
+
+| GT count bin | Images | MAE | RMSE | Bias | Mean pred / GT |
+|---|---:|---:|---:|---:|---:|
+| 0-10 | 60 | 11.08 | 15.81 | +10.22 | 19.37 / 9.15 |
+| 11-20 | 268 | 10.73 | 16.35 | +9.65 | 24.46 / 14.81 |
+| 21-50 | 413 | 14.53 | 19.52 | +10.76 | 44.43 / 33.67 |
+| 51-100 | 254 | 22.99 | 29.63 | +2.29 | 74.85 / 72.57 |
+| 100+ | 195 | **82.84** | **316.61** | **-61.55** | 153.74 / 215.29 |
+
+误差呈现明确的密度失配：低/中密度系统性过计数，100+ 系统性漏计。Top 1% 图像贡献 27.29% 总绝对误差，Top 5% 贡献 42.64%。
+
+### 5.3 极端失败分析
+
+| Image | GT | Pred | Abs. error | 诊断 |
+|---|---:|---:|---:|---|
+| `1123.jpg` | 3,701 | 140 | 3,561 | 2x2 前端只有 354 个 raw candidates，proposal recall 是首要上限 |
+| `7611.jpg` | 2,560 | 219 | 2,341 | 4x4 有 1,997 个 raw candidates，但冻结 gate 只保留 246 个 |
+
+`7611` 的 1,997 个候选中，filter>=0.3 有 748 个、category confidence>=0.4 有 584 个、两者联合仅 246 个；seed 73 去重后计数 219。去掉 `7611` 后为 MAE=24.55 / RMSE=110.56；去掉 `1123` 与 `7611` 后 MAE=21.58 / RMSE=39.49。说明 remaining error 同时来自 proposal recall 与 train-vocabulary/category-filter gate，不能只靠 relation head 修复。
+
+### 5.4 与历史 12.67 的关系
+
+| 结果 | MAE | RMSE | 可否作为 no-GT 主结果 |
+|---|---:|---:|---|
+| 历史 MR+T4 | 12.6681 | 113.7111 | **否**：GT-derived `valid`、GT 路由和训练 overlap |
+| 新 strict no-GT、CP-free primary | **26.4992** | **129.6856** | **是，计算路径通过审计** |
+
+两者相差 +13.8311 MAE，但这不是“去掉 CP”的单组件增量：本轮同时修复 candidate gate、路由、训练 split、文本词表和 relation 初始化。此前严格配对 CP/scratch 实验的差异接近零，因此不能把这 13.83 归因于移除 COCO；主要差距更可能来自旧 GT candidate oracle、旧 split overlap 和新 train-only 词表/过滤器，但要量化各项必须在当前 strict cache 下另做 train/validation-frozen leave-one-out。
+
+## 6. 结论与投稿口径
+
+1. 原 `12.67 / 113.71` 必须从论文主结果撤下，只能保留为 GT-assisted historical diagnostic。
+2. 当前可复现主结果是 seed 73 的 `26.50 / 129.69`，训练监督应写成 **FSC point/dot-supervised、density-map-free**，不能写 `count-supervision-free`。
+3. 推理不接收 exemplar、per-image class name 或 test GT；但内部使用固定的 89 类 official-train 文本原型。FSC test 类别在该词表之外，因此本实验只验证 count，不能支撑“正确输出 test 类别名”。
+4. strict relation 推理只用 learned instance branch，`A_part=0`；不能据此声称学习了 part-whole relation。
+5. SAM2、DINOv2 与 OpenCLIP 仍使用外部 foundation pretraining；“CP-free”只表示 relation head 没有 COCO 初始化。
+6. 代码级 no-GT 已消除，但 FSC test 曾被项目反复查看，尤其 rescue 受 `7611` 启发；投稿时应披露 test familiarity，并优先在未触碰的新数据集复核主结论。
+
+## 7. 复现入口
 
 - `script/train_candidate_filter.py`：official-train-only candidate filter。
 - `script/build_fsc147_train_vocabulary.py`：从 official train 类名直接构建 89 类原型。

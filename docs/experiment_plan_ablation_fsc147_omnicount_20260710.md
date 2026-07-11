@@ -1,5 +1,7 @@
 # 实验计划：FSC-147 Full + OmniCount-191 Full Leave-One-Out 消融
 
+> **2026-07-11 状态更正**：本计划的旧 M1-M6 已被 strict no-GT 主协议取代。FSC 数字依赖 GT-derived `valid`，OmniCount 数字使用旧 checkpoint；两者均不得再填入当前论文主消融表。新结果与待补 strict LOO 清单见 `docs/AAAI_2026_Experiment_Report.md`。
+
 **日期**：2026-07-10
 
 **对应论文位置**：`AnonymousSubmission2027.tex` 的组件消融主表与 OmniCount 多类别实验表

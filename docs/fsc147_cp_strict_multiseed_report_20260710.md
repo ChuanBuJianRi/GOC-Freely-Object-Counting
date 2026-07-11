@@ -1,5 +1,7 @@
 # FSC-147 CP 严格多随机种子消融报告
 
+> **2026-07-11 适用范围**：本文严格控制了 official-train split、CP/scratch 配对和 val-only 阈值，但绝对 test 指标仍使用旧 GT-derived candidate `valid`，因此只用于“CP 边际作用接近零”的配对结论，不能作为 strict no-GT 主结果。当前主结果见 `docs/fsc147_strict_nogt_cp_free_report_20260710.md`。
+
 **日期**：2026-07-10
 
 **组件**：CP（COCO relation pretraining）

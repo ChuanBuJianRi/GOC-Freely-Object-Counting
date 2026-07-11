@@ -1,5 +1,7 @@
 # MCAC 2,115 张全量评测与 Leave-One-Out 消融报告
 
+> **2026-07-11 状态更正**：本文 MCAC 推理虽不读取 MCAC GT，但使用历史 FSC/COCO checkpoint，不再能称为与当前 strict FSC-147 CP-free 主模型相同；数值保留为 legacy checkpoint 记录。
+
 **日期**：2026-07-10
 
 **数据集**：MCAC test full 2,115 images
