@@ -20,11 +20,12 @@
 | FSC-147 historical 1,189 | 缺失 `7611.jpg` | 12.74 | 106.20 | 无效主结果 |
 | CARPK test 459 | 旧 FSC/COCO checkpoint，CARPK no-GT | 4.06 | 5.51 | 尚未用新 strict checkpoint 重跑 |
 | PUCPR+ test 25 | 旧 checkpoint，2x2 tiled | 3.59 | 5.43 | 尚未用新 strict checkpoint 重跑 |
-| OmniCount-191 full 1,957 | 旧 checkpoint，prompt-free total count | 6.75 | 10.24 | 不能称为与新 FSC 主模型相同 |
+| **OmniCount-191 full 1,957** | **与 FSC 26.50 同一 strict 模型；固定 train-89；image only** | **13.26** | **20.56** | 当前 same-model total-count 复评；明显过计数 |
+| OmniCount-191 legacy | 旧 checkpoint + OmniCount-93 prototypes / full image | 4.68 | 8.46 | 非同模型、非同前端，仅保留历史诊断 |
 | MCAC full 2,115 | 旧 checkpoint，strict no-MCAC-GT inference | 32.11 | 53.79 | 不能称为与新 FSC 主模型相同 |
 | ABC123 MCAC official ckpt | density-supervised，官方 matching | 9.46 | 17.52 | 复现 baseline |
 
-跨数据集数字本身仍可作为各自历史实验记录，但在用本轮 train-only、CP-free checkpoint 重跑之前，不能与 FSC-147 26.50 合并声称“同一模型跨数据集泛化”。
+OmniCount 已完成同一 strict checkpoint 的 full-1,957 total-count 重跑；结果显示当前 FSC-val `always_tiled` 配置不能良好迁移，不能继续沿用 legacy 4.68。其余跨数据集数字仍是历史 checkpoint，在重跑前不能与 FSC-147 26.50 合并声称“同一模型跨数据集泛化”。
 
 ### 1.2 当前允许的 claim
 
@@ -33,6 +34,7 @@
 3. FSC strict 主配置不使用 COCO relation initialization，relation head 从随机初始化训练。
 4. validation/test inference cache 只含 image-derived `z/bbox/height/width` 等安全字段。
 5. 当前 FSC 主结果覆盖 official test 全部 1,190 张，包括 `7611.jpg`。
+6. 同一模型在 OmniCount-191 full 1,957 的 prompt-free total-count 结果为 13.26 / 20.56；该 claim 不包含正确类别名或 per-class 指标。
 
 ### 1.3 当前禁止的 claim
 
@@ -195,14 +197,23 @@ SHA-256：`a455706c602a3b386488983b94db394e7ba3dd65ca7536aac535aff2121a184c`
 
 ## 8. 多类别与跨数据集实验
 
-OmniCount、MCAC、CARPK、PUCPR+ 的已有报告仍保留：
+OmniCount 已使用当前 FSC strict 模型完成 image-only full-1,957 重跑：
+
+- primary seed 73：MAE=13.2575 / RMSE=20.5566 / bias=+12.9673；
+- 3 seeds：MAE=13.4067±0.1706 / RMSE=20.7950±0.2750；
+- mean prediction=19.00、mean GT=6.03，1,722/1,957 张过计数；
+- Urban 与 Supermarket 分别贡献 56.50% / 26.15% 总绝对误差；
+- prediction 与 score 为独立进程，predict CLI 不接收 target shard；
+- 详细记录：`docs/omnicount_strict_nogt_full1957_report_20260711.md`。
+
+历史跨数据集报告仍保留：
 
 - `docs/omnicount_multiclass_ablation_report_20260708.md`
 - `docs/mcac_full2115_leaveoneout_report_20260710.md`
 - `docs/abc123_mcac_reproduction_report_20260710.md`
 - `docs/carpk_full459_rerun_20260709.md`
 
-但它们使用旧 FSC/COCO checkpoint。若论文要写“与 FSC strict 主结果同一模型”，必须用本轮以下资产重跑：train-89 category heads、train-only candidate filters、scratch relation seed73，以及各数据集 image-only safe cache。MCAC/OmniCount 的多类别匹配协议也必须保持各自报告中的 Hungarian/per-class 定义，不能与 FSC single-class total count 混表。
+旧 OmniCount 4.68、MCAC、CARPK、PUCPR+ 记录使用旧 FSC/COCO checkpoint。当前 OmniCount strict 重跑只解决了 scalar total-count same-model 问题，尚未实现 anonymous groups + locations + per-group counts。后续 OmniCount/MCAC 若报告 per-group/per-class，必须预先固定 extra-group penalty 和严格 Hungarian，不能与 FSC single-class scalar count 混表，也不得用 benchmark test 词表反向选择主模型。
 
 ## 9. 论文表格调整
 
@@ -210,7 +221,7 @@ OmniCount、MCAC、CARPK、PUCPR+ 的已有报告仍保留：
 2. `12.67 / 113.71` 移到附录 protocol audit，明确 `GT-assisted candidate oracle`，不与 baseline 排名。
 3. 删除 `count-supervision-free`、learned part-whole 和 FSC held-out class-name output 的表述。
 4. CP 不再出现在组件贡献表；可在附录报告配对 null result。
-5. 旧 CARPK/PUCPR+/OmniCount/MCAC 数字标为 legacy checkpoint，待 strict checkpoint 重跑后再恢复 same-model claim。
+5. OmniCount same-model total-count 行更新为 `13.26 / 20.56`；旧 `4.68 / 8.46` 标为 legacy vocabulary-adapted protocol。CARPK/PUCPR+/MCAC 仍待 strict checkpoint 重跑。
 6. FSC test familiarity 作为 limitation 披露；新增 benchmark 或未触碰 split 用于最终确认。
 
 ## 10. 复现与资产
@@ -225,6 +236,10 @@ OmniCount、MCAC、CARPK、PUCPR+ 的已有报告仍保留：
 - `script/preprocess_fsc147_tiled_nogt.py`
 - `script/select_fsc147_train_rescue.py`
 - `script/eval_fsc147_strict_nogt.py`
+- `script/export_omnicount_strict_protocol.py`
+- `script/export_omnicount_inference_cache.py`
+- `script/preprocess_omnicount_tiled_nogt.py`
+- `script/eval_omnicount_strict_nogt.py`
 
 正式 test 命令：
 
@@ -244,6 +259,9 @@ python3 script/eval_fsc147_strict_nogt.py test \
 - `result/configs/fsc147_strict_nogt_test_tile_plan.json`
 - `result/logs/fsc147_strict_nogt_cp_free_full1190.json`
 - `docs/fsc147_strict_nogt_cp_free_report_20260710.md`
+- `result/logs/omnicount_strict_nogt_predictions_full1957.json`
+- `result/logs/omnicount_strict_nogt_full1957.json`
+- `docs/omnicount_strict_nogt_full1957_report_20260711.md`
 
 ## 11. 当前检查清单
 
@@ -255,6 +273,7 @@ python3 script/eval_fsc147_strict_nogt.py test \
 - [x] 所有 1,190 预测生成后才读取 test annotation。
 - [x] 逐 seed MAE/RMSE、bootstrap、分桶和失败样本记录。
 - [x] 撤销 12.67 的 no-GT 主结果地位。
-- [ ] 用新 strict checkpoint 重跑跨数据集与多类别主表。
+- [x] 当前 FSC strict checkpoint 在 OmniCount full 1,957 上完成 process-isolated total-count 重跑。
+- [ ] 用新 strict checkpoint 补齐 MCAC/CARPK/PUCPR+，并完成 OmniCount/MCAC anonymous multi-group 主表。
 - [ ] 在当前 strict 协议下重跑 leave-one-out 组件消融。
 - [ ] 在未触碰的新 benchmark 上确认 rescue 与高密度结论。

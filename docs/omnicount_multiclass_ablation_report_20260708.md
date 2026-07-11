@@ -1,6 +1,6 @@
 # OmniCount-191 多类别消融实验记录
 
-> **2026-07-11 状态更正**：本文 OmniCount 数字来自历史 FSC/COCO checkpoint，不再能称为与当前 strict FSC-147 CP-free 主模型相同。实验数值保留，但 same-model claim 需等待新 checkpoint full-1,957 重跑。
+> **2026-07-11 strict 重跑完成**：本文以下 4.68 / 8.46 仍是历史 FSC/COCO checkpoint + OmniCount-93 prototypes + full-image 前端结果，不能称为与当前 strict FSC-147 CP-free 主模型相同。当前 FSC 26.50 同一模型、固定 train-89 vocabulary、FSC-val frozen `always_tiled` 配置在 full-1,957 上为 **13.2575 / 20.5566 / bias=+12.9673**。新正式记录见 `docs/omnicount_strict_nogt_full1957_report_20260711.md`；本文其余数值只保留为 legacy vocabulary-adapted protocol。
 
 **日期**: 2026-07-08
 **分支**: `ljs`

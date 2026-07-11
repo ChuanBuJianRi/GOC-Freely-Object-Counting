@@ -1,0 +1,1635 @@
+{
+  "date": "2026-07-11",
+  "dataset": "OmniCount-191 test full",
+  "protocol": {
+    "same_model_as_fsc147_strict_mae_26p4992": true,
+    "fsc147_reference": {
+      "images": 1190,
+      "MAE": 26.499159663865544,
+      "RMSE": 129.68557969115892
+    },
+    "prediction_input": "image only",
+    "prediction_gt_fields": [],
+    "omnicount_threshold_tuning": false,
+    "selection_split": "FSC-147 official validation only",
+    "text_vocabulary": "fixed 89 FSC-147 official-train classes; no OmniCount class names",
+    "relation_initialization": "scratch; COCO relation pretraining forbidden",
+    "frontend": "pts32 2x2 tiles, overlap=0.25, bbox merge",
+    "omnicount_annotations_loaded": "score process only, after prediction process exited",
+    "process_isolation": "predict CLI has no target-shard argument",
+    "route": {
+      "mode": "always_tiled"
+    },
+    "tiled_config": {
+      "category_threshold": 0.4,
+      "filter_threshold": 0.3,
+      "tau_inst": 0.99
+    },
+    "classwise_metrics": "not reported: the fixed FSC train-89 ontology is not the OmniCount 93-class ontology; reporting mRMSE/mRMSE-nz would require an OmniCount class list/prompt or a separately declared anonymous matching protocol"
+  },
+  "image_count": 1957,
+  "primary_seed": 73,
+  "primary": {
+    "metrics": {
+      "n": 1957,
+      "MAE": 13.257537046499744,
+      "RMSE": 20.556625683190177,
+      "bias": 12.96729688298416,
+      "mean_pred": 19.0,
+      "mean_gt": 6.03270311701584
+    },
+    "bootstrap": {
+      "iterations": 5000,
+      "seed": 20260784,
+      "MAE_95CI": [
+        12.57639243740419,
+        13.961177823198774
+      ],
+      "RMSE_95CI": [
+        19.10286874319936,
+        22.066767326243788
+      ]
+    },
+    "per_gt_class_count": {
+      "1": {
+        "n": 1124,
+        "MAE": 14.582740213523131,
+        "RMSE": 23.48996529905674,
+        "bias": 14.32473309608541,
+        "mean_pred": 20.134341637010674,
+        "mean_gt": 5.809608540925267
+      },
+      "2": {
+        "n": 311,
+        "MAE": 15.617363344051446,
+        "RMSE": 18.84605087121741,
+        "bias": 15.488745980707396,
+        "mean_pred": 21.244372990353696,
+        "mean_gt": 5.755627009646302
+      },
+      "3": {
+        "n": 186,
+        "MAE": 14.709677419354838,
+        "RMSE": 17.96561829885671,
+        "bias": 14.634408602150538,
+        "mean_pred": 22.5,
+        "mean_gt": 7.865591397849462
+      },
+      "4+": {
+        "n": 336,
+        "MAE": 5.836309523809524,
+        "RMSE": 10.392161652395703,
+        "bias": 5.169642857142857,
+        "mean_pred": 11.19047619047619,
+        "mean_gt": 6.020833333333333
+      }
+    },
+    "single_vs_multi": {
+      "multi-class": {
+        "n": 833,
+        "MAE": 11.46938775510204,
+        "RMSE": 15.75548457260668,
+        "bias": 11.135654261704682,
+        "mean_pred": 17.46938775510204,
+        "mean_gt": 6.333733493397359
+      },
+      "single-class": {
+        "n": 1124,
+        "MAE": 14.582740213523131,
+        "RMSE": 23.48996529905674,
+        "bias": 14.32473309608541,
+        "mean_pred": 20.134341637010674,
+        "mean_gt": 5.809608540925267
+      }
+    },
+    "per_supercategory": {
+      "Birds": {
+        "n": 10,
+        "MAE": 19.2,
+        "RMSE": 19.748417658131498,
+        "bias": 19.2,
+        "mean_pred": 35.7,
+        "mean_gt": 16.5
+      },
+      "Fruits": {
+        "n": 303,
+        "MAE": 2.871287128712871,
+        "RMSE": 3.8279845018670926,
+        "bias": 2.1914191419141913,
+        "mean_pred": 6.907590759075908,
+        "mean_gt": 4.7161716171617165
+      },
+      "Pets": {
+        "n": 11,
+        "MAE": 2.272727272727273,
+        "RMSE": 2.7468990781342053,
+        "bias": -0.8181818181818182,
+        "mean_pred": 8.818181818181818,
+        "mean_gt": 9.636363636363637
+      },
+      "Satellite": {
+        "n": 127,
+        "MAE": 6.716535433070866,
+        "RMSE": 12.802251278399265,
+        "bias": 5.929133858267717,
+        "mean_pred": 8.149606299212598,
+        "mean_gt": 2.220472440944882
+      },
+      "Supermarket": {
+        "n": 251,
+        "MAE": 27.02788844621514,
+        "RMSE": 41.904938902025265,
+        "bias": 26.43027888446215,
+        "mean_pred": 40.81274900398407,
+        "mean_gt": 14.382470119521912
+      },
+      "Urban": {
+        "n": 1000,
+        "MAE": 14.658,
+        "RMSE": 17.852786897288613,
+        "bias": 14.602,
+        "mean_pred": 19.954,
+        "mean_gt": 5.352
+      },
+      "Wild": {
+        "n": 255,
+        "MAE": 10.050980392156863,
+        "RMSE": 12.248569344229233,
+        "bias": 9.964705882352941,
+        "mean_pred": 13.345098039215687,
+        "mean_gt": 3.380392156862745
+      }
+    },
+    "per_gt_count_bin": {
+      "01-05": {
+        "n": 1276,
+        "MAE": 8.920846394984325,
+        "RMSE": 12.910804447181215,
+        "bias": 8.718652037617554,
+        "mean_pred": 11.702194357366771,
+        "mean_gt": 2.9835423197492164
+      },
+      "06-10": {
+        "n": 496,
+        "MAE": 16.856854838709676,
+        "RMSE": 22.087846972282467,
+        "bias": 16.574596774193548,
+        "mean_pred": 23.824596774193548,
+        "mean_gt": 7.25
+      },
+      "11-20": {
+        "n": 123,
+        "MAE": 23.447154471544714,
+        "RMSE": 32.244492817738205,
+        "bias": 22.943089430894307,
+        "mean_pred": 36.59349593495935,
+        "mean_gt": 13.65040650406504
+      },
+      "21-50": {
+        "n": 42,
+        "MAE": 52.54761904761905,
+        "RMSE": 59.22817058187928,
+        "bias": 52.54761904761905,
+        "mean_pred": 86.66666666666667,
+        "mean_gt": 34.11904761904762
+      },
+      "51+": {
+        "n": 20,
+        "MAE": 55.5,
+        "RMSE": 69.67065379340143,
+        "bias": 50.1,
+        "mean_pred": 114.65,
+        "mean_gt": 64.55
+      }
+    },
+    "routing": {
+      "tiled2x2": 1957
+    },
+    "worst_20": [
+      {
+        "sample_id": "IMG-20211029-WA0020_jpg.rf.9581d519545e68c234829bd91a051a55",
+        "file_name": "IMG-20211029-WA0020_jpg.rf.9581d519545e68c234829bd91a051a55.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 62,
+        "pred_count": 212,
+        "signed_error": 150,
+        "raw_tiled_candidates": 387
+      },
+      {
+        "sample_id": "20211009_181737_jpg.rf.84583442016a455718c93f21cd37aab1",
+        "file_name": "20211009_181737_jpg.rf.84583442016a455718c93f21cd37aab1.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 16,
+        "pred_count": 142,
+        "signed_error": 126,
+        "raw_tiled_candidates": 302
+      },
+      {
+        "sample_id": "85_jpeg_jpg.rf.78bbc650a3b8b496220ed9b3aee01ad8",
+        "file_name": "85_jpeg_jpg.rf.78bbc650a3b8b496220ed9b3aee01ad8.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 68,
+        "pred_count": 194,
+        "signed_error": 126,
+        "raw_tiled_candidates": 379
+      },
+      {
+        "sample_id": "product12-09-2021_10-55-42_jpg.rf.5310a3658e22ee00db2e05d2878c7836",
+        "file_name": "product12-09-2021_10-55-42_jpg.rf.5310a3658e22ee00db2e05d2878c7836.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 5,
+        "pred_count": 128,
+        "signed_error": 123,
+        "raw_tiled_candidates": 296
+      },
+      {
+        "sample_id": "97_jpeg_jpg.rf.494ba11f9d420902de753139c1fd9e3b",
+        "file_name": "97_jpeg_jpg.rf.494ba11f9d420902de753139c1fd9e3b.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 51,
+        "pred_count": 167,
+        "signed_error": 116,
+        "raw_tiled_candidates": 338
+      },
+      {
+        "sample_id": "coffee248_jpg.rf.37bfb3880332420419ac597bb8fbfd88",
+        "file_name": "coffee248_jpg.rf.37bfb3880332420419ac597bb8fbfd88.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 20,
+        "pred_count": 126,
+        "signed_error": 106,
+        "raw_tiled_candidates": 351
+      },
+      {
+        "sample_id": "322592082-1-74_jpg.rf.470db6bcbb0f017991f6950996a1c095",
+        "file_name": "322592082-1-74_jpg.rf.470db6bcbb0f017991f6950996a1c095.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 40,
+        "pred_count": 145,
+        "signed_error": 105,
+        "raw_tiled_candidates": 363
+      },
+      {
+        "sample_id": "126_jpeg_jpg.rf.647bc569161bdcd9ae5e0bb52b1ea07e",
+        "file_name": "126_jpeg_jpg.rf.647bc569161bdcd9ae5e0bb52b1ea07e.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 55,
+        "pred_count": 159,
+        "signed_error": 104,
+        "raw_tiled_candidates": 307
+      },
+      {
+        "sample_id": "20211009_181843_jpg.rf.8cdd9b5ea6e5a9674ea4563ee8f81d24",
+        "file_name": "20211009_181843_jpg.rf.8cdd9b5ea6e5a9674ea4563ee8f81d24.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 21,
+        "pred_count": 125,
+        "signed_error": 104,
+        "raw_tiled_candidates": 283
+      },
+      {
+        "sample_id": "322592058-1-76_jpg.rf.03dfc4e998c05099ecc3b61b4799fd11",
+        "file_name": "322592058-1-76_jpg.rf.03dfc4e998c05099ecc3b61b4799fd11.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 31,
+        "pred_count": 135,
+        "signed_error": 104,
+        "raw_tiled_candidates": 287
+      },
+      {
+        "sample_id": "IMG_20220219_180507_jpg.rf.a298c071667c45cdeeddfb478c2022b4",
+        "file_name": "IMG_20220219_180507_jpg.rf.a298c071667c45cdeeddfb478c2022b4.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 11,
+        "pred_count": 110,
+        "signed_error": 99,
+        "raw_tiled_candidates": 288
+      },
+      {
+        "sample_id": "20211009_181748_jpg.rf.ee328719c1da13ef59d783cde19460cf",
+        "file_name": "20211009_181748_jpg.rf.ee328719c1da13ef59d783cde19460cf.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 14,
+        "pred_count": 110,
+        "signed_error": 96,
+        "raw_tiled_candidates": 196
+      },
+      {
+        "sample_id": "322592306-1-10_jpg.rf.6b9936b1a924a2a65456226c78e8f173",
+        "file_name": "322592306-1-10_jpg.rf.6b9936b1a924a2a65456226c78e8f173.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 29,
+        "pred_count": 125,
+        "signed_error": 96,
+        "raw_tiled_candidates": 359
+      },
+      {
+        "sample_id": "IMG_20220219_182542_jpg.rf.ceb9d1a1e48b9ee552d0dc2f98ac3c72",
+        "file_name": "IMG_20220219_182542_jpg.rf.ceb9d1a1e48b9ee552d0dc2f98ac3c72.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 18,
+        "pred_count": 112,
+        "signed_error": 94,
+        "raw_tiled_candidates": 324
+      },
+      {
+        "sample_id": "20211009_181716_jpg.rf.9eb77859f1b34e6dd63ecd56865f712e",
+        "file_name": "20211009_181716_jpg.rf.9eb77859f1b34e6dd63ecd56865f712e.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 6,
+        "pred_count": 99,
+        "signed_error": 93,
+        "raw_tiled_candidates": 235
+      },
+      {
+        "sample_id": "0ce05c8b-98636a99_jpg.rf.4e6ee5875018433059c9c118bb059308",
+        "file_name": "0ce05c8b-98636a99_jpg.rf.4e6ee5875018433059c9c118bb059308.jpg",
+        "supercategory": "Urban",
+        "gt_class_count": 6,
+        "gt_count": 9,
+        "pred_count": 100,
+        "signed_error": 91,
+        "raw_tiled_candidates": 243
+      },
+      {
+        "sample_id": "coffee24_jpg.rf.8aac845391d4f97f0ec71c9ac5bbff82",
+        "file_name": "coffee24_jpg.rf.8aac845391d4f97f0ec71c9ac5bbff82.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 10,
+        "pred_count": 101,
+        "signed_error": 91,
+        "raw_tiled_candidates": 276
+      },
+      {
+        "sample_id": "79_jpeg_jpg.rf.0a43a0d4a2bb7f8b189bc02305902430",
+        "file_name": "79_jpeg_jpg.rf.0a43a0d4a2bb7f8b189bc02305902430.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 33,
+        "pred_count": 123,
+        "signed_error": 90,
+        "raw_tiled_candidates": 281
+      },
+      {
+        "sample_id": "coffee230_jpg.rf.3726039035fa6fae6fa0be0b66f8808d",
+        "file_name": "coffee230_jpg.rf.3726039035fa6fae6fa0be0b66f8808d.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 48,
+        "pred_count": 137,
+        "signed_error": 89,
+        "raw_tiled_candidates": 354
+      },
+      {
+        "sample_id": "20211009_181716_jpg.rf.75970f4c83f92e1b306b326d9288a51d",
+        "file_name": "20211009_181716_jpg.rf.75970f4c83f92e1b306b326d9288a51d.jpg",
+        "supercategory": "Supermarket",
+        "gt_class_count": 1,
+        "gt_count": 6,
+        "pred_count": 94,
+        "signed_error": 88,
+        "raw_tiled_candidates": 236
+      }
+    ]
+  },
+  "aggregate": {
+    "MAE_mean": 13.406745017884518,
+    "MAE_std": 0.17060512407583275,
+    "RMSE_mean": 20.79501839790659,
+    "RMSE_std": 0.2750430431287981
+  },
+  "runs": {
+    "17": {
+      "metrics": {
+        "n": 1957,
+        "MAE": 13.59274399591211,
+        "RMSE": 21.095943566274922,
+        "bias": 13.320899335717936,
+        "mean_pred": 19.353602452733774,
+        "mean_gt": 6.03270311701584
+      },
+      "bootstrap": {
+        "iterations": 5000,
+        "seed": 20260728,
+        "MAE_95CI": [
+          12.907485947879408,
+          14.319902912621359
+        ],
+        "RMSE_95CI": [
+          19.621422403911822,
+          22.61704948295209
+        ]
+      },
+      "per_gt_class_count": {
+        "1": {
+          "n": 1124,
+          "MAE": 14.930604982206406,
+          "RMSE": 24.12379106553664,
+          "bias": 14.683274021352313,
+          "mean_pred": 20.49288256227758,
+          "mean_gt": 5.809608540925267
+        },
+        "2": {
+          "n": 311,
+          "MAE": 16.112540192926044,
+          "RMSE": 19.45222525892901,
+          "bias": 15.996784565916398,
+          "mean_pred": 21.7524115755627,
+          "mean_gt": 5.755627009646302
+        },
+        "3": {
+          "n": 186,
+          "MAE": 14.951612903225806,
+          "RMSE": 18.23723592525875,
+          "bias": 14.887096774193548,
+          "mean_pred": 22.752688172043012,
+          "mean_gt": 7.865591397849462
+        },
+        "4+": {
+          "n": 336,
+          "MAE": 6.032738095238095,
+          "RMSE": 10.533252335433,
+          "bias": 5.419642857142857,
+          "mean_pred": 11.44047619047619,
+          "mean_gt": 6.020833333333333
+        }
+      },
+      "single_vs_multi": {
+        "multi-class": {
+          "n": 833,
+          "MAE": 11.787515006002401,
+          "RMSE": 16.133484302105682,
+          "bias": 11.482593037214887,
+          "mean_pred": 17.816326530612244,
+          "mean_gt": 6.333733493397359
+        },
+        "single-class": {
+          "n": 1124,
+          "MAE": 14.930604982206406,
+          "RMSE": 24.12379106553664,
+          "bias": 14.683274021352313,
+          "mean_pred": 20.49288256227758,
+          "mean_gt": 5.809608540925267
+        }
+      },
+      "per_supercategory": {
+        "Birds": {
+          "n": 10,
+          "MAE": 20.4,
+          "RMSE": 21.02379604162864,
+          "bias": 20.4,
+          "mean_pred": 36.9,
+          "mean_gt": 16.5
+        },
+        "Fruits": {
+          "n": 303,
+          "MAE": 3.042904290429043,
+          "RMSE": 3.9601980148512377,
+          "bias": 2.442244224422442,
+          "mean_pred": 7.158415841584159,
+          "mean_gt": 4.7161716171617165
+        },
+        "Pets": {
+          "n": 11,
+          "MAE": 2.1818181818181817,
+          "RMSE": 2.73030134866931,
+          "bias": -0.9090909090909091,
+          "mean_pred": 8.727272727272727,
+          "mean_gt": 9.636363636363637
+        },
+        "Satellite": {
+          "n": 127,
+          "MAE": 6.826771653543307,
+          "RMSE": 12.918582111808075,
+          "bias": 6.039370078740157,
+          "mean_pred": 8.259842519685039,
+          "mean_gt": 2.220472440944882
+        },
+        "Supermarket": {
+          "n": 251,
+          "MAE": 27.844621513944222,
+          "RMSE": 43.14540411694324,
+          "bias": 27.286852589641434,
+          "mean_pred": 41.669322709163346,
+          "mean_gt": 14.382470119521912
+        },
+        "Urban": {
+          "n": 1000,
+          "MAE": 15.01,
+          "RMSE": 18.29098138427788,
+          "bias": 14.952,
+          "mean_pred": 20.304,
+          "mean_gt": 5.352
+        },
+        "Wild": {
+          "n": 255,
+          "MAE": 10.137254901960784,
+          "RMSE": 12.31753094688424,
+          "bias": 10.066666666666666,
+          "mean_pred": 13.447058823529412,
+          "mean_gt": 3.380392156862745
+        }
+      },
+      "per_gt_count_bin": {
+        "01-05": {
+          "n": 1276,
+          "MAE": 9.112852664576803,
+          "RMSE": 13.206106690410133,
+          "bias": 8.923197492163009,
+          "mean_pred": 11.906739811912226,
+          "mean_gt": 2.9835423197492164
+        },
+        "06-10": {
+          "n": 496,
+          "MAE": 17.328629032258064,
+          "RMSE": 22.76258071144749,
+          "bias": 17.058467741935484,
+          "mean_pred": 24.308467741935484,
+          "mean_gt": 7.25
+        },
+        "11-20": {
+          "n": 123,
+          "MAE": 23.715447154471544,
+          "RMSE": 32.19844464253474,
+          "bias": 23.227642276422763,
+          "mean_pred": 36.8780487804878,
+          "mean_gt": 13.65040650406504
+        },
+        "21-50": {
+          "n": 42,
+          "MAE": 54.38095238095238,
+          "RMSE": 61.3661920263065,
+          "bias": 54.38095238095238,
+          "mean_pred": 88.5,
+          "mean_gt": 34.11904761904762
+        },
+        "51+": {
+          "n": 20,
+          "MAE": 58.85,
+          "RMSE": 72.70728986834814,
+          "bias": 54.05,
+          "mean_pred": 118.6,
+          "mean_gt": 64.55
+        }
+      },
+      "routing": {
+        "tiled2x2": 1957
+      },
+      "worst_20": [
+        {
+          "sample_id": "IMG-20211029-WA0020_jpg.rf.9581d519545e68c234829bd91a051a55",
+          "file_name": "IMG-20211029-WA0020_jpg.rf.9581d519545e68c234829bd91a051a55.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 62,
+          "pred_count": 214,
+          "signed_error": 152,
+          "raw_tiled_candidates": 387
+        },
+        {
+          "sample_id": "20211009_181737_jpg.rf.84583442016a455718c93f21cd37aab1",
+          "file_name": "20211009_181737_jpg.rf.84583442016a455718c93f21cd37aab1.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 16,
+          "pred_count": 144,
+          "signed_error": 128,
+          "raw_tiled_candidates": 302
+        },
+        {
+          "sample_id": "85_jpeg_jpg.rf.78bbc650a3b8b496220ed9b3aee01ad8",
+          "file_name": "85_jpeg_jpg.rf.78bbc650a3b8b496220ed9b3aee01ad8.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 68,
+          "pred_count": 195,
+          "signed_error": 127,
+          "raw_tiled_candidates": 379
+        },
+        {
+          "sample_id": "product12-09-2021_10-55-42_jpg.rf.5310a3658e22ee00db2e05d2878c7836",
+          "file_name": "product12-09-2021_10-55-42_jpg.rf.5310a3658e22ee00db2e05d2878c7836.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 5,
+          "pred_count": 132,
+          "signed_error": 127,
+          "raw_tiled_candidates": 296
+        },
+        {
+          "sample_id": "97_jpeg_jpg.rf.494ba11f9d420902de753139c1fd9e3b",
+          "file_name": "97_jpeg_jpg.rf.494ba11f9d420902de753139c1fd9e3b.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 51,
+          "pred_count": 176,
+          "signed_error": 125,
+          "raw_tiled_candidates": 338
+        },
+        {
+          "sample_id": "126_jpeg_jpg.rf.647bc569161bdcd9ae5e0bb52b1ea07e",
+          "file_name": "126_jpeg_jpg.rf.647bc569161bdcd9ae5e0bb52b1ea07e.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 55,
+          "pred_count": 164,
+          "signed_error": 109,
+          "raw_tiled_candidates": 307
+        },
+        {
+          "sample_id": "79_jpeg_jpg.rf.0a43a0d4a2bb7f8b189bc02305902430",
+          "file_name": "79_jpeg_jpg.rf.0a43a0d4a2bb7f8b189bc02305902430.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 33,
+          "pred_count": 142,
+          "signed_error": 109,
+          "raw_tiled_candidates": 281
+        },
+        {
+          "sample_id": "322592082-1-74_jpg.rf.470db6bcbb0f017991f6950996a1c095",
+          "file_name": "322592082-1-74_jpg.rf.470db6bcbb0f017991f6950996a1c095.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 40,
+          "pred_count": 148,
+          "signed_error": 108,
+          "raw_tiled_candidates": 363
+        },
+        {
+          "sample_id": "20211009_181843_jpg.rf.8cdd9b5ea6e5a9674ea4563ee8f81d24",
+          "file_name": "20211009_181843_jpg.rf.8cdd9b5ea6e5a9674ea4563ee8f81d24.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 21,
+          "pred_count": 123,
+          "signed_error": 102,
+          "raw_tiled_candidates": 283
+        },
+        {
+          "sample_id": "20211009_181716_jpg.rf.75970f4c83f92e1b306b326d9288a51d",
+          "file_name": "20211009_181716_jpg.rf.75970f4c83f92e1b306b326d9288a51d.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 6,
+          "pred_count": 107,
+          "signed_error": 101,
+          "raw_tiled_candidates": 236
+        },
+        {
+          "sample_id": "322592058-1-76_jpg.rf.03dfc4e998c05099ecc3b61b4799fd11",
+          "file_name": "322592058-1-76_jpg.rf.03dfc4e998c05099ecc3b61b4799fd11.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 31,
+          "pred_count": 132,
+          "signed_error": 101,
+          "raw_tiled_candidates": 287
+        },
+        {
+          "sample_id": "coffee248_jpg.rf.37bfb3880332420419ac597bb8fbfd88",
+          "file_name": "coffee248_jpg.rf.37bfb3880332420419ac597bb8fbfd88.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 20,
+          "pred_count": 119,
+          "signed_error": 99,
+          "raw_tiled_candidates": 351
+        },
+        {
+          "sample_id": "20211009_181716_jpg.rf.9eb77859f1b34e6dd63ecd56865f712e",
+          "file_name": "20211009_181716_jpg.rf.9eb77859f1b34e6dd63ecd56865f712e.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 6,
+          "pred_count": 104,
+          "signed_error": 98,
+          "raw_tiled_candidates": 235
+        },
+        {
+          "sample_id": "322592306-1-10_jpg.rf.6b9936b1a924a2a65456226c78e8f173",
+          "file_name": "322592306-1-10_jpg.rf.6b9936b1a924a2a65456226c78e8f173.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 29,
+          "pred_count": 126,
+          "signed_error": 97,
+          "raw_tiled_candidates": 359
+        },
+        {
+          "sample_id": "IMG_20220219_180507_jpg.rf.a298c071667c45cdeeddfb478c2022b4",
+          "file_name": "IMG_20220219_180507_jpg.rf.a298c071667c45cdeeddfb478c2022b4.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 11,
+          "pred_count": 107,
+          "signed_error": 96,
+          "raw_tiled_candidates": 288
+        },
+        {
+          "sample_id": "IMG_20220219_182542_jpg.rf.ceb9d1a1e48b9ee552d0dc2f98ac3c72",
+          "file_name": "IMG_20220219_182542_jpg.rf.ceb9d1a1e48b9ee552d0dc2f98ac3c72.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 18,
+          "pred_count": 113,
+          "signed_error": 95,
+          "raw_tiled_candidates": 324
+        },
+        {
+          "sample_id": "20211009_181748_jpg.rf.ee328719c1da13ef59d783cde19460cf",
+          "file_name": "20211009_181748_jpg.rf.ee328719c1da13ef59d783cde19460cf.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 14,
+          "pred_count": 107,
+          "signed_error": 93,
+          "raw_tiled_candidates": 196
+        },
+        {
+          "sample_id": "coffee230_jpg.rf.3726039035fa6fae6fa0be0b66f8808d",
+          "file_name": "coffee230_jpg.rf.3726039035fa6fae6fa0be0b66f8808d.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 48,
+          "pred_count": 141,
+          "signed_error": 93,
+          "raw_tiled_candidates": 354
+        },
+        {
+          "sample_id": "0ce05c8b-98636a99_jpg.rf.4e6ee5875018433059c9c118bb059308",
+          "file_name": "0ce05c8b-98636a99_jpg.rf.4e6ee5875018433059c9c118bb059308.jpg",
+          "supercategory": "Urban",
+          "gt_class_count": 6,
+          "gt_count": 9,
+          "pred_count": 101,
+          "signed_error": 92,
+          "raw_tiled_candidates": 243
+        },
+        {
+          "sample_id": "IMG-20211102-WA0066_jpg.rf.eb8df33d8e5eb0f84938f9f3137ddfdc",
+          "file_name": "IMG-20211102-WA0066_jpg.rf.eb8df33d8e5eb0f84938f9f3137ddfdc.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 73,
+          "pred_count": 163,
+          "signed_error": 90,
+          "raw_tiled_candidates": 286
+        }
+      ]
+    },
+    "42": {
+      "metrics": {
+        "n": 1957,
+        "MAE": 13.369954011241697,
+        "RMSE": 20.73248594425467,
+        "bias": 13.090955544200307,
+        "mean_pred": 19.123658661216147,
+        "mean_gt": 6.03270311701584
+      },
+      "bootstrap": {
+        "iterations": 5000,
+        "seed": 20260753,
+        "MAE_95CI": [
+          12.665291262135922,
+          14.061343893714868
+        ],
+        "RMSE_95CI": [
+          19.21841754051284,
+          22.19718502195384
+        ]
+      },
+      "per_gt_class_count": {
+        "1": {
+          "n": 1124,
+          "MAE": 14.705516014234876,
+          "RMSE": 23.733150981612496,
+          "bias": 14.458185053380783,
+          "mean_pred": 20.26779359430605,
+          "mean_gt": 5.809608540925267
+        },
+        "2": {
+          "n": 311,
+          "MAE": 15.742765273311898,
+          "RMSE": 18.95416709224575,
+          "bias": 15.614147909967846,
+          "mean_pred": 21.369774919614148,
+          "mean_gt": 5.755627009646302
+        },
+        "3": {
+          "n": 186,
+          "MAE": 14.763440860215054,
+          "RMSE": 17.97429466814218,
+          "bias": 14.698924731182796,
+          "mean_pred": 22.56451612903226,
+          "mean_gt": 7.865591397849462
+        },
+        "4+": {
+          "n": 336,
+          "MAE": 5.934523809523809,
+          "RMSE": 10.388294694831615,
+          "bias": 5.291666666666667,
+          "mean_pred": 11.3125,
+          "mean_gt": 6.020833333333333
+        }
+      },
+      "single_vs_multi": {
+        "multi-class": {
+          "n": 833,
+          "MAE": 11.567827130852342,
+          "RMSE": 15.805009311219374,
+          "bias": 11.24609843937575,
+          "mean_pred": 17.57983193277311,
+          "mean_gt": 6.333733493397359
+        },
+        "single-class": {
+          "n": 1124,
+          "MAE": 14.705516014234876,
+          "RMSE": 23.733150981612496,
+          "bias": 14.458185053380783,
+          "mean_pred": 20.26779359430605,
+          "mean_gt": 5.809608540925267
+        }
+      },
+      "per_supercategory": {
+        "Birds": {
+          "n": 10,
+          "MAE": 20.5,
+          "RMSE": 20.87821831478922,
+          "bias": 20.5,
+          "mean_pred": 37.0,
+          "mean_gt": 16.5
+        },
+        "Fruits": {
+          "n": 303,
+          "MAE": 2.9966996699669965,
+          "RMSE": 3.938470661959476,
+          "bias": 2.3564356435643563,
+          "mean_pred": 7.072607260726072,
+          "mean_gt": 4.7161716171617165
+        },
+        "Pets": {
+          "n": 11,
+          "MAE": 2.272727272727273,
+          "RMSE": 2.6798914496333954,
+          "bias": -1.0,
+          "mean_pred": 8.636363636363637,
+          "mean_gt": 9.636363636363637
+        },
+        "Satellite": {
+          "n": 127,
+          "MAE": 6.826771653543307,
+          "RMSE": 13.067059022445065,
+          "bias": 6.039370078740157,
+          "mean_pred": 8.259842519685039,
+          "mean_gt": 2.220472440944882
+        },
+        "Supermarket": {
+          "n": 251,
+          "MAE": 27.35458167330677,
+          "RMSE": 42.41476101773102,
+          "bias": 26.812749003984063,
+          "mean_pred": 41.19521912350598,
+          "mean_gt": 14.382470119521912
+        },
+        "Urban": {
+          "n": 1000,
+          "MAE": 14.71,
+          "RMSE": 17.90915966761143,
+          "bias": 14.652,
+          "mean_pred": 20.004,
+          "mean_gt": 5.352
+        },
+        "Wild": {
+          "n": 255,
+          "MAE": 10.133333333333333,
+          "RMSE": 12.219560019036019,
+          "bias": 10.047058823529412,
+          "mean_pred": 13.427450980392157,
+          "mean_gt": 3.380392156862745
+        }
+      },
+      "per_gt_count_bin": {
+        "01-05": {
+          "n": 1276,
+          "MAE": 9.010971786833856,
+          "RMSE": 13.046156305876716,
+          "bias": 8.818181818181818,
+          "mean_pred": 11.801724137931034,
+          "mean_gt": 2.9835423197492164
+        },
+        "06-10": {
+          "n": 496,
+          "MAE": 16.943548387096776,
+          "RMSE": 22.19933521236543,
+          "bias": 16.649193548387096,
+          "mean_pred": 23.899193548387096,
+          "mean_gt": 7.25
+        },
+        "11-20": {
+          "n": 123,
+          "MAE": 23.26829268292683,
+          "RMSE": 31.68262327974404,
+          "bias": 22.78048780487805,
+          "mean_pred": 36.43089430894309,
+          "mean_gt": 13.65040650406504
+        },
+        "21-50": {
+          "n": 42,
+          "MAE": 53.523809523809526,
+          "RMSE": 60.255013622657714,
+          "bias": 53.523809523809526,
+          "mean_pred": 87.64285714285714,
+          "mean_gt": 34.11904761904762
+        },
+        "51+": {
+          "n": 20,
+          "MAE": 57.65,
+          "RMSE": 71.98020561237652,
+          "bias": 52.95,
+          "mean_pred": 117.5,
+          "mean_gt": 64.55
+        }
+      },
+      "routing": {
+        "tiled2x2": 1957
+      },
+      "worst_20": [
+        {
+          "sample_id": "IMG-20211029-WA0020_jpg.rf.9581d519545e68c234829bd91a051a55",
+          "file_name": "IMG-20211029-WA0020_jpg.rf.9581d519545e68c234829bd91a051a55.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 62,
+          "pred_count": 215,
+          "signed_error": 153,
+          "raw_tiled_candidates": 387
+        },
+        {
+          "sample_id": "97_jpeg_jpg.rf.494ba11f9d420902de753139c1fd9e3b",
+          "file_name": "97_jpeg_jpg.rf.494ba11f9d420902de753139c1fd9e3b.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 51,
+          "pred_count": 182,
+          "signed_error": 131,
+          "raw_tiled_candidates": 338
+        },
+        {
+          "sample_id": "20211009_181737_jpg.rf.84583442016a455718c93f21cd37aab1",
+          "file_name": "20211009_181737_jpg.rf.84583442016a455718c93f21cd37aab1.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 16,
+          "pred_count": 143,
+          "signed_error": 127,
+          "raw_tiled_candidates": 302
+        },
+        {
+          "sample_id": "85_jpeg_jpg.rf.78bbc650a3b8b496220ed9b3aee01ad8",
+          "file_name": "85_jpeg_jpg.rf.78bbc650a3b8b496220ed9b3aee01ad8.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 68,
+          "pred_count": 194,
+          "signed_error": 126,
+          "raw_tiled_candidates": 379
+        },
+        {
+          "sample_id": "product12-09-2021_10-55-42_jpg.rf.5310a3658e22ee00db2e05d2878c7836",
+          "file_name": "product12-09-2021_10-55-42_jpg.rf.5310a3658e22ee00db2e05d2878c7836.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 5,
+          "pred_count": 131,
+          "signed_error": 126,
+          "raw_tiled_candidates": 296
+        },
+        {
+          "sample_id": "322592082-1-74_jpg.rf.470db6bcbb0f017991f6950996a1c095",
+          "file_name": "322592082-1-74_jpg.rf.470db6bcbb0f017991f6950996a1c095.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 40,
+          "pred_count": 145,
+          "signed_error": 105,
+          "raw_tiled_candidates": 363
+        },
+        {
+          "sample_id": "126_jpeg_jpg.rf.647bc569161bdcd9ae5e0bb52b1ea07e",
+          "file_name": "126_jpeg_jpg.rf.647bc569161bdcd9ae5e0bb52b1ea07e.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 55,
+          "pred_count": 159,
+          "signed_error": 104,
+          "raw_tiled_candidates": 307
+        },
+        {
+          "sample_id": "coffee248_jpg.rf.37bfb3880332420419ac597bb8fbfd88",
+          "file_name": "coffee248_jpg.rf.37bfb3880332420419ac597bb8fbfd88.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 20,
+          "pred_count": 124,
+          "signed_error": 104,
+          "raw_tiled_candidates": 351
+        },
+        {
+          "sample_id": "322592306-1-10_jpg.rf.6b9936b1a924a2a65456226c78e8f173",
+          "file_name": "322592306-1-10_jpg.rf.6b9936b1a924a2a65456226c78e8f173.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 29,
+          "pred_count": 132,
+          "signed_error": 103,
+          "raw_tiled_candidates": 359
+        },
+        {
+          "sample_id": "322592058-1-76_jpg.rf.03dfc4e998c05099ecc3b61b4799fd11",
+          "file_name": "322592058-1-76_jpg.rf.03dfc4e998c05099ecc3b61b4799fd11.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 31,
+          "pred_count": 132,
+          "signed_error": 101,
+          "raw_tiled_candidates": 287
+        },
+        {
+          "sample_id": "IMG_20220219_180507_jpg.rf.a298c071667c45cdeeddfb478c2022b4",
+          "file_name": "IMG_20220219_180507_jpg.rf.a298c071667c45cdeeddfb478c2022b4.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 11,
+          "pred_count": 110,
+          "signed_error": 99,
+          "raw_tiled_candidates": 288
+        },
+        {
+          "sample_id": "79_jpeg_jpg.rf.0a43a0d4a2bb7f8b189bc02305902430",
+          "file_name": "79_jpeg_jpg.rf.0a43a0d4a2bb7f8b189bc02305902430.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 33,
+          "pred_count": 130,
+          "signed_error": 97,
+          "raw_tiled_candidates": 281
+        },
+        {
+          "sample_id": "20211009_181716_jpg.rf.9eb77859f1b34e6dd63ecd56865f712e",
+          "file_name": "20211009_181716_jpg.rf.9eb77859f1b34e6dd63ecd56865f712e.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 6,
+          "pred_count": 102,
+          "signed_error": 96,
+          "raw_tiled_candidates": 235
+        },
+        {
+          "sample_id": "IMG_20220219_182542_jpg.rf.ceb9d1a1e48b9ee552d0dc2f98ac3c72",
+          "file_name": "IMG_20220219_182542_jpg.rf.ceb9d1a1e48b9ee552d0dc2f98ac3c72.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 18,
+          "pred_count": 114,
+          "signed_error": 96,
+          "raw_tiled_candidates": 324
+        },
+        {
+          "sample_id": "20211009_181716_jpg.rf.75970f4c83f92e1b306b326d9288a51d",
+          "file_name": "20211009_181716_jpg.rf.75970f4c83f92e1b306b326d9288a51d.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 6,
+          "pred_count": 101,
+          "signed_error": 95,
+          "raw_tiled_candidates": 236
+        },
+        {
+          "sample_id": "20211009_181843_jpg.rf.8cdd9b5ea6e5a9674ea4563ee8f81d24",
+          "file_name": "20211009_181843_jpg.rf.8cdd9b5ea6e5a9674ea4563ee8f81d24.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 21,
+          "pred_count": 116,
+          "signed_error": 95,
+          "raw_tiled_candidates": 283
+        },
+        {
+          "sample_id": "coffee230_jpg.rf.3726039035fa6fae6fa0be0b66f8808d",
+          "file_name": "coffee230_jpg.rf.3726039035fa6fae6fa0be0b66f8808d.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 48,
+          "pred_count": 143,
+          "signed_error": 95,
+          "raw_tiled_candidates": 354
+        },
+        {
+          "sample_id": "coffee145_jpg.rf.1f1f344f4c2a070dcdef3bac73d6b58d",
+          "file_name": "coffee145_jpg.rf.1f1f344f4c2a070dcdef3bac73d6b58d.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 32,
+          "pred_count": 123,
+          "signed_error": 91,
+          "raw_tiled_candidates": 273
+        },
+        {
+          "sample_id": "0ce05c8b-98636a99_jpg.rf.4e6ee5875018433059c9c118bb059308",
+          "file_name": "0ce05c8b-98636a99_jpg.rf.4e6ee5875018433059c9c118bb059308.jpg",
+          "supercategory": "Urban",
+          "gt_class_count": 6,
+          "gt_count": 9,
+          "pred_count": 99,
+          "signed_error": 90,
+          "raw_tiled_candidates": 243
+        },
+        {
+          "sample_id": "coffee24_jpg.rf.8aac845391d4f97f0ec71c9ac5bbff82",
+          "file_name": "coffee24_jpg.rf.8aac845391d4f97f0ec71c9ac5bbff82.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 10,
+          "pred_count": 100,
+          "signed_error": 90,
+          "raw_tiled_candidates": 276
+        }
+      ]
+    },
+    "73": {
+      "metrics": {
+        "n": 1957,
+        "MAE": 13.257537046499744,
+        "RMSE": 20.556625683190177,
+        "bias": 12.96729688298416,
+        "mean_pred": 19.0,
+        "mean_gt": 6.03270311701584
+      },
+      "bootstrap": {
+        "iterations": 5000,
+        "seed": 20260784,
+        "MAE_95CI": [
+          12.57639243740419,
+          13.961177823198774
+        ],
+        "RMSE_95CI": [
+          19.10286874319936,
+          22.066767326243788
+        ]
+      },
+      "per_gt_class_count": {
+        "1": {
+          "n": 1124,
+          "MAE": 14.582740213523131,
+          "RMSE": 23.48996529905674,
+          "bias": 14.32473309608541,
+          "mean_pred": 20.134341637010674,
+          "mean_gt": 5.809608540925267
+        },
+        "2": {
+          "n": 311,
+          "MAE": 15.617363344051446,
+          "RMSE": 18.84605087121741,
+          "bias": 15.488745980707396,
+          "mean_pred": 21.244372990353696,
+          "mean_gt": 5.755627009646302
+        },
+        "3": {
+          "n": 186,
+          "MAE": 14.709677419354838,
+          "RMSE": 17.96561829885671,
+          "bias": 14.634408602150538,
+          "mean_pred": 22.5,
+          "mean_gt": 7.865591397849462
+        },
+        "4+": {
+          "n": 336,
+          "MAE": 5.836309523809524,
+          "RMSE": 10.392161652395703,
+          "bias": 5.169642857142857,
+          "mean_pred": 11.19047619047619,
+          "mean_gt": 6.020833333333333
+        }
+      },
+      "single_vs_multi": {
+        "multi-class": {
+          "n": 833,
+          "MAE": 11.46938775510204,
+          "RMSE": 15.75548457260668,
+          "bias": 11.135654261704682,
+          "mean_pred": 17.46938775510204,
+          "mean_gt": 6.333733493397359
+        },
+        "single-class": {
+          "n": 1124,
+          "MAE": 14.582740213523131,
+          "RMSE": 23.48996529905674,
+          "bias": 14.32473309608541,
+          "mean_pred": 20.134341637010674,
+          "mean_gt": 5.809608540925267
+        }
+      },
+      "per_supercategory": {
+        "Birds": {
+          "n": 10,
+          "MAE": 19.2,
+          "RMSE": 19.748417658131498,
+          "bias": 19.2,
+          "mean_pred": 35.7,
+          "mean_gt": 16.5
+        },
+        "Fruits": {
+          "n": 303,
+          "MAE": 2.871287128712871,
+          "RMSE": 3.8279845018670926,
+          "bias": 2.1914191419141913,
+          "mean_pred": 6.907590759075908,
+          "mean_gt": 4.7161716171617165
+        },
+        "Pets": {
+          "n": 11,
+          "MAE": 2.272727272727273,
+          "RMSE": 2.7468990781342053,
+          "bias": -0.8181818181818182,
+          "mean_pred": 8.818181818181818,
+          "mean_gt": 9.636363636363637
+        },
+        "Satellite": {
+          "n": 127,
+          "MAE": 6.716535433070866,
+          "RMSE": 12.802251278399265,
+          "bias": 5.929133858267717,
+          "mean_pred": 8.149606299212598,
+          "mean_gt": 2.220472440944882
+        },
+        "Supermarket": {
+          "n": 251,
+          "MAE": 27.02788844621514,
+          "RMSE": 41.904938902025265,
+          "bias": 26.43027888446215,
+          "mean_pred": 40.81274900398407,
+          "mean_gt": 14.382470119521912
+        },
+        "Urban": {
+          "n": 1000,
+          "MAE": 14.658,
+          "RMSE": 17.852786897288613,
+          "bias": 14.602,
+          "mean_pred": 19.954,
+          "mean_gt": 5.352
+        },
+        "Wild": {
+          "n": 255,
+          "MAE": 10.050980392156863,
+          "RMSE": 12.248569344229233,
+          "bias": 9.964705882352941,
+          "mean_pred": 13.345098039215687,
+          "mean_gt": 3.380392156862745
+        }
+      },
+      "per_gt_count_bin": {
+        "01-05": {
+          "n": 1276,
+          "MAE": 8.920846394984325,
+          "RMSE": 12.910804447181215,
+          "bias": 8.718652037617554,
+          "mean_pred": 11.702194357366771,
+          "mean_gt": 2.9835423197492164
+        },
+        "06-10": {
+          "n": 496,
+          "MAE": 16.856854838709676,
+          "RMSE": 22.087846972282467,
+          "bias": 16.574596774193548,
+          "mean_pred": 23.824596774193548,
+          "mean_gt": 7.25
+        },
+        "11-20": {
+          "n": 123,
+          "MAE": 23.447154471544714,
+          "RMSE": 32.244492817738205,
+          "bias": 22.943089430894307,
+          "mean_pred": 36.59349593495935,
+          "mean_gt": 13.65040650406504
+        },
+        "21-50": {
+          "n": 42,
+          "MAE": 52.54761904761905,
+          "RMSE": 59.22817058187928,
+          "bias": 52.54761904761905,
+          "mean_pred": 86.66666666666667,
+          "mean_gt": 34.11904761904762
+        },
+        "51+": {
+          "n": 20,
+          "MAE": 55.5,
+          "RMSE": 69.67065379340143,
+          "bias": 50.1,
+          "mean_pred": 114.65,
+          "mean_gt": 64.55
+        }
+      },
+      "routing": {
+        "tiled2x2": 1957
+      },
+      "worst_20": [
+        {
+          "sample_id": "IMG-20211029-WA0020_jpg.rf.9581d519545e68c234829bd91a051a55",
+          "file_name": "IMG-20211029-WA0020_jpg.rf.9581d519545e68c234829bd91a051a55.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 62,
+          "pred_count": 212,
+          "signed_error": 150,
+          "raw_tiled_candidates": 387
+        },
+        {
+          "sample_id": "20211009_181737_jpg.rf.84583442016a455718c93f21cd37aab1",
+          "file_name": "20211009_181737_jpg.rf.84583442016a455718c93f21cd37aab1.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 16,
+          "pred_count": 142,
+          "signed_error": 126,
+          "raw_tiled_candidates": 302
+        },
+        {
+          "sample_id": "85_jpeg_jpg.rf.78bbc650a3b8b496220ed9b3aee01ad8",
+          "file_name": "85_jpeg_jpg.rf.78bbc650a3b8b496220ed9b3aee01ad8.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 68,
+          "pred_count": 194,
+          "signed_error": 126,
+          "raw_tiled_candidates": 379
+        },
+        {
+          "sample_id": "product12-09-2021_10-55-42_jpg.rf.5310a3658e22ee00db2e05d2878c7836",
+          "file_name": "product12-09-2021_10-55-42_jpg.rf.5310a3658e22ee00db2e05d2878c7836.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 5,
+          "pred_count": 128,
+          "signed_error": 123,
+          "raw_tiled_candidates": 296
+        },
+        {
+          "sample_id": "97_jpeg_jpg.rf.494ba11f9d420902de753139c1fd9e3b",
+          "file_name": "97_jpeg_jpg.rf.494ba11f9d420902de753139c1fd9e3b.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 51,
+          "pred_count": 167,
+          "signed_error": 116,
+          "raw_tiled_candidates": 338
+        },
+        {
+          "sample_id": "coffee248_jpg.rf.37bfb3880332420419ac597bb8fbfd88",
+          "file_name": "coffee248_jpg.rf.37bfb3880332420419ac597bb8fbfd88.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 20,
+          "pred_count": 126,
+          "signed_error": 106,
+          "raw_tiled_candidates": 351
+        },
+        {
+          "sample_id": "322592082-1-74_jpg.rf.470db6bcbb0f017991f6950996a1c095",
+          "file_name": "322592082-1-74_jpg.rf.470db6bcbb0f017991f6950996a1c095.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 40,
+          "pred_count": 145,
+          "signed_error": 105,
+          "raw_tiled_candidates": 363
+        },
+        {
+          "sample_id": "126_jpeg_jpg.rf.647bc569161bdcd9ae5e0bb52b1ea07e",
+          "file_name": "126_jpeg_jpg.rf.647bc569161bdcd9ae5e0bb52b1ea07e.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 55,
+          "pred_count": 159,
+          "signed_error": 104,
+          "raw_tiled_candidates": 307
+        },
+        {
+          "sample_id": "20211009_181843_jpg.rf.8cdd9b5ea6e5a9674ea4563ee8f81d24",
+          "file_name": "20211009_181843_jpg.rf.8cdd9b5ea6e5a9674ea4563ee8f81d24.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 21,
+          "pred_count": 125,
+          "signed_error": 104,
+          "raw_tiled_candidates": 283
+        },
+        {
+          "sample_id": "322592058-1-76_jpg.rf.03dfc4e998c05099ecc3b61b4799fd11",
+          "file_name": "322592058-1-76_jpg.rf.03dfc4e998c05099ecc3b61b4799fd11.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 31,
+          "pred_count": 135,
+          "signed_error": 104,
+          "raw_tiled_candidates": 287
+        },
+        {
+          "sample_id": "IMG_20220219_180507_jpg.rf.a298c071667c45cdeeddfb478c2022b4",
+          "file_name": "IMG_20220219_180507_jpg.rf.a298c071667c45cdeeddfb478c2022b4.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 11,
+          "pred_count": 110,
+          "signed_error": 99,
+          "raw_tiled_candidates": 288
+        },
+        {
+          "sample_id": "20211009_181748_jpg.rf.ee328719c1da13ef59d783cde19460cf",
+          "file_name": "20211009_181748_jpg.rf.ee328719c1da13ef59d783cde19460cf.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 14,
+          "pred_count": 110,
+          "signed_error": 96,
+          "raw_tiled_candidates": 196
+        },
+        {
+          "sample_id": "322592306-1-10_jpg.rf.6b9936b1a924a2a65456226c78e8f173",
+          "file_name": "322592306-1-10_jpg.rf.6b9936b1a924a2a65456226c78e8f173.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 29,
+          "pred_count": 125,
+          "signed_error": 96,
+          "raw_tiled_candidates": 359
+        },
+        {
+          "sample_id": "IMG_20220219_182542_jpg.rf.ceb9d1a1e48b9ee552d0dc2f98ac3c72",
+          "file_name": "IMG_20220219_182542_jpg.rf.ceb9d1a1e48b9ee552d0dc2f98ac3c72.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 18,
+          "pred_count": 112,
+          "signed_error": 94,
+          "raw_tiled_candidates": 324
+        },
+        {
+          "sample_id": "20211009_181716_jpg.rf.9eb77859f1b34e6dd63ecd56865f712e",
+          "file_name": "20211009_181716_jpg.rf.9eb77859f1b34e6dd63ecd56865f712e.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 6,
+          "pred_count": 99,
+          "signed_error": 93,
+          "raw_tiled_candidates": 235
+        },
+        {
+          "sample_id": "0ce05c8b-98636a99_jpg.rf.4e6ee5875018433059c9c118bb059308",
+          "file_name": "0ce05c8b-98636a99_jpg.rf.4e6ee5875018433059c9c118bb059308.jpg",
+          "supercategory": "Urban",
+          "gt_class_count": 6,
+          "gt_count": 9,
+          "pred_count": 100,
+          "signed_error": 91,
+          "raw_tiled_candidates": 243
+        },
+        {
+          "sample_id": "coffee24_jpg.rf.8aac845391d4f97f0ec71c9ac5bbff82",
+          "file_name": "coffee24_jpg.rf.8aac845391d4f97f0ec71c9ac5bbff82.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 10,
+          "pred_count": 101,
+          "signed_error": 91,
+          "raw_tiled_candidates": 276
+        },
+        {
+          "sample_id": "79_jpeg_jpg.rf.0a43a0d4a2bb7f8b189bc02305902430",
+          "file_name": "79_jpeg_jpg.rf.0a43a0d4a2bb7f8b189bc02305902430.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 33,
+          "pred_count": 123,
+          "signed_error": 90,
+          "raw_tiled_candidates": 281
+        },
+        {
+          "sample_id": "coffee230_jpg.rf.3726039035fa6fae6fa0be0b66f8808d",
+          "file_name": "coffee230_jpg.rf.3726039035fa6fae6fa0be0b66f8808d.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 48,
+          "pred_count": 137,
+          "signed_error": 89,
+          "raw_tiled_candidates": 354
+        },
+        {
+          "sample_id": "20211009_181716_jpg.rf.75970f4c83f92e1b306b326d9288a51d",
+          "file_name": "20211009_181716_jpg.rf.75970f4c83f92e1b306b326d9288a51d.jpg",
+          "supercategory": "Supermarket",
+          "gt_class_count": 1,
+          "gt_count": 6,
+          "pred_count": 94,
+          "signed_error": 88,
+          "raw_tiled_candidates": 236
+        }
+      ]
+    }
+  },
+  "candidate_stats": {
+    "raw_fast_candidates": {
+      "sum": 52079,
+      "mean": 26.611650485436893,
+      "median": 23.0,
+      "p90": 43.0,
+      "max": 137,
+      "zero": 0
+    },
+    "raw_tiled_candidates": {
+      "sum": 221827,
+      "mean": 113.35053653551354,
+      "median": 104.0,
+      "p90": 192.4000000000001,
+      "max": 388,
+      "zero": 0
+    }
+  },
+  "assets": {
+    "model_paths": {
+      "category_fast": "result/checkpoints/cp_strict/category_pts16_trainvocab.pt",
+      "category_tiled": "result/checkpoints/cp_strict/category_pts32_trainvocab.pt",
+      "filter_fast": "/home/czp/ljs/Freely-Object-Counting/result/checkpoints/fsc147_candidate_filter_pts16_trainonly.pt",
+      "filter_tiled": "/home/czp/ljs/Freely-Object-Counting/result/checkpoints/fsc147_candidate_filter_pts32_trainonly.pt",
+      "prototypes": "/home/czp/ljs/Freely-Object-Counting/result/checkpoints/text_prototypes_fsc147_train89.pt",
+      "prototype_metadata": "/home/czp/ljs/Freely-Object-Counting/result/checkpoints/text_prototypes_fsc147_train89.json",
+      "relation_fast_17": "result/checkpoints/cp_strict/relation_pts16_trainvocab_scratch_seed17.pt",
+      "relation_tiled_17": "result/checkpoints/cp_strict/relation_pts32_trainvocab_scratch_seed17.pt",
+      "relation_fast_42": "result/checkpoints/cp_strict/relation_pts16_trainvocab_scratch_seed42.pt",
+      "relation_tiled_42": "result/checkpoints/cp_strict/relation_pts32_trainvocab_scratch_seed42.pt",
+      "relation_fast_73": "result/checkpoints/cp_strict/relation_pts16_trainvocab_scratch_seed73.pt",
+      "relation_tiled_73": "result/checkpoints/cp_strict/relation_pts32_trainvocab_scratch_seed73.pt"
+    },
+    "model_sha256": {
+      "category_fast": "9ffa9864ba1c7d0750ecbdcb9e8a932b92d1c3ad7cfe2f147338248e7419fc94",
+      "category_tiled": "5726d7ffd2e0eafd772a65b3963ba975afc21af81910483569812769df330998",
+      "filter_fast": "766ba5dc5e5a37840556bfee5d32067eaf86436b02aa6eaddf90469281f6754c",
+      "filter_tiled": "55d530c3c942ecb873fbbb7433b74ab24c23a2f544f9ff206f79832daec2de11",
+      "prototypes": "125a529726a568a19a0b4886d1c8a6661adbd35abb26e94de09bef339a125106",
+      "prototype_metadata": "d46b50b846a7ee2dbf02ea95c8534021a81ef9d8455f81decbe8735052f5f4fa",
+      "relation_fast_17": "63fbade6b664ae8f986155e1e9e4a610fead9d6c3bc0beb51cb9ee057dcb2bad",
+      "relation_tiled_17": "16dfe4bf1e1d0cd9e47bdedf42b70f59eefc9710228b1e1f8398f899f6165b90",
+      "relation_fast_42": "55e047377ae92ef9e0e57125764a2cd961fae9b0f35271a14e83ec25d8e607b5",
+      "relation_tiled_42": "4c88c73f2dfefe727f698072660f248bfc2028d7e37c12df674615fc824b3c7f",
+      "relation_fast_73": "e3a70cd40a41fc62b6a32c9ce2045daa7ea47ee3d54de0c102f9f93d35495d2f",
+      "relation_tiled_73": "ecf09d2967fc10cb901a6fd2858e551a78ca8e84367d8fadafff75af3d142e48"
+    },
+    "frozen_config_path": "result/logs/fsc147_strict_nogt_val_selection.json",
+    "frozen_config_sha256": "8c4f0c61cdf74221470cd41fcc58837be7f39ba37b5f08b50d303b9b3ab5ee16",
+    "shared_code_sha256": {
+      "script/eval_fsc147_strict_nogt.py": "2603db980ad57025c1656496d44482d929cbbb074f5313ddcb53b671a6840c9f",
+      "script/ablation_fsc147_multires_components.py": "91b607a46c9c5db2e8b167c309228605547bc7facfd580c6d84cd95326908216",
+      "script/preprocess_fsc147_tiled.py": "4713fabe8afc630ce8adc9cbd7b6d72e9e35295fe99d77e3f06c9106f758a497",
+      "script/preprocess_fsc147_tiled_nogt.py": "73fd52332baafcd5f0ea2cb3575266bb30bfb9292364dd50aa7e4d4dae3d39b3",
+      "script/train_candidate_filter.py": "1491b5c67223f436831342f926a8c4222d3bac18bed474e5aa2a24363337711a",
+      "script/train_category_v2.py": "26c2e401cb05e5462d42b74887a53a1aba65a3633d19d1a898c6ac5208e7a9a3",
+      "code/candidates/crops.py": "cca6b61b73b321db5f88192020ff6cf056858c76d408c69e392b432a2e7ca893",
+      "code/clustering/first_neighbor.py": "0ad3ca9643fe990f208e1884f0511d3fce51ddb8836aa474224e1874223325a9",
+      "code/counting/deduplicate.py": "68e07b1fc9c6abea2f4930e222b56cc16f9099e7e233da97c5158487ba892c55",
+      "code/counting/representative.py": "cc6399f20001152c076671aabb4a57404d0322b7601bdd590ee35ad8ce948897",
+      "code/encoders/dinov2_encoder.py": "88a4f975f3d25faf50338a8734374bdaa636d804b7ca0189ab4f3f2387ec9f93",
+      "code/matrix/pairwise_features.py": "5c4363eb6f2387332893c42f548448e9f66b3a74b662597ab51710c3abf88ef6"
+    },
+    "omnicount_code_sha256": {
+      "script/eval_omnicount_strict_nogt.py": "3d1884f596132bbd5707f35e3d71450a556aaf0be09b3681f9321c3801c3798d",
+      "script/preprocess_omnicount_tiled_nogt.py": "e8c75d3ad2e57e3d8f8730e1bc524fa2813879d17cf4a4069aea0531c6e2db2f",
+      "script/export_omnicount_strict_protocol.py": "a71197444a1172dcbdae6ecf44ef8c9ae6649ea0db91d0dfc93b2e42aa7f97e8",
+      "script/export_omnicount_inference_cache.py": "917b623dad5e82f37c237e28535ad3751e5bd6d681a5e4ecbf81b682e2d952ec"
+    },
+    "manifest_path": "result/configs/omnicount_test_image_manifest_strict.json",
+    "manifest_sha256": "c982a19d7e1dd91f9397b601efa765eb95b11de9c7b11e041587d854be4979d5",
+    "fast_cache": "/home/czp/ws_yiyang/ovcud_cache/omnicount_strict_nogt_fast",
+    "tiled_cache": "/home/czp/ws_yiyang/ovcud_cache/omnicount_strict_nogt_tiled2x2",
+    "target_path": "result/configs/omnicount_test_count_targets_strict.json",
+    "target_sha256": "d3febab2e7ea1f11846b2bfa77bff66ba61c4075839cbc65a6ab546dad95d17c",
+    "prediction_only_path": "result/logs/omnicount_strict_nogt_predictions_full1957.json",
+    "prediction_only_sha256": "ef5f938a6291df9646927430f5a8031f191b4ca446a2e5facdb0797a82502c43"
+  },
+  "elapsed_seconds": 0.20482587814331055
+}
