@@ -164,7 +164,15 @@ Validation 配置提交后运行 image-only `plan-test`，输出 `result/configs
 
 主结果必须使用 validation 预先选择的 seed 73，即 **MAE=26.50 / RMSE=129.69**。三个 seed 的均值只表示 relation 初始化稳定性，不能替代预注册 primary，也不覆盖 category/filter 的训练随机性。
 
-### 5.2 Primary seed 分桶
+### 5.2 Prediction-GT 散点图
+
+![FSC-147 strict no-GT prediction versus ground truth](figures/fsc147_strict_nogt_pred_vs_gt_seed73.png)
+
+左图使用 log-log 坐标显示全部 1,190 张 test 图，右图在线性坐标下放大 count 0-250 的 1,147 张主体样本；虚线为理想预测 `prediction=GT`。Primary seed 73 的 Pearson `r=0.4713`。低/中密度样本大量位于虚线上方，对应系统性过计数；`1123.jpg` 与 `7611.jpg` 则远低于虚线，是 RMSE 的主要极端误差来源。
+
+矢量版本：[`fsc147_strict_nogt_pred_vs_gt_seed73.pdf`](figures/fsc147_strict_nogt_pred_vs_gt_seed73.pdf)。绘图入口：`script/plot_fsc147_strict_pred_vs_gt.py`。
+
+### 5.3 Primary seed 分桶
 
 | GT count bin | Images | MAE | RMSE | Bias | Mean pred / GT |
 |---|---:|---:|---:|---:|---:|
@@ -176,7 +184,7 @@ Validation 配置提交后运行 image-only `plan-test`，输出 `result/configs
 
 误差呈现明确的密度失配：低/中密度系统性过计数，100+ 系统性漏计。Top 1% 图像贡献 27.29% 总绝对误差，Top 5% 贡献 42.64%。
 
-### 5.3 极端失败分析
+### 5.4 极端失败分析
 
 | Image | GT | Pred | Abs. error | 诊断 |
 |---|---:|---:|---:|---|
@@ -185,7 +193,7 @@ Validation 配置提交后运行 image-only `plan-test`，输出 `result/configs
 
 `7611` 的 1,997 个候选中，filter>=0.3 有 748 个、category confidence>=0.4 有 584 个、两者联合仅 246 个；seed 73 去重后计数 219。去掉 `7611` 后为 MAE=24.55 / RMSE=110.56；去掉 `1123` 与 `7611` 后 MAE=21.58 / RMSE=39.49。说明 remaining error 同时来自 proposal recall 与 train-vocabulary/category-filter gate，不能只靠 relation head 修复。
 
-### 5.4 与历史 12.67 的关系
+### 5.5 与历史 12.67 的关系
 
 | 结果 | MAE | RMSE | 可否作为 no-GT 主结果 |
 |---|---:|---:|---|
@@ -214,4 +222,6 @@ Validation 配置提交后运行 image-only `plan-test`，输出 `result/configs
 - `script/preprocess_fsc147_tiled_nogt.py`：不加载 annotation 的 tiled candidate 生成。
 - `script/select_fsc147_train_rescue.py`：仅用 train fast-zero failure cases 冻结 rescue recipe。
 - `script/eval_fsc147_strict_nogt.py`：validation freeze 与 test 两阶段入口。
+- `script/plot_fsc147_strict_pred_vs_gt.py`：从 frozen full-test JSON 复算指标并生成 PNG/PDF 散点图。
+- `docs/figures/fsc147_strict_nogt_pred_vs_gt_seed73.{png,pdf}`：primary seed 73 的全量图与矢量版本。
 - `result/configs/fsc147_train_fast_zero_images.json`：train-only rescue 选择样本；test fast-zero 名单由冻结后的 `plan-test` 动态输出。
