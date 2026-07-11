@@ -202,6 +202,20 @@ Validation 配置提交后运行 image-only `plan-test`，输出 `result/configs
 
 两者相差 +13.8311 MAE，但这不是“去掉 CP”的单组件增量：本轮同时修复 candidate gate、路由、训练 split、文本词表和 relation 初始化。此前严格配对 CP/scratch 实验的差异接近零，因此不能把这 13.83 归因于移除 COCO；主要差距更可能来自旧 GT candidate oracle、旧 split overlap 和新 train-only 词表/过滤器，但要量化各项必须在当前 strict cache 下另做 train/validation-frozen leave-one-out。
 
+### 5.6 保留 GT oracle 的词表归因实验
+
+为判断历史低 MAE 是否依赖提前知道 FSC test 类名，另做了一个明确保留旧 GT-derived `valid`、GT-selected MR 路由、旧 relation 与 T4 的诊断实验：
+
+| Category / vocabulary | MAE | RMSE | 解释 |
+|---|---:|---:|---|
+| 旧 head + full-147 | 12.6681 | 113.7111 | 历史锚点 |
+| 旧 head + 删除 test 29 行 | 57.5790 | 145.6918 | 旧 head 与完整词表强耦合，直接裁行导致置信度坍缩 |
+| train-only head + full-147 | 15.5479 | 114.7505 | same-head 词表参考 |
+| train-only head + 删除 test 29 行 | 14.1218 | 111.7693 | 相对同 head full-147 改善 1.4261 MAE |
+| **train-only head + direct train-89** | **13.1109** | **109.6685** | val/test 类名均为 0；相对历史 12.67 配对差 +0.4429，95% CI [-0.4950, 1.0412] |
+
+该结果说明 test 类名不是 GT-assisted 低 MAE 的必要条件；真正支撑 12.67 量级的是 GT candidate oracle 等历史协议。`13.11` 仍不是 no-GT 结果，也不改变本报告 `26.50` 的主结果地位。完整记录见 `docs/fsc147_gt_assisted_vocabulary_ablation_report_20260711.md`。
+
 ## 6. 结论与投稿口径
 
 1. 原 `12.67 / 113.71` 必须从论文主结果撤下，只能保留为 GT-assisted historical diagnostic。
@@ -223,5 +237,8 @@ Validation 配置提交后运行 image-only `plan-test`，输出 `result/configs
 - `script/select_fsc147_train_rescue.py`：仅用 train fast-zero failure cases 冻结 rescue recipe。
 - `script/eval_fsc147_strict_nogt.py`：validation freeze 与 test 两阶段入口。
 - `script/plot_fsc147_strict_pred_vs_gt.py`：从 frozen full-test JSON 复算指标并生成 PNG/PDF 散点图。
+- `script/eval_fsc147_leaky_filter_vocab_ablation.py`：保留旧 GT oracle 的词表泄露归因实验。
 - `docs/figures/fsc147_strict_nogt_pred_vs_gt_seed73.{png,pdf}`：primary seed 73 的全量图与矢量版本。
+- `result/logs/fsc147_leaky_filter_vocab_ablation_full1190.json.gz`：七变体 full-test 逐图结果。
+- `docs/fsc147_gt_assisted_vocabulary_ablation_report_20260711.md`：词表归因中文报告。
 - `result/configs/fsc147_train_fast_zero_images.json`：train-only rescue 选择样本；test fast-zero 名单由冻结后的 `plan-test` 动态输出。

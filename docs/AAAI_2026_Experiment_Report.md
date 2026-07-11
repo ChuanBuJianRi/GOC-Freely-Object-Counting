@@ -19,6 +19,7 @@
 | **FSC-147 test 1,190，primary seed 73** | **strict no-GT，FSC train-only，dot-supervised，CP-free** | **26.50** | **129.69** | 当前主结果 |
 | FSC-147，3 relation seeds | 同上；只改变 relation 初始化 | 28.00 ± 1.41 | 129.59 ± 0.16 | 稳定性补充 |
 | FSC-147 historical MR+T4 | GT-assisted / split-contaminated | 12.67 | 113.71 | 只能作历史诊断 |
+| FSC-147 historical oracle + train-only category/vocab | 仍为 GT-assisted；无 val/test 类名 | 13.11 | 109.67 | 词表归因诊断，不能作主结果 |
 | FSC-147 historical 1,189 | 缺失 `7611.jpg` | 12.74 | 106.20 | 无效主结果 |
 | CARPK test 459 | 旧 FSC/COCO checkpoint，CARPK no-GT | 4.06 | 5.51 | 尚未用新 strict checkpoint 重跑 |
 | PUCPR+ test 25 | 旧 checkpoint，2x2 tiled | 3.59 | 5.43 | 尚未用新 strict checkpoint 重跑 |
@@ -59,6 +60,8 @@ OmniCount 已完成同一 strict checkpoint 的 full-1,957 total-count 重跑；
 | `7611` T4 | recipe 受 test failure 启发 | 存在 researcher-level test familiarity | 仅用 train fast-zero 样本选 2x2/3x3/4x4；同时披露历史 |
 
 旧 `12.67` 的 trigger `fast n_candidates==0` 本身是 image-only，但其余 candidate gate、路由和训练路径不满足 no-GT。仅披露“trigger 不读 GT”不足以挽救整个协议。
+
+补充 full-1,190 词表归因实验表明：固定旧 category head 后直接删除 test 29 个 prototype 行会从 12.67 退化到 57.58，说明旧 head 与完整词表严重失配；但换成 official-train-only category head 和 train-89 原型，同时保留其余历史 GT oracle 后，可得到 `13.11 / 109.67`。相对旧 12.67 的配对 MAE 差为 `+0.443`，95% CI `[-0.495, 1.041]`。因此 test 类名不是历史低 MAE 的必要条件，GT-derived filtering 才是更核心的解释；该实验仍是 GT-assisted diagnostic。详见 `docs/fsc147_gt_assisted_vocabulary_ablation_report_20260711.md`。
 
 ## 3. Strict 主方法实现
 
@@ -178,6 +181,7 @@ SHA-256：`a455706c602a3b386488983b94db394e7ba3dd65ca7536aac535aff2121a184c`
 | 协议 | Candidate gate | Routing | Category / relation train split | Vocabulary | Relation init | MAE |
 |---|---|---|---|---|---|---:|
 | Historical 12.67 | test GT dot oracle | GT count cache bins | 有 official-test overlap | full 147 | COCO + FSC | 12.67 |
+| Vocabulary diagnostic | test GT dot oracle | GT count cache bins | category train-only；relation 仍有 overlap | train 89 | 旧 relation | 13.11 |
 | Strict rerun | train-dot MLP prediction | val-frozen image-only | official train only | train 89 | scratch FSC dots | 26.50 |
 
 因此 +13.83 MAE 是完整协议纠正后的差值，不是 CP leave-one-out。此前 official-train-only 的 CP/scratch 三 seed配对差异接近零，已经说明 COCO 初始化不是旧 12.67 的主要来源。若要量化每个修正项，只能在当前 safe cache、train-only data 和 validation-frozen threshold 下逐项重跑；不能恢复 test `valid` 后把结果称为消融。
@@ -240,6 +244,7 @@ OmniCount 已使用当前 FSC strict 模型完成 image-only full-1,957 重跑�
 - `script/preprocess_fsc147_tiled_nogt.py`
 - `script/select_fsc147_train_rescue.py`
 - `script/eval_fsc147_strict_nogt.py`
+- `script/eval_fsc147_leaky_filter_vocab_ablation.py`
 - `script/export_omnicount_strict_protocol.py`
 - `script/export_omnicount_inference_cache.py`
 - `script/preprocess_omnicount_tiled_nogt.py`
@@ -262,6 +267,8 @@ python3 script/eval_fsc147_strict_nogt.py test \
 - `result/logs/fsc147_strict_nogt_val_selection.json`
 - `result/configs/fsc147_strict_nogt_test_tile_plan.json`
 - `result/logs/fsc147_strict_nogt_cp_free_full1190.json`
+- `result/logs/fsc147_leaky_filter_vocab_ablation_full1190.json.gz`
+- `docs/fsc147_gt_assisted_vocabulary_ablation_report_20260711.md`
 - `docs/fsc147_strict_nogt_cp_free_report_20260710.md`
 - `result/logs/omnicount_strict_nogt_predictions_full1957.json`
 - `result/logs/omnicount_strict_nogt_full1957.json`
@@ -277,6 +284,7 @@ python3 script/eval_fsc147_strict_nogt.py test \
 - [x] 所有 1,190 预测生成后才读取 test annotation。
 - [x] 逐 seed MAE/RMSE、bootstrap、分桶和失败样本记录。
 - [x] 撤销 12.67 的 no-GT 主结果地位。
+- [x] 完成保留 GT oracle、移除 held-out 词表的 full-1,190 配对归因实验。
 - [x] 当前 FSC strict checkpoint 在 OmniCount full 1,957 上完成 process-isolated total-count 重跑。
 - [x] v2.1 通俗执行版已绑定 B0/validation 冻结 JSON SHA，并保留候选 gate/proposal-capacity 的证据边界与完整技术附录。
 - [ ] 生成 official-train class-disjoint fit/stop/dev/audit manifest 和 isolated point/class shard。
