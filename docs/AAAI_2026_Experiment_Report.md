@@ -8,6 +8,8 @@
 
 > **主结果更正**：历史 `12.67 / 113.71` 使用了 test GT-derived candidate `valid`、GT count 分桶形成的 cache 路由，并且旧 category/relation 训练 cache 混入 official test。该数字不能继续作为 no-GT 主结果。当前通过实现审计和 full-1,190 重跑的主结果是 **MAE=26.50 / RMSE=129.69**（relation seed 73，仅由 validation 预选）。
 
+> **当前改进路线（v2.1 通俗执行版）**：后续开发以 `docs/fsc147_strict_nogt_improvement_plan_20260711.md` 为唯一执行计划（SHA-256：`c52a32c3497055c26570f36635195693e9611713cf20af8612a21a9ad6f21e06`）。v2.1 不改变 v2.0 的实验定义和冻结结论，只将正文改成通俗执行说明，并把精确参数放入技术附录；当前仍是计划，尚无 v2.1 结果。
+
 ## 1. 执行摘要
 
 ### 1.1 当前可报告结果
@@ -187,11 +189,13 @@ SHA-256：`a455706c602a3b386488983b94db394e7ba3dd65ca7536aac535aff2121a184c`
 | 消融 | 当前是否有 strict full-1,190 证据 | 后续要求 |
 |---|---|---|
 | Relation head -> box-IoU | 否 | 新 safe cache、seed73；阈值只用 val |
-| Candidate filter / ADF | 否 | 只比较 train-dot MLP 与预注册 image-only gate |
+| Candidate filter / candidate funnel | 只有冻结 val 的 gate sensitivity，尚无完整模块 LOO | 按 v2.1 G0-G4、F0-F2、Q0-Q3 归因；同时记录 proposal capacity、unique-dot loss 和三处 category 耦合 |
 | Category grouping | 否 | no grouping / train-89 grouping；不可用 test class |
 | pts32 2x2 tiling | Val 有 route 证据，test 无严格 LOO | always-fast 与 always-tiled 配置冻结后一次评测 |
 | 4x4 fast-zero rescue | test 有单样本主结果，非严格 blind | 报 trigger coverage，并在新未触碰数据集复核 |
 | COCO pretraining | 已完成配对实验 | 从主组件表删除，不再作为贡献 |
+
+冻结 val 的阈值诊断表明，joint gate 三 seed mean 为 30.31 MAE；关闭 filter threshold、保留 category threshold 时为 50.02，关闭 category threshold、保留 filter threshold 时为 40.27，而只改 relation `tau_inst=0.99 -> 0.999` 为 30.31 -> 30.81。该证据支持优先研究候选 gate，但阈值为 0 时 filter/category 仍参与 ranking、grouping 或 representative selection，因此不能把这些数字写成完整模块因果消融。极端密度还存在独立的 proposal-capacity 硬瓶颈，不能把所有误差归因于 filter。
 
 在这些 strict LOO 完成前，论文 `tab:ablation` 应留空或明确标注 historical GT-assisted，不能沿用 12.67 表格。
 
@@ -213,7 +217,7 @@ OmniCount 已使用当前 FSC strict 模型完成 image-only full-1,957 重跑�
 - `docs/abc123_mcac_reproduction_report_20260710.md`
 - `docs/carpk_full459_rerun_20260709.md`
 
-旧 OmniCount 4.68、MCAC、CARPK、PUCPR+ 记录使用旧 FSC/COCO checkpoint。当前 OmniCount strict 重跑只解决了 scalar total-count same-model 问题，尚未实现 anonymous groups + locations + per-group counts。后续 OmniCount/MCAC 若报告 per-group/per-class，必须预先固定 extra-group penalty 和严格 Hungarian，不能与 FSC single-class scalar count 混表，也不得用 benchmark test 词表反向选择主模型。
+旧 OmniCount 4.68、MCAC、CARPK、PUCPR+ 记录使用旧 FSC/COCO checkpoint。当前 OmniCount strict 重跑只解决了 scalar total-count same-model 问题，尚未实现 v2.1 计划中的 anonymous groups + locations + per-group counts。后续 OmniCount/MCAC 若报告 per-group/per-class，必须预先固定 extra-group penalty 和严格 Hungarian，不能与 FSC single-class scalar count 混表，也不得用 benchmark test 词表反向选择主模型。
 
 ## 9. 论文表格调整
 
@@ -274,6 +278,11 @@ python3 script/eval_fsc147_strict_nogt.py test \
 - [x] 逐 seed MAE/RMSE、bootstrap、分桶和失败样本记录。
 - [x] 撤销 12.67 的 no-GT 主结果地位。
 - [x] 当前 FSC strict checkpoint 在 OmniCount full 1,957 上完成 process-isolated total-count 重跑。
+- [x] v2.1 通俗执行版已绑定 B0/validation 冻结 JSON SHA，并保留候选 gate/proposal-capacity 的证据边界与完整技术附录。
+- [ ] 生成 official-train class-disjoint fit/stop/dev/audit manifest 和 isolated point/class shard。
+- [ ] 落盘 B0 raw/filter/category/joint/dedup stage telemetry，正式复核候选漏斗归因。
+- [ ] 完成 tiled countability、PU/singleton-quality 与 category-objectness 全路径解耦。
+- [ ] 将 scalar count 输出重构为 anonymous groups、representatives、locations 和 per-group counts。
 - [ ] 用新 strict checkpoint 补齐 MCAC/CARPK/PUCPR+，并完成 OmniCount/MCAC anonymous multi-group 主表。
 - [ ] 在当前 strict 协议下重跑 leave-one-out 组件消融。
 - [ ] 在未触碰的新 benchmark 上确认 rescue 与高密度结论。

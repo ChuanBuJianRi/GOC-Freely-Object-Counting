@@ -1,5 +1,7 @@
 # OV-CUD AAAI 投稿实验补充计划
 
+> **历史计划 / 已被取代（2026-07-11）**：本文保留 2026-07-01 时的旧数字和旧监督口径，仅供审计，不得作为当前执行依据。当前权威结果见 `docs/AAAI_2026_Experiment_Report.md`；当前执行计划见 `docs/fsc147_strict_nogt_improvement_plan_20260711.md`（v2.1 通俗执行版，image-only、user-prompt-free、point-supervised、density-map-free anonymous multi-category）。
+
 **版本**: v1.0  
 **日期**: 2026-07-01  
 **目标**: 围绕当前 OV-CUD 在 FSC147 与 CARPK 上的结果，规划 AAAI 投稿前必须补充的消融实验、对比实验、诊断实验与论文呈现方案。
