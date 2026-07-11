@@ -1,0 +1,566 @@
+{
+  "schema": "fsc147-train-vocabulary-v1",
+  "official_split": "train",
+  "split_file": "/home/czp/official_code/dataset/FSC147/Train_Test_Val_FSC_147.json",
+  "declared_train_images": 3659,
+  "loaded_train_images": 3657,
+  "missing_train_images": [
+    "2737.jpg",
+    "2979.jpg"
+  ],
+  "test_images_loaded": 0,
+  "validation_images_loaded": 0,
+  "prototype_generation": "direct OpenCLIP encoding of official-train class names",
+  "model_name": "ViT-B-32",
+  "pretrained": "laion2b_s34b_b79k",
+  "prompt_templates": [
+    "a photo of a {}.",
+    "a close-up photo of a {}.",
+    "a photo of a single {}.",
+    "an image of a {}.",
+    "a cropped photo of a {}."
+  ],
+  "out_prototypes": "result/checkpoints/text_prototypes_fsc147_train89.pt",
+  "out_prototypes_sha256": "125a529726a568a19a0b4886d1c8a6661adbd35abb26e94de09bef339a125106",
+  "global_class_ids": [
+    0,
+    3,
+    4,
+    5,
+    6,
+    7,
+    9,
+    10,
+    11,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    21,
+    22,
+    24,
+    26,
+    27,
+    29,
+    30,
+    32,
+    33,
+    34,
+    36,
+    38,
+    39,
+    40,
+    41,
+    43,
+    44,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    58,
+    63,
+    64,
+    65,
+    66,
+    67,
+    72,
+    73,
+    74,
+    75,
+    77,
+    78,
+    81,
+    82,
+    83,
+    84,
+    87,
+    88,
+    90,
+    91,
+    92,
+    94,
+    95,
+    96,
+    97,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    109,
+    110,
+    113,
+    116,
+    117,
+    120,
+    126,
+    129,
+    130,
+    131,
+    133,
+    136,
+    138,
+    139,
+    141,
+    144,
+    145,
+    146
+  ],
+  "categories": [
+    {
+      "local_id": 0,
+      "global_id": 0,
+      "name": "alcohol bottles"
+    },
+    {
+      "local_id": 1,
+      "global_id": 3,
+      "name": "baguette rolls"
+    },
+    {
+      "local_id": 2,
+      "global_id": 4,
+      "name": "balls"
+    },
+    {
+      "local_id": 3,
+      "global_id": 5,
+      "name": "bananas"
+    },
+    {
+      "local_id": 4,
+      "global_id": 6,
+      "name": "beads"
+    },
+    {
+      "local_id": 5,
+      "global_id": 7,
+      "name": "bees"
+    },
+    {
+      "local_id": 6,
+      "global_id": 9,
+      "name": "birthday candles"
+    },
+    {
+      "local_id": 7,
+      "global_id": 10,
+      "name": "biscuits"
+    },
+    {
+      "local_id": 8,
+      "global_id": 11,
+      "name": "boats"
+    },
+    {
+      "local_id": 9,
+      "global_id": 14,
+      "name": "bottles"
+    },
+    {
+      "local_id": 10,
+      "global_id": 15,
+      "name": "bowls"
+    },
+    {
+      "local_id": 11,
+      "global_id": 16,
+      "name": "boxes"
+    },
+    {
+      "local_id": 12,
+      "global_id": 17,
+      "name": "bread rolls"
+    },
+    {
+      "local_id": 13,
+      "global_id": 18,
+      "name": "bricks"
+    },
+    {
+      "local_id": 14,
+      "global_id": 19,
+      "name": "buffaloes"
+    },
+    {
+      "local_id": 15,
+      "global_id": 21,
+      "name": "buns"
+    },
+    {
+      "local_id": 16,
+      "global_id": 22,
+      "name": "calamari rings"
+    },
+    {
+      "local_id": 17,
+      "global_id": 24,
+      "name": "candles"
+    },
+    {
+      "local_id": 18,
+      "global_id": 26,
+      "name": "cans"
+    },
+    {
+      "local_id": 19,
+      "global_id": 27,
+      "name": "caps"
+    },
+    {
+      "local_id": 20,
+      "global_id": 29,
+      "name": "cars"
+    },
+    {
+      "local_id": 21,
+      "global_id": 30,
+      "name": "cartridges"
+    },
+    {
+      "local_id": 22,
+      "global_id": 32,
+      "name": "cassettes"
+    },
+    {
+      "local_id": 23,
+      "global_id": 33,
+      "name": "cement bags"
+    },
+    {
+      "local_id": 24,
+      "global_id": 34,
+      "name": "cereals"
+    },
+    {
+      "local_id": 25,
+      "global_id": 36,
+      "name": "chewing gum pieces"
+    },
+    {
+      "local_id": 26,
+      "global_id": 38,
+      "name": "chopstick"
+    },
+    {
+      "local_id": 27,
+      "global_id": 39,
+      "name": "clams"
+    },
+    {
+      "local_id": 28,
+      "global_id": 40,
+      "name": "coffee beans"
+    },
+    {
+      "local_id": 29,
+      "global_id": 41,
+      "name": "coins"
+    },
+    {
+      "local_id": 30,
+      "global_id": 43,
+      "name": "cotton balls"
+    },
+    {
+      "local_id": 31,
+      "global_id": 44,
+      "name": "cows"
+    },
+    {
+      "local_id": 32,
+      "global_id": 46,
+      "name": "cranes"
+    },
+    {
+      "local_id": 33,
+      "global_id": 47,
+      "name": "crayons"
+    },
+    {
+      "local_id": 34,
+      "global_id": 48,
+      "name": "croissants"
+    },
+    {
+      "local_id": 35,
+      "global_id": 49,
+      "name": "crows"
+    },
+    {
+      "local_id": 36,
+      "global_id": 50,
+      "name": "cupcake tray"
+    },
+    {
+      "local_id": 37,
+      "global_id": 51,
+      "name": "cupcakes"
+    },
+    {
+      "local_id": 38,
+      "global_id": 52,
+      "name": "cups"
+    },
+    {
+      "local_id": 39,
+      "global_id": 58,
+      "name": "fishes"
+    },
+    {
+      "local_id": 40,
+      "global_id": 63,
+      "name": "geese"
+    },
+    {
+      "local_id": 41,
+      "global_id": 64,
+      "name": "gemstones"
+    },
+    {
+      "local_id": 42,
+      "global_id": 65,
+      "name": "go game"
+    },
+    {
+      "local_id": 43,
+      "global_id": 66,
+      "name": "goats"
+    },
+    {
+      "local_id": 44,
+      "global_id": 67,
+      "name": "goldfish snack"
+    },
+    {
+      "local_id": 45,
+      "global_id": 72,
+      "name": "ice cream"
+    },
+    {
+      "local_id": 46,
+      "global_id": 73,
+      "name": "instant noodles"
+    },
+    {
+      "local_id": 47,
+      "global_id": 74,
+      "name": "jade stones"
+    },
+    {
+      "local_id": 48,
+      "global_id": 75,
+      "name": "jeans"
+    },
+    {
+      "local_id": 49,
+      "global_id": 77,
+      "name": "kidney beans"
+    },
+    {
+      "local_id": 50,
+      "global_id": 78,
+      "name": "kitchen towels"
+    },
+    {
+      "local_id": 51,
+      "global_id": 81,
+      "name": "lighters"
+    },
+    {
+      "local_id": 52,
+      "global_id": 82,
+      "name": "lipstick"
+    },
+    {
+      "local_id": 53,
+      "global_id": 83,
+      "name": "m&m pieces"
+    },
+    {
+      "local_id": 54,
+      "global_id": 84,
+      "name": "macarons"
+    },
+    {
+      "local_id": 55,
+      "global_id": 87,
+      "name": "matches"
+    },
+    {
+      "local_id": 56,
+      "global_id": 88,
+      "name": "meat skewers"
+    },
+    {
+      "local_id": 57,
+      "global_id": 90,
+      "name": "mini blinds"
+    },
+    {
+      "local_id": 58,
+      "global_id": 91,
+      "name": "mosaic tiles"
+    },
+    {
+      "local_id": 59,
+      "global_id": 92,
+      "name": "naan bread"
+    },
+    {
+      "local_id": 60,
+      "global_id": 94,
+      "name": "nails"
+    },
+    {
+      "local_id": 61,
+      "global_id": 95,
+      "name": "nuts"
+    },
+    {
+      "local_id": 62,
+      "global_id": 96,
+      "name": "onion rings"
+    },
+    {
+      "local_id": 63,
+      "global_id": 97,
+      "name": "oranges"
+    },
+    {
+      "local_id": 64,
+      "global_id": 101,
+      "name": "pearls"
+    },
+    {
+      "local_id": 65,
+      "global_id": 102,
+      "name": "pencils"
+    },
+    {
+      "local_id": 66,
+      "global_id": 103,
+      "name": "penguins"
+    },
+    {
+      "local_id": 67,
+      "global_id": 104,
+      "name": "pens"
+    },
+    {
+      "local_id": 68,
+      "global_id": 105,
+      "name": "people"
+    },
+    {
+      "local_id": 69,
+      "global_id": 106,
+      "name": "peppers"
+    },
+    {
+      "local_id": 70,
+      "global_id": 107,
+      "name": "pigeons"
+    },
+    {
+      "local_id": 71,
+      "global_id": 109,
+      "name": "plates"
+    },
+    {
+      "local_id": 72,
+      "global_id": 110,
+      "name": "polka dot tiles"
+    },
+    {
+      "local_id": 73,
+      "global_id": 113,
+      "name": "potatoes"
+    },
+    {
+      "local_id": 74,
+      "global_id": 116,
+      "name": "rice bags"
+    },
+    {
+      "local_id": 75,
+      "global_id": 117,
+      "name": "roof tiles"
+    },
+    {
+      "local_id": 76,
+      "global_id": 120,
+      "name": "screws"
+    },
+    {
+      "local_id": 77,
+      "global_id": 126,
+      "name": "shoes"
+    },
+    {
+      "local_id": 78,
+      "global_id": 129,
+      "name": "spoon"
+    },
+    {
+      "local_id": 79,
+      "global_id": 130,
+      "name": "spring rolls"
+    },
+    {
+      "local_id": 80,
+      "global_id": 131,
+      "name": "stairs"
+    },
+    {
+      "local_id": 81,
+      "global_id": 133,
+      "name": "stapler pins"
+    },
+    {
+      "local_id": 82,
+      "global_id": 136,
+      "name": "straws"
+    },
+    {
+      "local_id": 83,
+      "global_id": 138,
+      "name": "supermarket shelf"
+    },
+    {
+      "local_id": 84,
+      "global_id": 139,
+      "name": "swans"
+    },
+    {
+      "local_id": 85,
+      "global_id": 141,
+      "name": "tomatoes"
+    },
+    {
+      "local_id": 86,
+      "global_id": 144,
+      "name": "watermelon"
+    },
+    {
+      "local_id": 87,
+      "global_id": 145,
+      "name": "windows"
+    },
+    {
+      "local_id": 88,
+      "global_id": 146,
+      "name": "zebras"
+    }
+  ],
+  "retained_class_count": 89,
+  "nontrain_class_rows_retained": 0,
+  "selection_rule": "global class IDs observed in official-train cache files only"
+}

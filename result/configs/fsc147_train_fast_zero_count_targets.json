@@ -1,0 +1,16 @@
+{
+  "schema": "fsc147-count-target-v1",
+  "official_split": "train",
+  "split_file": "/home/czp/official_code/dataset/FSC147/Train_Test_Val_FSC_147.json",
+  "declared_images": 1,
+  "names_sha256": "b5d14f1aeb862ac8b1b2f314d101ce09fbcc65496efa67ae9ccf9abd396504b3",
+  "nonselected_images_loaded": 0,
+  "source_type": "density integral",
+  "source_root": "/home/czp/official_code/dataset/FSC147/gt_density_map_adaptive_384_VarV2",
+  "source_files": [
+    "/home/czp/official_code/dataset/FSC147/gt_density_map_adaptive_384_VarV2/7454.npy"
+  ],
+  "targets": {
+    "7454.jpg": 197
+  }
+}

@@ -25,10 +25,10 @@ from pathlib import Path
 import numpy as np
 import torch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "code"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from frame_1.heads.category_head import build_category_head, CategoryHeadConfig
-from frame_1.training.train_category import forward_logits
+from code.heads.category_head import build_category_head, CategoryHeadConfig
+from code.training.train_category import forward_logits
 
 
 def _infer_proj_kwargs(state: dict) -> dict:

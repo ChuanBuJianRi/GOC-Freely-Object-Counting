@@ -1,0 +1,276 @@
+[
+  {
+    "file_name": "20161225_TPZ_00346.png",
+    "pred": 159,
+    "gt": 159,
+    "groups": [
+      {
+        "class": "cars",
+        "count": 44
+      },
+      {
+        "class": "cars",
+        "count": 32
+      },
+      {
+        "class": "cars",
+        "count": 25
+      },
+      {
+        "class": "cars",
+        "count": 23
+      },
+      {
+        "class": "cars",
+        "count": 8
+      },
+      {
+        "class": "chairs",
+        "count": 8
+      },
+      {
+        "class": "keyboard keys",
+        "count": 4
+      },
+      {
+        "class": "bottle caps",
+        "count": 2
+      },
+      {
+        "class": "cars",
+        "count": 2
+      },
+      {
+        "class": "cars",
+        "count": 2
+      },
+      {
+        "class": "sunglasses",
+        "count": 2
+      },
+      {
+        "class": "caps",
+        "count": 1
+      },
+      {
+        "class": "cars",
+        "count": 1
+      },
+      {
+        "class": "cars",
+        "count": 1
+      },
+      {
+        "class": "chairs",
+        "count": 1
+      },
+      {
+        "class": "crows",
+        "count": 1
+      },
+      {
+        "class": "keyboard keys",
+        "count": 1
+      },
+      {
+        "class": "watches",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "file_name": "20161225_TPZ_00341.png",
+    "pred": 151,
+    "gt": 151,
+    "groups": [
+      {
+        "class": "cars",
+        "count": 66
+      },
+      {
+        "class": "cars",
+        "count": 49
+      },
+      {
+        "class": "cars",
+        "count": 17
+      },
+      {
+        "class": "chairs",
+        "count": 5
+      },
+      {
+        "class": "bottle caps",
+        "count": 2
+      },
+      {
+        "class": "sunglasses",
+        "count": 2
+      },
+      {
+        "class": "windows",
+        "count": 2
+      },
+      {
+        "class": "boxes",
+        "count": 1
+      },
+      {
+        "class": "bricks",
+        "count": 1
+      },
+      {
+        "class": "caps",
+        "count": 1
+      },
+      {
+        "class": "cars",
+        "count": 1
+      },
+      {
+        "class": "jeans",
+        "count": 1
+      },
+      {
+        "class": "keyboard keys",
+        "count": 1
+      },
+      {
+        "class": "pens",
+        "count": 1
+      },
+      {
+        "class": "windows",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "file_name": "2265.jpg",
+    "pred": 57,
+    "gt": 57,
+    "groups": [
+      {
+        "class": "apples",
+        "count": 53
+      },
+      {
+        "class": "apples",
+        "count": 1
+      },
+      {
+        "class": "apples",
+        "count": 1
+      },
+      {
+        "class": "apples",
+        "count": 1
+      },
+      {
+        "class": "tomatoes",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "file_name": "1461.jpg",
+    "pred": 99,
+    "gt": 99,
+    "groups": [
+      {
+        "class": "keyboard keys",
+        "count": 99
+      }
+    ]
+  },
+  {
+    "file_name": "20161225_TPZ_00355.png",
+    "pred": 120,
+    "gt": 141,
+    "groups": [
+      {
+        "class": "cars",
+        "count": 33
+      },
+      {
+        "class": "cars",
+        "count": 23
+      },
+      {
+        "class": "cars",
+        "count": 21
+      },
+      {
+        "class": "cars",
+        "count": 16
+      },
+      {
+        "class": "cars",
+        "count": 9
+      },
+      {
+        "class": "chairs",
+        "count": 7
+      },
+      {
+        "class": "cars",
+        "count": 4
+      },
+      {
+        "class": "keyboard keys",
+        "count": 2
+      },
+      {
+        "class": "alcohol bottles",
+        "count": 1
+      },
+      {
+        "class": "bottle caps",
+        "count": 1
+      },
+      {
+        "class": "caps",
+        "count": 1
+      },
+      {
+        "class": "pens",
+        "count": 1
+      },
+      {
+        "class": "sunglasses",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "file_name": "2007.jpg",
+    "pred": 61,
+    "gt": 108,
+    "groups": [
+      {
+        "class": "sunglasses",
+        "count": 48
+      },
+      {
+        "class": "sunglasses",
+        "count": 5
+      },
+      {
+        "class": "sunglasses",
+        "count": 4
+      },
+      {
+        "class": "sunglasses",
+        "count": 2
+      },
+      {
+        "class": "sunglasses",
+        "count": 1
+      },
+      {
+        "class": "sunglasses",
+        "count": 1
+      }
+    ]
+  }
+]

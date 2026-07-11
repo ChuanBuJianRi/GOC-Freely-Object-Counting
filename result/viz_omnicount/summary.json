@@ -1,0 +1,980 @@
+[
+  {
+    "file": "c-85-_jpg.rf.ecdd80af5522544eb797bca58ce9a7d5.jpg",
+    "category": "Fruits",
+    "gt_class_counts": {
+      "dragon fruit": 1,
+      "banana": 1,
+      "pineapple": 1,
+      "oren": 1
+    },
+    "gt_count": 4,
+    "pred_groups": [
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "umbrella",
+        "count": 1
+      },
+      {
+        "class": "cup",
+        "count": 1
+      },
+      {
+        "class": "fork",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "orange",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "tv",
+        "count": 1
+      },
+      {
+        "class": "refrigerator",
+        "count": 1
+      }
+    ],
+    "pred_total": 18,
+    "out": "result/viz_omnicount/00_c-85-_jpg.png"
+  },
+  {
+    "file": "01ca43f9-d9cae3f4_jpg.rf.ceee5ea8d5eb53aac8a9e12e95bf66f9.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "car": 2,
+      "pedestrian": 3
+    },
+    "gt_count": 5,
+    "pred_groups": [
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 4
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "motorcycle",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "handbag",
+        "count": 1
+      },
+      {
+        "class": "surfboard",
+        "count": 1
+      },
+      {
+        "class": "tennis racket",
+        "count": 1
+      },
+      {
+        "class": "bottle",
+        "count": 1
+      },
+      {
+        "class": "bottle",
+        "count": 1
+      },
+      {
+        "class": "potted plant",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "tv",
+        "count": 1
+      },
+      {
+        "class": "tv",
+        "count": 1
+      }
+    ],
+    "pred_total": 51,
+    "out": "result/viz_omnicount/01_01ca43f9-d9cae3f4_jpg.png"
+  },
+  {
+    "file": "b-1459-_jpg.rf.04e69b80722104bd021a777b621543f8.jpg",
+    "category": "Fruits",
+    "gt_class_counts": {
+      "banana": 2,
+      "dragon fruit": 1,
+      "sugar apple": 1,
+      "apples": 2
+    },
+    "gt_count": 6,
+    "pred_groups": [
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      }
+    ],
+    "pred_total": 12,
+    "out": "result/viz_omnicount/02_b-1459-_jpg.png"
+  },
+  {
+    "file": "c-289-_jpg.rf.7354309f4c3b7a22d024f873e2db4f22.jpg",
+    "category": "Fruits",
+    "gt_class_counts": {
+      "guava": 1,
+      "dragon fruit": 1,
+      "sugar apple": 1,
+      "banana": 1
+    },
+    "gt_count": 4,
+    "pred_groups": [
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "refrigerator",
+        "count": 1
+      }
+    ],
+    "pred_total": 12,
+    "out": "result/viz_omnicount/03_c-289-_jpg.png"
+  },
+  {
+    "file": "001344_png.rf.7c9bd6737730fed9b01305740895a70f.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "biker": 1,
+      "bike": 1,
+      "bus": 1,
+      "car": 5,
+      "pedestrian": 5
+    },
+    "gt_count": 13,
+    "pred_groups": [
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 3
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "stop sign",
+        "count": 1
+      },
+      {
+        "class": "stop sign",
+        "count": 1
+      },
+      {
+        "class": "bottle",
+        "count": 1
+      },
+      {
+        "class": "spoon",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "chair",
+        "count": 1
+      },
+      {
+        "class": "chair",
+        "count": 1
+      },
+      {
+        "class": "chair",
+        "count": 1
+      },
+      {
+        "class": "chair",
+        "count": 1
+      },
+      {
+        "class": "tv",
+        "count": 1
+      },
+      {
+        "class": "book",
+        "count": 1
+      }
+    ],
+    "pred_total": 45,
+    "out": "result/viz_omnicount/04_001344_png.png"
+  },
+  {
+    "file": "c-305-_jpg.rf.e8f1870c2229eff0da1b3ce309d86026.jpg",
+    "category": "Fruits",
+    "gt_class_counts": {
+      "dragon fruit": 1,
+      "guava": 1,
+      "pineapple": 1,
+      "banana": 1,
+      "pear": 1
+    },
+    "gt_count": 5,
+    "pred_groups": [
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "spoon",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "bed",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      }
+    ],
+    "pred_total": 14,
+    "out": "result/viz_omnicount/05_c-305-_jpg.png"
+  },
+  {
+    "file": "b-1462-_jpg.rf.a4c0deee79be335831a5aca4c6a9d1e5.jpg",
+    "category": "Fruits",
+    "gt_class_counts": {
+      "banana": 2,
+      "apples": 2,
+      "sugar apple": 1,
+      "dragon fruit": 1
+    },
+    "gt_count": 6,
+    "pred_groups": [
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "spoon",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "bowl",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "apple",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      }
+    ],
+    "pred_total": 11,
+    "out": "result/viz_omnicount/06_b-1462-_jpg.png"
+  },
+  {
+    "file": "1a13ba24-f51b8286_jpg.rf.f4a0dbf75fe5ac36edd37cdbc8bff342.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "car": 2,
+      "truck": 2
+    },
+    "gt_count": 4,
+    "pred_groups": [
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "person",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "train",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "chair",
+        "count": 1
+      },
+      {
+        "class": "chair",
+        "count": 1
+      },
+      {
+        "class": "bed",
+        "count": 1
+      },
+      {
+        "class": "dining table",
+        "count": 1
+      },
+      {
+        "class": "tv",
+        "count": 1
+      },
+      {
+        "class": "oven",
+        "count": 1
+      },
+      {
+        "class": "refrigerator",
+        "count": 1
+      }
+    ],
+    "pred_total": 57,
+    "out": "result/viz_omnicount/07_1a13ba24-f51b8286_jpg.png"
+  }
+]

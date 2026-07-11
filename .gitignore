@@ -1,17 +1,24 @@
 # Large dataset files
-dataset/
+datasets/
 
 # Model weights (too large for GitHub)
 models/
+checkpoint/
+result/checkpoints/
+*.pt
+*.pth
+*.zip
 
 # Logs
 *.log
+result/logs/
 
 # GitHub Pages site (separate repo)
 page/
 
-# Cache
+# Cache directories
 cache/
+*cache/
 
 # Python
 __pycache__/

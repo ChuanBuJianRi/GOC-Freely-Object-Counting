@@ -1,0 +1,4638 @@
+[
+  {
+    "file": "0d3a4e7f-42aea218_jpg.rf.527fdb75b20a4d205d834b866673100e.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "pedestrian": 12,
+      "car": 7,
+      "trafficlight_green": 1
+    },
+    "gt_count": 20,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 3
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "Cat",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "trafficlight_yellow",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 68,
+    "out": "result/viz_omnicount_dense/00_0d3a4e7f-42aea218_jpg.png"
+  },
+  {
+    "file": "Screenshot_20230618_205405_png_jpg.rf.aff06378d7d8de59bfcb946ba32812bf.jpg",
+    "category": "Wild",
+    "gt_class_counts": {
+      "wildboar": 11,
+      "car": 6,
+      "motorcycle": 3
+    },
+    "gt_count": 20,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 4
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Cat",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "Pig",
+        "count": 1
+      },
+      {
+        "class": "Pig",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 49,
+    "out": "result/viz_omnicount_dense/01_Screenshot_20230618_205405_png.png"
+  },
+  {
+    "file": "0e460dd3-471aad9b_jpg.rf.72324bd50d5007a041b6c52c42f4224b.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "car": 17,
+      "trafficlight": 2
+    },
+    "gt_count": 19,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 7
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "motorbike",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 57,
+    "out": "result/viz_omnicount_dense/02_0e460dd3-471aad9b_jpg.png"
+  },
+  {
+    "file": "Honeydew-Melon_012_jpg.rf.fd6e387d206626d5cd01612e32e57335.jpg",
+    "category": "Supermarket",
+    "gt_class_counts": {
+      "Galia": 18,
+      "pineapple": 1
+    },
+    "gt_count": 19,
+    "pred_groups": [
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "apples",
+        "count": 1
+      },
+      {
+        "class": "apples",
+        "count": 1
+      },
+      {
+        "class": "apples",
+        "count": 1
+      },
+      {
+        "class": "apples",
+        "count": 1
+      },
+      {
+        "class": "guava",
+        "count": 1
+      },
+      {
+        "class": "guava",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "oren",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "Drinks",
+        "count": 1
+      },
+      {
+        "class": "Cat",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "Clementine",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 67,
+    "out": "result/viz_omnicount_dense/03_Honeydew-Melon_012_jpg.png"
+  },
+  {
+    "file": "birds_train_mp4-34_jpg.rf.09cf99fa9556c5203b292f6dcef6c6ee.jpg",
+    "category": "Birds",
+    "gt_class_counts": {
+      "pigeon": 13,
+      "crow": 2,
+      "raven": 4
+    },
+    "gt_count": 19,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 2
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "Drinks",
+        "count": 1
+      },
+      {
+        "class": "playground",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 42,
+    "out": "result/viz_omnicount_dense/04_birds_train_mp4-34_jpg.png"
+  },
+  {
+    "file": "birds_train_mp4-35_jpg.rf.4f30e234014788d16c041c7d66309e77.jpg",
+    "category": "Birds",
+    "gt_class_counts": {
+      "pigeon": 14,
+      "raven": 2,
+      "crow": 3
+    },
+    "gt_count": 19,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 2
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "playground",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Cat",
+        "count": 1
+      },
+      {
+        "class": "Pond",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 48,
+    "out": "result/viz_omnicount_dense/05_birds_train_mp4-35_jpg.png"
+  },
+  {
+    "file": "birds_train_mp4-39_jpg.rf.ee409e6936cfaa747b55a5c22ee78136.jpg",
+    "category": "Birds",
+    "gt_class_counts": {
+      "pigeon": 14,
+      "crow": 2,
+      "raven": 3
+    },
+    "gt_count": 19,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "playground",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Cat",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "beach",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Chicken",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 48,
+    "out": "result/viz_omnicount_dense/06_birds_train_mp4-39_jpg.png"
+  },
+  {
+    "file": "birds_train_mp4-36_jpg.rf.40708e744e2bea0f570773f9c1fc3b65.jpg",
+    "category": "Birds",
+    "gt_class_counts": {
+      "crow": 3,
+      "pigeon": 12,
+      "raven": 3
+    },
+    "gt_count": 18,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 45,
+    "out": "result/viz_omnicount_dense/07_birds_train_mp4-36_jpg.png"
+  },
+  {
+    "file": "birds_train_mp4-37_jpg.rf.e1f8ce3d85295bbd4344f3c84458f3bc.jpg",
+    "category": "Birds",
+    "gt_class_counts": {
+      "crow": 3,
+      "pigeon": 12,
+      "raven": 3
+    },
+    "gt_count": 18,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Cat",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 45,
+    "out": "result/viz_omnicount_dense/08_birds_train_mp4-37_jpg.png"
+  },
+  {
+    "file": "IMG_20220219_181812_jpg.rf.35c77e1315378edf3ddbf1f5bda27289.jpg",
+    "category": "Supermarket",
+    "gt_class_counts": {
+      "Cheese": 16,
+      "Meat": 1
+    },
+    "gt_count": 17,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "Coffee",
+        "count": 1
+      },
+      {
+        "class": "Coffee",
+        "count": 1
+      },
+      {
+        "class": "Drinks",
+        "count": 1
+      },
+      {
+        "class": "Drinks",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 63,
+    "out": "result/viz_omnicount_dense/09_IMG_20220219_181812_jpg.png"
+  },
+  {
+    "file": "birds_train_mp4-32_jpg.rf.35b77a8371eedc07f190ab20323927ba.jpg",
+    "category": "Birds",
+    "gt_class_counts": {
+      "crow": 3,
+      "pigeon": 12,
+      "raven": 2
+    },
+    "gt_count": 17,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "Drinks",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 34,
+    "out": "result/viz_omnicount_dense/10_birds_train_mp4-32_jpg.png"
+  },
+  {
+    "file": "birds_train_mp4-38_jpg.rf.24d8ad4c5677ad8505334c4652599ce4.jpg",
+    "category": "Birds",
+    "gt_class_counts": {
+      "pigeon": 10,
+      "crow": 2,
+      "raven": 5
+    },
+    "gt_count": 17,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 2
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "Bird",
+        "count": 1
+      },
+      {
+        "class": "parking area",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 58,
+    "out": "result/viz_omnicount_dense/11_birds_train_mp4-38_jpg.png"
+  },
+  {
+    "file": "000327_png.rf.23fc33b4cda900f23324c31e31d93ec7.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "car": 9,
+      "trafficlight_red": 1,
+      "trafficlight": 6
+    },
+    "gt_count": 16,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 7
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "motorbike",
+        "count": 1
+      },
+      {
+        "class": "motorbike",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 50,
+    "out": "result/viz_omnicount_dense/12_000327_png.png"
+  },
+  {
+    "file": "002449_png.rf.d4f9d35776d0823ba5aeb64072a6b189.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "pedestrian": 10,
+      "car": 5,
+      "bike": 1
+    },
+    "gt_count": 16,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 2
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "banana",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "playground",
+        "count": 1
+      },
+      {
+        "class": "planet-oat-original",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 70,
+    "out": "result/viz_omnicount_dense/13_002449_png.png"
+  },
+  {
+    "file": "1a0fa68e-5ba887d4_jpg.rf.376cdec09ecbddc30e996852965d233d.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "car": 4,
+      "bus": 1,
+      "trafficlight_yellow": 2,
+      "pedestrian": 9
+    },
+    "gt_count": 16,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 2
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "trafficlight_green",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 86,
+    "out": "result/viz_omnicount_dense/14_1a0fa68e-5ba887d4_jpg.png"
+  },
+  {
+    "file": "001245_png.rf.2d2efab92d5d2169e3cb9e2f7fb34a81.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "car": 9,
+      "trafficlight_red": 1,
+      "trafficlight": 5
+    },
+    "gt_count": 15,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 10
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 3
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "motorbike",
+        "count": 1
+      },
+      {
+        "class": "motorbike",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 64,
+    "out": "result/viz_omnicount_dense/15_001245_png.png"
+  },
+  {
+    "file": "004714_png.rf.abd20eb8613b01fadf2326441d46d516.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "car": 9,
+      "trafficlight_red": 1,
+      "trafficlight": 5
+    },
+    "gt_count": 15,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 6
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 2
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "bike",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "motorbike",
+        "count": 1
+      },
+      {
+        "class": "Dog",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 55,
+    "out": "result/viz_omnicount_dense/16_004714_png.png"
+  },
+  {
+    "file": "0e4acdbb-2403b10e_jpg.rf.9842b8fc5694cf46118cd8f92a4b05a9.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "bus": 1,
+      "car": 5,
+      "trafficlight_green": 2,
+      "trafficlight": 1,
+      "biker": 1,
+      "pedestrian": 5
+    },
+    "gt_count": 15,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 3
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "trafficlight_green",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "Pig",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 64,
+    "out": "result/viz_omnicount_dense/17_0e4acdbb-2403b10e_jpg.png"
+  },
+  {
+    "file": "0efc081f-3e8e73aa_jpg.rf.812dff2a73830df48c572afe4da4da3c.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "car": 6,
+      "motorbiker": 1,
+      "trafficlight_red": 1,
+      "trafficlight_green": 1,
+      "trafficlight": 3,
+      "pedestrian": 3
+    },
+    "gt_count": 15,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 5
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "motorbike",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "books",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "aeroplanes",
+        "count": 1
+      },
+      {
+        "class": "Salad",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 74,
+    "out": "result/viz_omnicount_dense/18_0efc081f-3e8e73aa_jpg.png"
+  },
+  {
+    "file": "002094_png.rf.5b737c54e5f39086b657c0f2a909b8b8.jpg",
+    "category": "Urban",
+    "gt_class_counts": {
+      "car": 8,
+      "trafficlight_red": 1,
+      "trafficlight": 5
+    },
+    "gt_count": 14,
+    "pred_groups": [
+      {
+        "class": "car",
+        "count": 7
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "car",
+        "count": 1
+      },
+      {
+        "class": "pedestrian",
+        "count": 1
+      },
+      {
+        "class": "trafficlight_green",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "truck",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "trafficlight",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "bus",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "biker",
+        "count": 1
+      },
+      {
+        "class": "Drinks",
+        "count": 1
+      },
+      {
+        "class": "motorbike",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "motorbiker",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "Railway Station",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      },
+      {
+        "class": "people",
+        "count": 1
+      }
+    ],
+    "pred_total": 52,
+    "out": "result/viz_omnicount_dense/19_002094_png.png"
+  }
+]

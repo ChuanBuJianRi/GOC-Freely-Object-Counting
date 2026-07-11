@@ -1,0 +1,101 @@
+{
+  "date": "2026-07-10",
+  "dataset": {
+    "name": "MCAC",
+    "split": "test",
+    "num_images": 2115,
+    "num_image_class_pairs": 3630
+  },
+  "published_reference": {
+    "source": "arXiv:2309.04820v2 MCAC test table",
+    "MAE": 9.52,
+    "RMSE": 17.64
+  },
+  "official_assets": {
+    "repository": "https://github.com/ActiveVisionLab/ABC123",
+    "commit": "1ca1f30614e0809f72dca8e225f8dd5dbe31be5d",
+    "checkpoint_sha256": "2c251850da061f183b239aa86f258f44085923f02bef196f247bd84d9d7b919c",
+    "config": "configs/ABC123test.yml",
+    "crop_size": 672,
+    "occlusion_limit": 70,
+    "gtd_scale": 400.0,
+    "matching": "L2-normalized density maps; Hungarian L1 cost squared"
+  },
+  "results": {
+    "legacy_resize_full_2115": {
+      "MAE": 9.459508982588975,
+      "RMSE": 17.51856493429674,
+      "bias": -1.5030729937003784,
+      "NAE": 0.2814645743418266,
+      "SRE": 2.210670692560419,
+      "delta_vs_published_MAE": -0.06049101741102447,
+      "delta_vs_published_RMSE": -0.12143506570325857
+    },
+    "legacy_resize_official_drop_last_2114": {
+      "MAE": 9.449953303140212,
+      "RMSE": 17.50565271130714,
+      "bias": -1.5156495003677382,
+      "dropped_image_ids": [
+        "3671918445863908"
+      ]
+    },
+    "current_resize_full_2115": {
+      "MAE": 9.563478244684916,
+      "RMSE": 17.760537279804424,
+      "bias": -2.0642524895135748,
+      "delta_vs_published_MAE": 0.04347824468491579,
+      "delta_vs_published_RMSE": 0.12053727980442419
+    },
+    "current_resize_official_drop_last_2114": {
+      "MAE": 9.555785351517613,
+      "RMSE": 17.752084242538604,
+      "bias": -2.0751494969642064,
+      "dropped_image_ids": [
+        "3671918445863908"
+      ]
+    }
+  },
+  "bootstrap_1000_image_resamples_seed_20260710": {
+    "MAE_95CI": [
+      8.939087339650982,
+      10.032588240053135
+    ],
+    "RMSE_95CI": [
+      16.41165469777191,
+      18.675451610729667
+    ]
+  },
+  "legacy_resize_diagnostics": {
+    "matched_total": {
+      "MAE": 11.544343502797824,
+      "RMSE": 22.020348206038282,
+      "bias": -2.5797423012446212
+    },
+    "all_five_heads_total": {
+      "MAE": 58.70061626841086,
+      "RMSE": 90.19638248632555,
+      "bias": 56.774486855356656
+    },
+    "zero_target_image": {
+      "image_id": "2277443934862561",
+      "gt_total": 0.0,
+      "all_head_pred_total": 401.2002239525318,
+      "official_per_class_pairs": 0
+    }
+  },
+  "by_num_gt_classes_legacy_resize": {
+    "0": {"num_images": 1, "num_pairs": 0, "MAE": null, "RMSE": null},
+    "1": {"num_images": 1013, "num_pairs": 1013, "MAE": 6.823897369864336, "RMSE": 14.695211289336221},
+    "2": {"num_images": 760, "num_pairs": 1520, "MAE": 8.048577068454057, "RMSE": 16.37204312471675},
+    "3": {"num_images": 267, "num_pairs": 801, "MAE": 13.812180400179466, "RMSE": 21.470817851648984},
+    "4": {"num_images": 74, "num_pairs": 296, "MAE": 13.945999751795563, "RMSE": 20.017430722094588}
+  },
+  "by_gt_count_legacy_resize": {
+    "1-10": {"num_pairs": 890, "MAE": 2.390711899232636, "RMSE": 4.6580714713211, "bias": -0.5007783460620139},
+    "11-50": {"num_pairs": 1470, "MAE": 7.0406560580415825, "RMSE": 11.782294059969795, "bias": -0.433379951187708},
+    "51-100": {"num_pairs": 732, "MAE": 13.116063664899503, "RMSE": 21.239250352622864, "bias": 3.677837497169849},
+    "101-200": {"num_pairs": 368, "MAE": 19.250864205153093, "RMSE": 28.347979468395977, "bias": -6.978582268175871},
+    "201-300": {"num_pairs": 170, "MAE": 30.44260577033548, "RMSE": 39.461850089879405, "bias": -26.455602847828583}
+  },
+  "conclusion": "The released ABC123 checkpoint reproduces the published MCAC result within 0.061 MAE and 0.121 RMSE. Keep the published row and report the local full-2115 result separately."
+}

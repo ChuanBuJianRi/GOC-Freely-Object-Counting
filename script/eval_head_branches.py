@@ -20,10 +20,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "code"))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from frame_1.heads.category_head import HybridCategoryHead  # noqa: E402
+from code.heads.category_head import HybridCategoryHead  # noqa: E402
 import eval_category_occamm as E  # noqa: E402
 
 
